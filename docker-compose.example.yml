@@ -1,0 +1,10 @@
+services:
+  ahe-ics:
+    image: wielorzeczownik/ahe-ics:latest
+    container_name: ahe-ics
+    ports:
+      - "8080:8080"
+    environment:
+      AHE_USERNAME: "your_login"
+      AHE_PASSWORD: "your_password"
+    restart: unless-stopped
