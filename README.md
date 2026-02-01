@@ -72,6 +72,11 @@ http://localhost:8080/calendar.ics?from=2026-01-01&to=2026-03-01
 - If `AHE_CAL_TOKEN` is enabled, include it in the subscription URL:
   `https://your-domain.example/calendar.ics?token=your-token`
 
+## Platform support
+
+- Linux: supported and tested.
+- Windows: release binaries are produced, so support is intended, but I currently have no Windows environment to run full runtime tests. Treat Windows support as **available but unverified**.
+
 ## Disclaimer
 
 This project is community-made, unofficial, and may break if the backend API changes.
