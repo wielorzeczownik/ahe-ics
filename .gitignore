@@ -1,0 +1,34 @@
+# Build outputs
+/target/
+**/*.rs.bk
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# Logs / runtime artifacts
+*.log
+*.pid
+*.seed
+
+# Coverage / profiling
+coverage/
+*.profraw
+*.profdata
+
+# Rust / cargo local files
+/.cargo/
+
+# Docker local overrides
+docker-compose.yml
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editors / IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
