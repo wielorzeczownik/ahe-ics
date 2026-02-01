@@ -19,6 +19,7 @@ jobs:
       released: ${{ steps.bump.outputs.released }}
       version: ${{ steps.bump.outputs.version }}
       tag: ${{ steps.bump.outputs.tag }}
+      commit_changes: ${{ steps.bump.outputs.commit_changes }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -63,13 +64,36 @@ jobs:
           fi
 
           next_version="${next_tag#v}"
+          current_tag="v$current_version"
+          has_current_tag="false"
+          if git rev-parse -q --verify "refs/tags/${current_tag}" >/dev/null; then
+            has_current_tag="true"
+          fi
 
           if [[ "$next_version" == "$current_version" ]]; then
-            echo "No version bump required (current: $current_version)."
-            echo "released=false" >> "$GITHUB_OUTPUT"
-            echo "version=$current_version" >> "$GITHUB_OUTPUT"
-            echo "tag=v$current_version" >> "$GITHUB_OUTPUT"
-            exit 0
+            if [[ "$has_current_tag" == "false" ]]; then
+              echo "No bump from git-cliff, but no current tag exists. Creating initial release for ${current_tag}."
+              echo "released=true" >> "$GITHUB_OUTPUT"
+              echo "version=$current_version" >> "$GITHUB_OUTPUT"
+              echo "tag=$current_tag" >> "$GITHUB_OUTPUT"
+              echo "commit_changes=false" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+
+            commits_since_tag=$(git rev-list --count "${current_tag}..HEAD")
+            if [[ "$commits_since_tag" -eq 0 ]]; then
+              echo "No new commits since ${current_tag}. Nothing to release."
+              echo "released=false" >> "$GITHUB_OUTPUT"
+              echo "version=$current_version" >> "$GITHUB_OUTPUT"
+              echo "tag=$current_tag" >> "$GITHUB_OUTPUT"
+              echo "commit_changes=false" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+
+            IFS='.' read -r major minor patch <<< "$current_version"
+            next_version="${major}.${minor}.$((patch + 1))"
+            next_tag="v${next_version}"
+            echo "No semantic bump from git-cliff; fallback to patch bump -> ${next_tag}"
           fi
 
           cargo set-version "$next_version"
@@ -79,6 +103,7 @@ jobs:
           echo "released=true" >> "$GITHUB_OUTPUT"
           echo "version=$next_version" >> "$GITHUB_OUTPUT"
           echo "tag=$next_tag" >> "$GITHUB_OUTPUT"
+          echo "commit_changes=true" >> "$GITHUB_OUTPUT"
 
       - name: Generate release notes (git-cliff)
         if: ${{ steps.bump.outputs.released == 'true' }}
@@ -91,7 +116,7 @@ jobs:
           GITHUB_REPO: ${{ github.repository }}
 
       - name: Commit, tag, and push
-        if: ${{ steps.bump.outputs.released == 'true' }}
+        if: ${{ steps.bump.outputs.released == 'true' && steps.bump.outputs.commit_changes == 'true' }}
         uses: EndBug/add-and-commit@v9
         with:
           add: "Cargo.toml Cargo.lock"
@@ -99,6 +124,12 @@ jobs:
           message: "chore(release): ${{ steps.bump.outputs.tag }} [skip ci]"
           tag: "${{ steps.bump.outputs.tag }}"
           push: true
+
+      - name: Push tag only
+        if: ${{ steps.bump.outputs.released == 'true' && steps.bump.outputs.commit_changes == 'false' }}
+        run: |
+          git tag "${{ steps.bump.outputs.tag }}"
+          git push origin "${{ steps.bump.outputs.tag }}"
 
       - name: Upload release notes
         if: ${{ steps.bump.outputs.released == 'true' }}
