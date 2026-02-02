@@ -129,6 +129,7 @@ async fn calendar_core(
 
   let student_data = state.api.get_student_data(&token).await?;
   let student_id = student_data.student_id;
+  // When exams are disabled, skip index resolution entirely and render only schedule entries.
   let mut index_id = if state.config.exams_enabled {
     student_data.index_id
   } else {
