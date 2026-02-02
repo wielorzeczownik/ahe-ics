@@ -109,6 +109,7 @@ pub async fn get_exams(
   Ok(events)
 }
 
+/// Reads current academic year used by WPS dictionary endpoints.
 async fn get_current_academic_year(client: &Client, access_token: &str) -> Result<i32> {
   let url = format!("{API_BASE_URL}{API_CURRENT_ACADEMIC_YEAR_PATH}");
 
@@ -134,6 +135,7 @@ async fn get_current_academic_year(client: &Client, access_token: &str) -> Resul
   Ok(payload.academic_year)
 }
 
+/// Fetches detailed exam protocol entries for a student index and term.
 async fn get_exam_protocol(
   client: &Client,
   access_token: &str,
@@ -172,12 +174,15 @@ async fn get_exam_protocol(
   )
 }
 
+/// Resolves subjects that should be treated as exams for a given term.
 async fn resolve_exam_subjects_for_term(
   client: &Client,
   access_token: &str,
   term: TermQuery,
   items: Vec<ExamProtocolItem>,
 ) -> TermSubjects {
+  // We only keep subjects that are explicitly settled as an exam.
+  // If "Szczegolowy" has null settlement, we resolve it via the "Posredni" endpoint.
   let mut subjects = TermSubjects::default();
   let mut settlement_cache: HashMap<(i64, i64), bool> = HashMap::new();
 
@@ -198,6 +203,7 @@ async fn resolve_exam_subjects_for_term(
     }
 
     let cache_key = (exam_card_id, exam_card_position_id);
+    // Avoid duplicate network calls when the same exam card pair appears multiple times.
     let is_exam = if let Some(value) = settlement_cache.get(&cache_key) {
       *value
     } else {
@@ -236,6 +242,7 @@ async fn resolve_exam_subjects_for_term(
   subjects
 }
 
+/// Fetches intermediate protocol details used when settlement is missing in the detailed protocol.
 async fn get_exam_protocol_intermediate(
   client: &Client,
   access_token: &str,
@@ -271,6 +278,7 @@ async fn get_exam_protocol_intermediate(
   )
 }
 
+/// Fetches public exam schedule entries for the selected academic term.
 async fn get_exam_schedule(
   client: &Client,
   access_token: &str,
@@ -307,6 +315,7 @@ async fn get_exam_schedule(
   )
 }
 
+/// Normalizes free text values for case-insensitive matching.
 fn normalize_subject(value: &str) -> Option<String> {
   let normalized = value
     .split_whitespace()
@@ -320,10 +329,12 @@ fn normalize_subject(value: &str) -> Option<String> {
   }
 }
 
+/// Returns true when settlement label maps to the configured "exam" keyword.
 fn is_exam_settlement(value: Option<&str>) -> bool {
   normalize_subject(value.unwrap_or_default()).is_some_and(|name| name == EXAM_SETTLEMENT_NAME)
 }
 
+/// Maps a raw exam schedule item into an ICS event within the requested date window.
 fn map_exam_event(item: ExamScheduleItem, from: NaiveDate, to: NaiveDate) -> Option<ExamEvent> {
   let exam_date = item.exam_date.date();
   if exam_date < from || exam_date > to {
@@ -360,6 +371,7 @@ fn map_exam_event(item: ExamScheduleItem, from: NaiveDate, to: NaiveDate) -> Opt
   })
 }
 
+/// Parses `HH:MM` strings returned by WPS API.
 fn parse_time(value: &str) -> Option<NaiveTime> {
   let mut parts = value.trim().split(':');
   let hour = parts.next()?.trim().parse::<u32>().ok()?;
@@ -371,6 +383,7 @@ fn parse_time(value: &str) -> Option<NaiveTime> {
   NaiveTime::from_hms_opt(hour, minute, 0)
 }
 
+/// Trims optional text fields and drops empty values.
 fn clean_text(value: Option<String>) -> Option<String> {
   value.and_then(|raw| {
     let trimmed = raw.trim();
@@ -382,6 +395,7 @@ fn clean_text(value: Option<String>) -> Option<String> {
   })
 }
 
+/// Trims lecturer names and removes leading dashes used by API formatting.
 fn clean_lecturer(value: Option<String>) -> Option<String> {
   value.and_then(|raw| {
     let trimmed = raw.trim().trim_start_matches('-').trim();
@@ -393,6 +407,7 @@ fn clean_lecturer(value: Option<String>) -> Option<String> {
   })
 }
 
+/// Builds the default pair of terms (winter/summer) for the academic year.
 fn build_terms_for_year(academic_year: i32) -> Vec<TermQuery> {
   vec![
     TermQuery {
