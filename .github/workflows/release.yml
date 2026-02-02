@@ -8,6 +8,7 @@ on:
       - "src/**"
       - "Cargo.toml"
       - "Cargo.lock"
+      - "Dockerfile"
 
 concurrency:
   group: release-main
@@ -150,11 +151,12 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: ubuntu-latest
+          # Build GNU Linux binaries on 22.04 so they stay compatible with older glibc (2.35+).
+          - os: ubuntu-22.04
             target: x86_64-unknown-linux-gnu
             binary: ahe-ics
             archive: tar.gz
-          - os: ubuntu-latest
+          - os: ubuntu-22.04
             target: aarch64-unknown-linux-gnu
             binary: ahe-ics
             archive: tar.gz
