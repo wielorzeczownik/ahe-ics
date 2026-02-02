@@ -1,7 +1,12 @@
 pub const API_BASE_URL: &str = "https://wpsapi.ahe.lodz.pl";
 pub const API_LOGIN_PATH: &str = "/api/Profil/zaloguj";
 pub const API_STUDENT_PATH: &str = "/api/Student/GetDaneStudenta";
+pub const API_STUDENT_INDEXES_PATH: &str = "/api/Indeks/GETPobierzListeIndeksowDlaStudenta";
 pub const API_PLAN_PATH: &str = "/api/PlanyZajec/GETPlanSzczegolowy";
+pub const API_EXAM_PROTOCOL_PATH: &str =
+  "/api/ProtokolyEgzaminacyjne/GetProtokolEgzaminacyjnySzczegolowy";
+pub const API_EXAM_FILTER_PATH: &str = "/api/Egzaminy/GETEgazminFiltr";
+pub const API_CURRENT_ACADEMIC_YEAR_PATH: &str = "/api/Slowniki/GETPobierzAktualnyRokAkademicki";
 
 pub const LOGIN_ROLE_ID: &str = "2";
 pub const LOGIN_GRANT_TYPE: &str = "password";

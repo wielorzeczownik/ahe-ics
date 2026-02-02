@@ -1,16 +1,17 @@
 use anyhow::Result;
-use icalendar::{ Calendar, Component, Event, EventLike };
+use icalendar::{Calendar, Component, Event, EventLike};
 
 use crate::config::CalendarLanguage;
 use crate::constants::CALENDAR_TZ;
-use crate::i18n::{ IcsTexts, ics_texts };
-use crate::models::PlanItem;
+use crate::i18n::{IcsTexts, ics_texts};
+use crate::models::{ExamEvent, PlanItem};
 
 /// Renders a list of plan items into a single ICS calendar string.
 pub fn render_calendar(
   student_id: i64,
   items: &[PlanItem],
-  lang: CalendarLanguage
+  exams: &[ExamEvent],
+  lang: CalendarLanguage,
 ) -> Result<String> {
   let t = ics_texts(lang);
 
@@ -19,7 +20,10 @@ pub fn render_calendar(
   calendar.timezone(CALENDAR_TZ);
 
   for item in items {
-    let uid = format!("ahe-{student_id}-{}@wpsapi.ahe.lodz.pl", item.id_plan_zajec_poz);
+    let uid = format!(
+      "ahe-{student_id}-{}@wpsapi.ahe.lodz.pl",
+      item.id_plan_zajec_poz
+    );
     let summary = build_summary(item);
     let location = build_location(item, &t);
     let description = build_description(item, &t);
@@ -31,6 +35,28 @@ pub fn render_calendar(
       .description(&description)
       .starts(item.data_od)
       .ends(item.data_do)
+      .done();
+
+    calendar.push(event);
+  }
+
+  for exam in exams {
+    let uid = format!(
+      "ahe-{student_id}-exam-{}-{}@wpsapi.ahe.lodz.pl",
+      exam.id_publikowana_dana,
+      exam.starts.and_utc().timestamp()
+    );
+    let summary = build_exam_summary(exam, &t);
+    let location = build_exam_location(exam, &t);
+    let description = build_exam_description(exam, &t);
+
+    let event = Event::new()
+      .uid(&uid)
+      .summary(&summary)
+      .location(&location)
+      .description(&description)
+      .starts(exam.starts)
+      .ends(exam.ends)
       .done();
 
     calendar.push(event);
@@ -72,12 +98,46 @@ fn build_description(item: &PlanItem, t: &IcsTexts) -> String {
   let instructors = if item.dydaktyk.is_empty() {
     t.missing_data.to_string()
   } else {
-    item.dydaktyk
+    item
+      .dydaktyk
       .iter()
       .map(|d| d.imie_nazwisko.as_str())
       .collect::<Vec<_>>()
       .join(", ")
   };
 
-  format!("{}: {instructors}\n{}: {}", t.label_instructors, t.label_type, item.typ_zajec)
+  format!(
+    "{}: {instructors}\n{}: {}",
+    t.label_instructors, t.label_type, item.typ_zajec
+  )
+}
+
+fn build_exam_summary(item: &ExamEvent, t: &IcsTexts) -> String {
+  let subject = if item.subject.trim().is_empty() {
+    t.missing_data.to_string()
+  } else {
+    item.subject.trim().to_string()
+  };
+  format!("{}: {subject}", t.label_exam)
+}
+
+fn build_exam_location(item: &ExamEvent, t: &IcsTexts) -> String {
+  item
+    .location
+    .as_ref()
+    .map(|value| value.trim())
+    .filter(|value| !value.is_empty())
+    .unwrap_or(t.location_default)
+    .to_string()
+}
+
+fn build_exam_description(item: &ExamEvent, t: &IcsTexts) -> String {
+  let notes = item.notes.as_deref().unwrap_or(t.missing_data);
+  let lecturer = item.lecturer.as_deref().unwrap_or(t.missing_data);
+  let details = item.details.as_deref().unwrap_or(t.missing_data);
+
+  format!(
+    "{}: {notes}\n{}: {lecturer}\n{}: {details}",
+    t.label_exam_type, t.label_instructors, t.label_details
+  )
 }

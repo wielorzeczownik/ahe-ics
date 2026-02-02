@@ -1,18 +1,19 @@
 use axum::Router;
-use axum::extract::{ ConnectInfo, Query, State };
+use axum::extract::{ConnectInfo, Query, State};
 use axum::http::HeaderMap;
 use axum::http::StatusCode;
 use axum::http::header::CONTENT_TYPE;
 use axum::response::IntoResponse;
 use axum::routing::get;
-use chrono::{ Duration, NaiveDate };
+use chrono::{Duration, NaiveDate};
 use serde::Deserialize;
 use std::net::SocketAddr;
 
 use crate::app::AppState;
 use crate::cache::IcsCacheKey;
-use crate::constants::{ ICS_CONTENT_TYPE, JSON_CONTENT_TYPE };
+use crate::constants::{ICS_CONTENT_TYPE, JSON_CONTENT_TYPE};
 use crate::ics::render_calendar;
+use crate::models::StudentIndex;
 use crate::web::AppError;
 use crate::web::openapi;
 
@@ -58,7 +59,7 @@ pub(crate) async fn calendar(
   State(state): State<AppState>,
   Query(query): Query<CalendarQuery>,
   headers: HeaderMap,
-  ConnectInfo(addr): ConnectInfo<SocketAddr>
+  ConnectInfo(addr): ConnectInfo<SocketAddr>,
 ) -> Result<impl IntoResponse, AppError> {
   let ics = calendar_core(state, query, headers, addr).await?;
   Ok(([(CONTENT_TYPE, ICS_CONTENT_TYPE)], ics))
@@ -89,7 +90,7 @@ pub(crate) async fn calendar_me(
   State(state): State<AppState>,
   Query(query): Query<CalendarQuery>,
   headers: HeaderMap,
-  ConnectInfo(addr): ConnectInfo<SocketAddr>
+  ConnectInfo(addr): ConnectInfo<SocketAddr>,
 ) -> Result<impl IntoResponse, AppError> {
   let ics = calendar_core(state, query, headers, addr).await?;
   Ok(([(CONTENT_TYPE, ICS_CONTENT_TYPE)], ics))
@@ -99,7 +100,7 @@ async fn calendar_core(
   state: AppState,
   query: CalendarQuery,
   headers: HeaderMap,
-  addr: SocketAddr
+  addr: SocketAddr,
 ) -> Result<String, AppError> {
   tracing::info!(client_ip = %addr.ip(), "calendar request");
   if let Some(expected) = state.config.calendar_token.as_deref() {
@@ -110,17 +111,45 @@ async fn calendar_core(
   }
 
   let today = chrono::Local::now().date_naive();
-  let from = query.from.unwrap_or_else(|| today - Duration::days(state.config.calendar_past_days));
-  let to = query.to.unwrap_or_else(|| today + Duration::days(state.config.calendar_future_days));
+  let from = query
+    .from
+    .unwrap_or_else(|| today - Duration::days(state.config.calendar_past_days));
+  let to = query
+    .to
+    .unwrap_or_else(|| today + Duration::days(state.config.calendar_future_days));
 
   if to < from {
     return Err(AppError::bad_request("to must be >= from"));
   }
 
-  let token = state.token_cache.get_or_login(&state.config, &state.api).await?;
+  let token = state
+    .token_cache
+    .get_or_login(&state.config, &state.api)
+    .await?;
 
   let student_data = state.api.get_student_data(&token).await?;
   let student_id = student_data.id_student;
+  let mut indeks_id = student_data.indeks_id;
+
+  if indeks_id.is_none() {
+    match state.api.get_student_indexes(&token).await {
+      Ok(indexes) => {
+        indeks_id = pick_indeks_id(&indexes);
+        if let Some(found) = indeks_id {
+          tracing::debug!(
+            student_id,
+            indeks_id = found,
+            "IndeksID resolved from indeks list"
+          );
+        } else {
+          tracing::warn!(student_id, "student indeks list is empty, skipping exams");
+        }
+      }
+      Err(error) => {
+        tracing::warn!(student_id, error = %error, "failed to fetch indeks list, skipping exams");
+      }
+    }
+  }
 
   let key = IcsCacheKey {
     student_id,
@@ -136,9 +165,27 @@ async fn calendar_core(
   tracing::debug!("ics cache miss");
   let date_from = from.format("%Y-%m-%d").to_string();
   let date_to = to.format("%Y-%m-%d").to_string();
-  let plan = state.api.get_plan(&token, student_id, &date_from, &date_to).await?;
+  let plan = state
+    .api
+    .get_plan(&token, student_id, &date_from, &date_to)
+    .await?;
+  let exams = if let Some(indeks_id) = indeks_id {
+    match state.api.get_exams(&token, indeks_id, from, to).await {
+      Ok(items) => items,
+      Err(error) => {
+        tracing::warn!(student_id, error = %error, "failed to fetch exams, continuing with schedule only");
+        Vec::new()
+      }
+    }
+  } else {
+    tracing::warn!(
+      student_id,
+      "IndeksID not found in student data, skipping exams"
+    );
+    Vec::new()
+  };
 
-  let ics = render_calendar(student_id, &plan, state.config.calendar_lang)?;
+  let ics = render_calendar(student_id, &plan, &exams, state.config.calendar_lang)?;
 
   state.ics_cache.insert(key, ics.clone()).await;
 
@@ -158,6 +205,20 @@ fn extract_token(query: &CalendarQuery, headers: &HeaderMap) -> Option<String> {
     .map(str::to_string);
 
   query.token.clone().or(header_token).or(bearer_token)
+}
+
+fn pick_indeks_id(indexes: &[StudentIndex]) -> Option<i64> {
+  indexes
+    .iter()
+    .max_by_key(|item| {
+      (
+        item.status_symbol.as_deref() == Some("S"),
+        item.rok.unwrap_or_default(),
+        item.semestr.unwrap_or_default(),
+        item.id_indeks,
+      )
+    })
+    .map(|item| item.id_indeks)
 }
 
 async fn not_found() -> impl IntoResponse {
