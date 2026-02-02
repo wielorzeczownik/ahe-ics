@@ -53,10 +53,10 @@ impl ApiClient {
   pub async fn get_exams(
     &self,
     access_token: &str,
-    indeks_id: i64,
+    index_id: i64,
     from: NaiveDate,
     to: NaiveDate,
   ) -> Result<Vec<ExamEvent>> {
-    exams::get_exams(&self.http, access_token, indeks_id, from, to).await
+    exams::get_exams(&self.http, access_token, index_id, from, to).await
   }
 }

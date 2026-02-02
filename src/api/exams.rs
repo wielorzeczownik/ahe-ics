@@ -3,30 +3,25 @@ use std::collections::{BTreeMap, HashSet};
 use anyhow::{Context, Result};
 use chrono::{Duration, NaiveDate, NaiveTime};
 use reqwest::Client;
-use serde::Deserialize;
 use tracing::{debug, warn};
 
 use crate::constants::{
   API_BASE_URL, API_CURRENT_ACADEMIC_YEAR_PATH, API_EXAM_FILTER_PATH, API_EXAM_PROTOCOL_PATH,
 };
-use crate::models::{ExamEvent, ExamProtocolItem, ExamScheduleItem, TermQuery};
+use crate::models::{
+  CurrentAcademicYearResponse, ExamEvent, ExamProtocolItem, ExamScheduleItem, TermQuery,
+};
 
 #[derive(Debug, Clone, Default)]
 struct TermSubjects {
   names: std::collections::BTreeSet<String>,
 }
 
-#[derive(Debug, Deserialize)]
-struct CurrentAcademicYearResponse {
-  #[serde(rename = "RokAkad")]
-  rok_akad: i32,
-}
-
 impl TermSubjects {
   fn from_protocol_items(items: Vec<ExamProtocolItem>) -> Self {
     let mut subjects = Self::default();
     for item in items {
-      if let Some(name) = normalize_subject(&item.przedmiot) {
+      if let Some(name) = normalize_subject(&item.subject) {
         subjects.names.insert(name);
       }
     }
@@ -41,16 +36,16 @@ impl TermSubjects {
 pub async fn get_exams(
   client: &Client,
   access_token: &str,
-  indeks_id: i64,
+  index_id: i64,
   from: NaiveDate,
   to: NaiveDate,
 ) -> Result<Vec<ExamEvent>> {
-  let rok_akad = get_current_academic_year(client, access_token).await?;
-  let terms = build_terms_for_year(rok_akad);
+  let academic_year = get_current_academic_year(client, access_token).await?;
+  let terms = build_terms_for_year(academic_year);
 
   let mut subjects_by_term: BTreeMap<TermQuery, TermSubjects> = BTreeMap::new();
   for term in terms {
-    match get_exam_protocol(client, access_token, indeks_id, term).await {
+    match get_exam_protocol(client, access_token, index_id, term).await {
       Ok(items) => {
         let subjects = TermSubjects::from_protocol_items(items);
         if !subjects.is_empty() {
@@ -59,8 +54,8 @@ pub async fn get_exams(
       }
       Err(error) => {
         warn!(
-          rok_akad = term.rok_akad,
-          semestr_id = term.semestr_id,
+          academic_year = term.academic_year,
+          semester_id = term.semester_id,
           error = %error,
           "exam protocol fetch failed"
         );
@@ -70,7 +65,7 @@ pub async fn get_exams(
 
   if subjects_by_term.is_empty() {
     debug!(
-      indeks_id,
+      index_id,
       "no exam protocol subjects found for requested range"
     );
     return Ok(Vec::new());
@@ -83,7 +78,7 @@ pub async fn get_exams(
     match get_exam_schedule(client, access_token, term).await {
       Ok(items) => {
         for item in items {
-          let Some(normalized_subject) = normalize_subject(&item.egz_przedmiot) else {
+          let Some(normalized_subject) = normalize_subject(&item.exam_subject) else {
             continue;
           };
           if !subjects.names.contains(&normalized_subject) {
@@ -96,7 +91,7 @@ pub async fn get_exams(
 
           let key = format!(
             "{}|{}|{}",
-            event.id_publikowana_dana, event.starts, normalized_subject
+            event.published_data_id, event.starts, normalized_subject
           );
           if seen.insert(key) {
             events.push(event);
@@ -105,8 +100,8 @@ pub async fn get_exams(
       }
       Err(error) => {
         warn!(
-          rok_akad = term.rok_akad,
-          semestr_id = term.semestr_id,
+          academic_year = term.academic_year,
+          semester_id = term.semester_id,
           error = %error,
           "exam schedule fetch failed"
         );
@@ -144,24 +139,24 @@ async fn get_current_academic_year(client: &Client, access_token: &str) -> Resul
     .await
     .context("invalid current academic year json")?;
 
-  Ok(payload.rok_akad)
+  Ok(payload.academic_year)
 }
 
 async fn get_exam_protocol(
   client: &Client,
   access_token: &str,
-  indeks_id: i64,
+  index_id: i64,
   term: TermQuery,
 ) -> Result<Vec<ExamProtocolItem>> {
   let url = format!(
-    "{API_BASE_URL}{API_EXAM_PROTOCOL_PATH}?IndeksID={indeks_id}&RokAkad={}&SemestrID={}",
-    term.rok_akad, term.semestr_id
+    "{API_BASE_URL}{API_EXAM_PROTOCOL_PATH}?IndeksID={index_id}&RokAkad={}&SemestrID={}",
+    term.academic_year, term.semester_id
   );
 
   debug!(
-    indeks_id,
-    rok_akad = term.rok_akad,
-    semestr_id = term.semestr_id,
+    index_id,
+    academic_year = term.academic_year,
+    semester_id = term.semester_id,
     "GET {API_EXAM_PROTOCOL_PATH}"
   );
   let resp = client
@@ -192,12 +187,12 @@ async fn get_exam_schedule(
 ) -> Result<Vec<ExamScheduleItem>> {
   let url = format!(
     "{API_BASE_URL}{API_EXAM_FILTER_PATH}?KierunekID=&PracownikID=&RokAkad={}&SekcjaID=&SemestrID={}&SystemID=&TrybID=",
-    term.rok_akad, term.semestr_id
+    term.academic_year, term.semester_id
   );
 
   debug!(
-    rok_akad = term.rok_akad,
-    semestr_id = term.semestr_id,
+    academic_year = term.academic_year,
+    semester_id = term.semester_id,
     "GET {API_EXAM_FILTER_PATH}"
   );
   let resp = client
@@ -235,20 +230,20 @@ fn normalize_subject(value: &str) -> Option<String> {
 }
 
 fn map_exam_event(item: ExamScheduleItem, from: NaiveDate, to: NaiveDate) -> Option<ExamEvent> {
-  let exam_date = item.egz_data.date();
+  let exam_date = item.exam_date.date();
   if exam_date < from || exam_date > to {
     return None;
   }
 
   let start_time = item
-    .godz_od
+    .start_time
     .as_deref()
     .and_then(parse_time)
     .or_else(|| NaiveTime::from_hms_opt(9, 0, 0))?;
   let starts = exam_date.and_time(start_time);
 
   let mut ends = item
-    .godz_do
+    .end_time
     .as_deref()
     .and_then(parse_time)
     .map(|time| exam_date.and_time(time))
@@ -259,12 +254,12 @@ fn map_exam_event(item: ExamScheduleItem, from: NaiveDate, to: NaiveDate) -> Opt
   }
 
   Some(ExamEvent {
-    id_publikowana_dana: item.id_publikowana_dana,
-    subject: item.egz_przedmiot.trim().to_string(),
-    notes: clean_text(item.uwagi),
-    location: clean_text(item.sala),
-    lecturer: clean_lecturer(item.wykladowca),
-    details: clean_text(item.opis_szczegolowy),
+    published_data_id: item.published_data_id,
+    subject: item.exam_subject.trim().to_string(),
+    notes: clean_text(item.notes),
+    location: clean_text(item.room),
+    lecturer: clean_lecturer(item.lecturer),
+    details: clean_text(item.details),
     starts,
     ends,
   })
@@ -303,15 +298,15 @@ fn clean_lecturer(value: Option<String>) -> Option<String> {
   })
 }
 
-fn build_terms_for_year(rok_akad: i32) -> Vec<TermQuery> {
+fn build_terms_for_year(academic_year: i32) -> Vec<TermQuery> {
   vec![
     TermQuery {
-      rok_akad,
-      semestr_id: 1,
+      academic_year,
+      semester_id: 1,
     },
     TermQuery {
-      rok_akad,
-      semestr_id: 2,
+      academic_year,
+      semester_id: 2,
     },
   ]
 }

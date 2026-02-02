@@ -22,7 +22,7 @@ pub fn render_calendar(
   for item in items {
     let uid = format!(
       "ahe-{student_id}-{}@wpsapi.ahe.lodz.pl",
-      item.id_plan_zajec_poz
+      item.schedule_item_id
     );
     let summary = build_summary(item);
     let location = build_location(item, &t);
@@ -33,8 +33,8 @@ pub fn render_calendar(
       .summary(&summary)
       .location(&location)
       .description(&description)
-      .starts(item.data_od)
-      .ends(item.data_do)
+      .starts(item.starts_at)
+      .ends(item.ends_at)
       .done();
 
     calendar.push(event);
@@ -43,7 +43,7 @@ pub fn render_calendar(
   for exam in exams {
     let uid = format!(
       "ahe-{student_id}-exam-{}-{}@wpsapi.ahe.lodz.pl",
-      exam.id_publikowana_dana,
+      exam.published_data_id,
       exam.starts.and_utc().timestamp()
     );
     let summary = build_exam_summary(exam, &t);
@@ -66,12 +66,12 @@ pub fn render_calendar(
 }
 
 fn build_summary(item: &PlanItem) -> String {
-  let mut typ = item.typ_zajec.clone();
-  if !item.typ_zajec_skrot.trim().is_empty() {
-    typ = format!("{} {}", item.typ_zajec, item.typ_zajec_skrot);
+  let mut typ = item.class_type.clone();
+  if !item.class_type_short.trim().is_empty() {
+    typ = format!("{} {}", item.class_type, item.class_type_short);
   }
 
-  format!("{} [{typ}]", item.p_nazwa)
+  format!("{} [{typ}]", item.subject_name)
 }
 
 fn build_location(item: &PlanItem, t: &IcsTexts) -> String {
@@ -80,10 +80,10 @@ fn build_location(item: &PlanItem, t: &IcsTexts) -> String {
   }
 
   let mut parts = Vec::new();
-  if let Some(value) = item.sala_numer.as_ref().filter(|v| !v.trim().is_empty()) {
+  if let Some(value) = item.room_number.as_ref().filter(|v| !v.trim().is_empty()) {
     parts.push(value.trim());
   }
-  if let Some(value) = item.sala_adres.as_ref().filter(|v| !v.trim().is_empty()) {
+  if let Some(value) = item.room_address.as_ref().filter(|v| !v.trim().is_empty()) {
     parts.push(value.trim());
   }
 
@@ -95,20 +95,20 @@ fn build_location(item: &PlanItem, t: &IcsTexts) -> String {
 }
 
 fn build_description(item: &PlanItem, t: &IcsTexts) -> String {
-  let instructors = if item.dydaktyk.is_empty() {
+  let instructors = if item.instructors.is_empty() {
     t.missing_data.to_string()
   } else {
     item
-      .dydaktyk
+      .instructors
       .iter()
-      .map(|d| d.imie_nazwisko.as_str())
+      .map(|d| d.full_name.as_str())
       .collect::<Vec<_>>()
       .join(", ")
   };
 
   format!(
     "{}: {instructors}\n{}: {}",
-    t.label_instructors, t.label_type, item.typ_zajec
+    t.label_instructors, t.label_type, item.class_type
   )
 }
 
