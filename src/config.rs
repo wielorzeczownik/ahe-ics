@@ -1,10 +1,7 @@
-use anyhow::{ Context, Result, bail };
+use anyhow::{Context, Result, bail};
 
 use crate::constants::{
-  DEFAULT_BIND_ADDR,
-  DEFAULT_CAL_FUTURE_DAYS,
-  DEFAULT_CAL_LANG,
-  DEFAULT_CAL_PAST_DAYS,
+  DEFAULT_BIND_ADDR, DEFAULT_CAL_FUTURE_DAYS, DEFAULT_CAL_LANG, DEFAULT_CAL_PAST_DAYS,
 };
 
 #[derive(Clone, Copy, Debug)]
@@ -44,8 +41,7 @@ impl Config {
     let bind_addr = std::env::var("BIND_ADDR").unwrap_or_else(|_| DEFAULT_BIND_ADDR.to_string());
     let calendar_past_days = parse_days_env("AHE_CAL_PAST_DAYS", DEFAULT_CAL_PAST_DAYS)?;
     let calendar_future_days = parse_days_env("AHE_CAL_FUTURE_DAYS", DEFAULT_CAL_FUTURE_DAYS)?;
-    let calendar_token = std::env
-      ::var("AHE_CAL_TOKEN")
+    let calendar_token = std::env::var("AHE_CAL_TOKEN")
       .ok()
       .map(|value| value.trim().to_string())
       .filter(|value| !value.is_empty());
@@ -68,7 +64,9 @@ fn parse_days_env(key: &str, default_value: i64) -> Result<i64> {
     return Ok(default_value);
   };
 
-  let value: i64 = raw.parse().with_context(|| format!("{key} must be a non-negative integer"))?;
+  let value: i64 = raw
+    .parse()
+    .with_context(|| format!("{key} must be a non-negative integer"))?;
 
   if value < 0 {
     bail!("{key} must be a non-negative integer");

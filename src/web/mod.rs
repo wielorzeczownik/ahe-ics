@@ -2,7 +2,7 @@ pub(crate) mod openapi;
 mod routes;
 
 use axum::http::StatusCode;
-use axum::response::{ IntoResponse, Response };
+use axum::response::{IntoResponse, Response};
 
 pub use routes::router;
 

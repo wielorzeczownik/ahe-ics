@@ -1,6 +1,6 @@
 use anyhow::Result;
-use utoipa::openapi::security::{ ApiKey, ApiKeyValue, HttpAuthScheme, HttpBuilder, SecurityScheme };
-use utoipa::{ Modify, OpenApi };
+use utoipa::openapi::security::{ApiKey, ApiKeyValue, HttpAuthScheme, HttpBuilder, SecurityScheme};
+use utoipa::{Modify, OpenApi};
 
 #[derive(OpenApi)]
 #[openapi(
@@ -23,21 +23,20 @@ struct SecurityAddon;
 impl Modify for SecurityAddon {
   fn modify(&self, openapi: &mut utoipa::openapi::OpenApi) {
     openapi.components = Some(
-      utoipa::openapi::ComponentsBuilder
-        ::new()
+      utoipa::openapi::ComponentsBuilder::new()
         .security_scheme(
           "calendarTokenQuery",
-          SecurityScheme::ApiKey(ApiKey::Query(ApiKeyValue::new("token")))
+          SecurityScheme::ApiKey(ApiKey::Query(ApiKeyValue::new("token"))),
         )
         .security_scheme(
           "calendarTokenHeader",
-          SecurityScheme::ApiKey(ApiKey::Header(ApiKeyValue::new("X-Calendar-Token")))
+          SecurityScheme::ApiKey(ApiKey::Header(ApiKeyValue::new("X-Calendar-Token"))),
         )
         .security_scheme(
           "calendarTokenBearer",
-          SecurityScheme::Http(HttpBuilder::new().scheme(HttpAuthScheme::Bearer).build())
+          SecurityScheme::Http(HttpBuilder::new().scheme(HttpAuthScheme::Bearer).build()),
         )
-        .build()
+        .build(),
     );
   }
 }

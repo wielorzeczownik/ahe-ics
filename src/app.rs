@@ -3,7 +3,7 @@ use std::sync::Arc;
 use anyhow::Result;
 
 use crate::api::ApiClient;
-use crate::cache::{ IcsCache, TokenCache };
+use crate::cache::{IcsCache, TokenCache};
 use crate::config::Config;
 
 #[derive(Clone)]

@@ -1,8 +1,8 @@
-use anyhow::{ Context, Result };
+use anyhow::{Context, Result};
 use reqwest::Client;
-use tracing::{ debug, warn };
+use tracing::{debug, warn};
 
-use crate::constants::{ API_BASE_URL, API_LOGIN_PATH, LOGIN_GRANT_TYPE, LOGIN_ROLE_ID };
+use crate::constants::{API_BASE_URL, API_LOGIN_PATH, LOGIN_GRANT_TYPE, LOGIN_ROLE_ID};
 use crate::models::TokenResponse;
 
 /// Performs the WPS login and returns the access token response.
@@ -12,15 +12,14 @@ pub async fn login(client: &Client, username: &str, password: &str) -> Result<To
   debug!("POST {API_LOGIN_PATH}");
   let resp = client
     .post(url)
-    .form(
-      &[
-        ("username", username),
-        ("password", password),
-        ("roleID", LOGIN_ROLE_ID),
-        ("grant_type", LOGIN_GRANT_TYPE),
-      ]
-    )
-    .send().await
+    .form(&[
+      ("username", username),
+      ("password", password),
+      ("roleID", LOGIN_ROLE_ID),
+      ("grant_type", LOGIN_GRANT_TYPE),
+    ])
+    .send()
+    .await
     .context("login request failed")?;
 
   let status = resp.status();
@@ -31,5 +30,10 @@ pub async fn login(client: &Client, username: &str, password: &str) -> Result<To
   }
 
   debug!(?status, "login ok");
-  Ok(resp.json::<TokenResponse>().await.context("invalid token json")?)
+  Ok(
+    resp
+      .json::<TokenResponse>()
+      .await
+      .context("invalid token json")?,
+  )
 }

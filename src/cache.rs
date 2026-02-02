@@ -1,15 +1,15 @@
-use std::hash::{ Hash, Hasher };
+use std::hash::{Hash, Hasher};
 use std::time::Duration;
 
 use anyhow::Result;
-use chrono::{ DateTime, NaiveDate, Utc };
+use chrono::{DateTime, NaiveDate, Utc};
 use moka::future::Cache;
 use tokio::sync::RwLock;
 use tracing::debug;
 
 use crate::api::ApiClient;
 use crate::config::Config;
-use crate::constants::{ ICS_CACHE_TTL_SECONDS, TOKEN_REFRESH_GRACE_SECONDS };
+use crate::constants::{ICS_CACHE_TTL_SECONDS, TOKEN_REFRESH_GRACE_SECONDS};
 
 #[derive(Clone, Debug)]
 pub struct TokenCacheEntry {
@@ -97,7 +97,9 @@ pub struct IcsCache {
 impl IcsCache {
   /// Creates an ICS cache with a fixed TTL.
   pub fn new() -> Self {
-    let inner = Cache::builder().time_to_live(Duration::from_secs(ICS_CACHE_TTL_SECONDS)).build();
+    let inner = Cache::builder()
+      .time_to_live(Duration::from_secs(ICS_CACHE_TTL_SECONDS))
+      .build();
     Self { inner }
   }
 
