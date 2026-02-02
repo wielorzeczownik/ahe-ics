@@ -4,10 +4,14 @@ on:
   push:
     branches:
       - main
+    paths:
+      - "src/**"
+      - "Cargo.toml"
+      - "Cargo.lock"
 
 concurrency:
   group: release-main
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   prepare-release:
