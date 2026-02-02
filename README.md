@@ -62,6 +62,7 @@ http://localhost:8080/calendar.ics?from=2026-01-01&to=2026-03-01
 | `AHE_CAL_PAST_DAYS` | no | `60` | Default range: days in the past when `from` is not provided |
 | `AHE_CAL_FUTURE_DAYS` | no | `60` | Default range: days in the future when `to` is not provided |
 | `AHE_CAL_LANG` | no | `pl` | Generated labels language (`pl` or `en`) |
+| `AHE_CAL_EXAMS_ENABLED` | no | `true` | Enable or disable exam fetching (`true`/`false`) |
 | `AHE_CAL_TOKEN` | no | - | Optional access token required for calendar endpoints |
 | `RUST_LOG` | no | `info` | Log level (`debug`, `info`, etc.) |
 

@@ -7,4 +7,5 @@ services:
     environment:
       AHE_USERNAME: "your_login"
       AHE_PASSWORD: "your_password"
+      AHE_CAL_EXAMS_ENABLED: "true"
     restart: unless-stopped
