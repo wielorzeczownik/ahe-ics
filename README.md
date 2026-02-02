@@ -74,13 +74,15 @@ Release artifact names follow:
 
 | Variable | Required | Default | Description |
 |---|---|---|---|
-| `AHE_USERNAME` | yes | - | [WPS](https://wps.ahe.lodz.pl/) API username |
-| `AHE_PASSWORD` | yes | - | [WPS](https://wps.ahe.lodz.pl/) API password |
+| `AHE_USERNAME` | yes | - | [WPS](https://wps.ahe.lodz.pl/) username |
+| `AHE_PASSWORD` | yes | - | [WPS](https://wps.ahe.lodz.pl/) password |
 | `BIND_ADDR` | no | `0.0.0.0:8080` | Bind address for the HTTP server |
 | `AHE_CAL_PAST_DAYS` | no | `60` | Default range: days in the past when `from` is not provided |
 | `AHE_CAL_FUTURE_DAYS` | no | `60` | Default range: days in the future when `to` is not provided |
 | `AHE_CAL_LANG` | no | `pl` | Generated labels language (`pl` or `en`) |
 | `AHE_CAL_EXAMS_ENABLED` | no | `true` | Enable or disable exam fetching (`true`/`false`); useful when exam entries are noisy |
+| `AHE_CAL_JSON_ENABLED` | no | `true` | Enable or disable JSON calendar endpoints (`/calendar.json`, `/calendar/me.json`) |
+| `AHE_OPENAPI_ENABLED` | no | `true` | Enable or disable the `/openapi.json` endpoint |
 | `AHE_CAL_TOKEN` | no | - | Optional access token required for calendar endpoints |
 | `RUST_LOG` | no | `info` | Log level (`debug`, `info`, etc.) |
 
@@ -88,11 +90,11 @@ Release artifact names follow:
 
 - `GET /calendar.ics` - primary ICS feed endpoint (`text/calendar`).
 - `GET /calendar/me.ics` - alias of `/calendar.ics` (same output).
-- `GET /calendar.json` - JSON with source data used to render the ICS feed.
-- `GET /calendar/me.json` - alias of `/calendar.json` (same output).
-- `GET /openapi.json` - OpenAPI spec for integrations/tools.
+- `GET /calendar.json` - JSON with source data used to render the ICS feed (when `AHE_CAL_JSON_ENABLED=true`).
+- `GET /calendar/me.json` - alias of `/calendar.json` (when `AHE_CAL_JSON_ENABLED=true`).
+- `GET /openapi.json` - OpenAPI spec for integrations/tools (when `AHE_OPENAPI_ENABLED=true`).
 
-Calendar query params (`/calendar.ics`, `/calendar/me.ics`, `/calendar.json`, `/calendar/me.json`):
+Calendar query params (`/calendar.ics`, `/calendar/me.ics`, and JSON endpoints when enabled):
 - `from=YYYY-MM-DD` - start date; when omitted, service uses `AHE_CAL_PAST_DAYS`.
 - `to=YYYY-MM-DD` - end date; when omitted, service uses `AHE_CAL_FUTURE_DAYS`.
 - `token=...` - optional request token if `AHE_CAL_TOKEN` is configured.
