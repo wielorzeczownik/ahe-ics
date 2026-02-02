@@ -15,8 +15,20 @@ pub struct TermQuery {
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct ExamProtocolItem {
+  #[serde(rename = "IDKartaEgzPoz", default)]
+  pub exam_card_position_id: i64,
+  #[serde(rename = "IDKartaEgz", default)]
+  pub exam_card_id: i64,
   #[serde(rename = "Przedmiot", default)]
   pub subject: String,
+  #[serde(rename = "SposobRozliczaniaNazwa", default)]
+  pub settlement_method_name: Option<String>,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct ExamProtocolIntermediateItem {
+  #[serde(rename = "SposobRozliczaniaNazwa", default)]
+  pub settlement_method_name: Option<String>,
 }
 
 #[derive(Debug, Clone, Deserialize)]

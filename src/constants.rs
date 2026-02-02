@@ -5,6 +5,8 @@ pub const API_STUDENT_INDEXES_PATH: &str = "/api/Indeks/GETPobierzListeIndeksowD
 pub const API_PLAN_PATH: &str = "/api/PlanyZajec/GETPlanSzczegolowy";
 pub const API_EXAM_PROTOCOL_PATH: &str =
   "/api/ProtokolyEgzaminacyjne/GetProtokolEgzaminacyjnySzczegolowy";
+pub const API_EXAM_PROTOCOL_INTERMEDIATE_PATH: &str =
+  "/api/ProtokolyEgzaminacyjne/GetProtokolEgzaminacyjnyPosredni";
 pub const API_EXAM_FILTER_PATH: &str = "/api/Egzaminy/GETEgazminFiltr";
 pub const API_CURRENT_ACADEMIC_YEAR_PATH: &str = "/api/Slowniki/GETPobierzAktualnyRokAkademicki";
 
@@ -20,9 +22,11 @@ pub const DEFAULT_BIND_ADDR: &str = "0.0.0.0:8080";
 pub const DEFAULT_CAL_PAST_DAYS: i64 = 60;
 pub const DEFAULT_CAL_FUTURE_DAYS: i64 = 60;
 pub const DEFAULT_CAL_LANG: &str = "pl";
+pub const DEFAULT_EXAMS_ENABLED: bool = true;
 
 pub const TOKEN_REFRESH_GRACE_SECONDS: u64 = 30;
 pub const ICS_CACHE_TTL_SECONDS: u64 = 600;
+pub const EXAM_SETTLEMENT_NAME: &str = "egzamin";
 
 pub const CALENDAR_TZ: &str = "Europe/Warsaw";
 pub const ICS_CONTENT_TYPE: &str = "text/calendar; charset=utf-8";

@@ -2,6 +2,7 @@ use anyhow::{Context, Result, bail};
 
 use crate::constants::{
   DEFAULT_BIND_ADDR, DEFAULT_CAL_FUTURE_DAYS, DEFAULT_CAL_LANG, DEFAULT_CAL_PAST_DAYS,
+  DEFAULT_EXAMS_ENABLED,
 };
 
 #[derive(Clone, Copy, Debug)]
@@ -29,6 +30,7 @@ pub struct Config {
   pub calendar_future_days: i64,
   pub calendar_token: Option<String>,
   pub calendar_lang: CalendarLanguage,
+  pub exams_enabled: bool,
 }
 
 impl Config {
@@ -46,6 +48,7 @@ impl Config {
       .map(|value| value.trim().to_string())
       .filter(|value| !value.is_empty());
     let calendar_lang = parse_lang_env("AHE_CAL_LANG", DEFAULT_CAL_LANG)?;
+    let exams_enabled = parse_bool_env("AHE_CAL_EXAMS_ENABLED", DEFAULT_EXAMS_ENABLED)?;
 
     Ok(Self {
       username,
@@ -55,6 +58,7 @@ impl Config {
       calendar_future_days,
       calendar_token,
       calendar_lang,
+      exams_enabled,
     })
   }
 }
@@ -78,4 +82,16 @@ fn parse_days_env(key: &str, default_value: i64) -> Result<i64> {
 fn parse_lang_env(key: &str, default_value: &str) -> Result<CalendarLanguage> {
   let value = std::env::var(key).unwrap_or_else(|_| default_value.to_string());
   CalendarLanguage::from_env_value(&value)
+}
+
+fn parse_bool_env(key: &str, default_value: bool) -> Result<bool> {
+  let Some(raw) = std::env::var(key).ok() else {
+    return Ok(default_value);
+  };
+
+  match raw.trim().to_ascii_lowercase().as_str() {
+    "1" | "true" | "yes" | "on" => Ok(true),
+    "0" | "false" | "no" | "off" => Ok(false),
+    _ => bail!("{key} must be a boolean value (true/false, 1/0, yes/no, on/off)"),
+  }
 }

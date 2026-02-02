@@ -129,9 +129,13 @@ async fn calendar_core(
 
   let student_data = state.api.get_student_data(&token).await?;
   let student_id = student_data.student_id;
-  let mut index_id = student_data.index_id;
+  let mut index_id = if state.config.exams_enabled {
+    student_data.index_id
+  } else {
+    None
+  };
 
-  if index_id.is_none() {
+  if state.config.exams_enabled && index_id.is_none() {
     match state.api.get_student_indexes(&token).await {
       Ok(indexes) => {
         index_id = pick_index_id(&indexes);
@@ -169,19 +173,24 @@ async fn calendar_core(
     .api
     .get_plan(&token, student_id, &date_from, &date_to)
     .await?;
-  let exams = if let Some(index_id) = index_id {
-    match state.api.get_exams(&token, index_id, from, to).await {
-      Ok(items) => items,
-      Err(error) => {
-        tracing::warn!(student_id, error = %error, "failed to fetch exams, continuing with schedule only");
-        Vec::new()
+  let exams = if state.config.exams_enabled {
+    if let Some(index_id) = index_id {
+      match state.api.get_exams(&token, index_id, from, to).await {
+        Ok(items) => items,
+        Err(error) => {
+          tracing::warn!(student_id, error = %error, "failed to fetch exams, continuing with schedule only");
+          Vec::new()
+        }
       }
+    } else {
+      tracing::warn!(
+        student_id,
+        "IndeksID not found in student data, skipping exams"
+      );
+      Vec::new()
     }
   } else {
-    tracing::warn!(
-      student_id,
-      "IndeksID not found in student data, skipping exams"
-    );
+    tracing::info!("exam fetching disabled by AHE_CAL_EXAMS_ENABLED");
     Vec::new()
   };
 

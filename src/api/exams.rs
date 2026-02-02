@@ -1,4 +1,4 @@
-use std::collections::{BTreeMap, HashSet};
+use std::collections::{BTreeMap, HashMap, HashSet};
 
 use anyhow::{Context, Result};
 use chrono::{Duration, NaiveDate, NaiveTime};
@@ -6,10 +6,12 @@ use reqwest::Client;
 use tracing::{debug, warn};
 
 use crate::constants::{
-  API_BASE_URL, API_CURRENT_ACADEMIC_YEAR_PATH, API_EXAM_FILTER_PATH, API_EXAM_PROTOCOL_PATH,
+  API_BASE_URL, API_CURRENT_ACADEMIC_YEAR_PATH, API_EXAM_FILTER_PATH,
+  API_EXAM_PROTOCOL_INTERMEDIATE_PATH, API_EXAM_PROTOCOL_PATH, EXAM_SETTLEMENT_NAME,
 };
 use crate::models::{
-  CurrentAcademicYearResponse, ExamEvent, ExamProtocolItem, ExamScheduleItem, TermQuery,
+  CurrentAcademicYearResponse, ExamEvent, ExamProtocolIntermediateItem, ExamProtocolItem,
+  ExamScheduleItem, TermQuery,
 };
 
 #[derive(Debug, Clone, Default)]
@@ -18,16 +20,6 @@ struct TermSubjects {
 }
 
 impl TermSubjects {
-  fn from_protocol_items(items: Vec<ExamProtocolItem>) -> Self {
-    let mut subjects = Self::default();
-    for item in items {
-      if let Some(name) = normalize_subject(&item.subject) {
-        subjects.names.insert(name);
-      }
-    }
-    subjects
-  }
-
   fn is_empty(&self) -> bool {
     self.names.is_empty()
   }
@@ -47,7 +39,7 @@ pub async fn get_exams(
   for term in terms {
     match get_exam_protocol(client, access_token, index_id, term).await {
       Ok(items) => {
-        let subjects = TermSubjects::from_protocol_items(items);
+        let subjects = resolve_exam_subjects_for_term(client, access_token, term, items).await;
         if !subjects.is_empty() {
           subjects_by_term.insert(term, subjects);
         }
@@ -180,6 +172,105 @@ async fn get_exam_protocol(
   )
 }
 
+async fn resolve_exam_subjects_for_term(
+  client: &Client,
+  access_token: &str,
+  term: TermQuery,
+  items: Vec<ExamProtocolItem>,
+) -> TermSubjects {
+  let mut subjects = TermSubjects::default();
+  let mut settlement_cache: HashMap<(i64, i64), bool> = HashMap::new();
+
+  for item in items {
+    let Some(normalized_subject) = normalize_subject(&item.subject) else {
+      continue;
+    };
+
+    if is_exam_settlement(item.settlement_method_name.as_deref()) {
+      subjects.names.insert(normalized_subject);
+      continue;
+    }
+
+    let exam_card_id = item.exam_card_id;
+    let exam_card_position_id = item.exam_card_position_id;
+    if exam_card_id <= 0 || exam_card_position_id <= 0 {
+      continue;
+    }
+
+    let cache_key = (exam_card_id, exam_card_position_id);
+    let is_exam = if let Some(value) = settlement_cache.get(&cache_key) {
+      *value
+    } else {
+      let value = match get_exam_protocol_intermediate(
+        client,
+        access_token,
+        exam_card_id,
+        exam_card_position_id,
+      )
+      .await
+      {
+        Ok(entries) => entries
+          .iter()
+          .any(|entry| is_exam_settlement(entry.settlement_method_name.as_deref())),
+        Err(error) => {
+          warn!(
+            academic_year = term.academic_year,
+            semester_id = term.semester_id,
+            exam_card_id,
+            exam_card_position_id,
+            error = %error,
+            "exam protocol intermediate fetch failed"
+          );
+          false
+        }
+      };
+      settlement_cache.insert(cache_key, value);
+      value
+    };
+
+    if is_exam {
+      subjects.names.insert(normalized_subject);
+    }
+  }
+
+  subjects
+}
+
+async fn get_exam_protocol_intermediate(
+  client: &Client,
+  access_token: &str,
+  exam_card_id: i64,
+  exam_card_position_id: i64,
+) -> Result<Vec<ExamProtocolIntermediateItem>> {
+  let url = format!(
+    "{API_BASE_URL}{API_EXAM_PROTOCOL_INTERMEDIATE_PATH}?KartaEgzID={exam_card_id}&KartaEgzPozID={exam_card_position_id}"
+  );
+
+  debug!(
+    exam_card_id,
+    exam_card_position_id, "GET {API_EXAM_PROTOCOL_INTERMEDIATE_PATH}"
+  );
+  let resp = client
+    .get(url)
+    .bearer_auth(access_token)
+    .send()
+    .await
+    .context("exam protocol intermediate request failed")?;
+
+  let status = resp.status();
+  if !status.is_success() {
+    let text = resp.text().await.unwrap_or_default();
+    anyhow::bail!("exam protocol intermediate failed: {status} body={text}");
+  }
+
+  Ok(
+    resp
+      .json::<Vec<ExamProtocolIntermediateItem>>()
+      .await
+      .context("invalid exam protocol intermediate json")?,
+  )
+}
+
 async fn get_exam_schedule(
   client: &Client,
   access_token: &str,
@@ -227,6 +318,10 @@ fn normalize_subject(value: &str) -> Option<String> {
   } else {
     Some(normalized)
   }
+}
+
+fn is_exam_settlement(value: Option<&str>) -> bool {
+  normalize_subject(value.unwrap_or_default()).is_some_and(|name| name == EXAM_SETTLEMENT_NAME)
 }
 
 fn map_exam_event(item: ExamScheduleItem, from: NaiveDate, to: NaiveDate) -> Option<ExamEvent> {
