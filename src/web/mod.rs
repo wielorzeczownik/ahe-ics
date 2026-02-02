@@ -1,4 +1,4 @@
-mod calendar_service;
+mod calendar;
 pub(crate) mod dto;
 pub(crate) mod openapi;
 mod routes;

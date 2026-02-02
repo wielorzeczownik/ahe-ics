@@ -9,7 +9,7 @@ use std::net::SocketAddr;
 use crate::app::AppState;
 use crate::constants::{ICS_CONTENT_TYPE, JSON_CONTENT_TYPE};
 use crate::web::AppError;
-use crate::web::calendar_service::{CalendarQueryParams, fetch_calendar_data, render_calendar_ics};
+use crate::web::calendar::{CalendarQueryParams, fetch_calendar_data, render_calendar_ics};
 use crate::web::dto::calendar::CalendarJsonResponse;
 
 #[derive(Debug, Deserialize)]
