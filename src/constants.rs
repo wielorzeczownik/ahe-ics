@@ -28,6 +28,7 @@ pub const DEFAULT_OPENAPI_ENABLED: bool = true;
 
 pub const TOKEN_REFRESH_GRACE_SECONDS: u64 = 30;
 pub const ICS_CACHE_TTL_SECONDS: u64 = 600;
+pub const STUDENT_CONTEXT_CACHE_TTL_SECONDS: u64 = 21_600;
 pub const EXAM_SETTLEMENT_NAME: &str = "egzamin";
 
 pub const CALENDAR_TZ: &str = "Europe/Warsaw";

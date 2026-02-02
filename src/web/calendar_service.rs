@@ -5,7 +5,7 @@ use std::net::SocketAddr;
 use crate::app::AppState;
 use crate::cache::IcsCacheKey;
 use crate::ics::render_calendar;
-use crate::models::{ExamEvent, PlanItem, StudentIndex};
+use crate::models::{ExamEvent, PlanItem};
 use crate::web::AppError;
 
 #[derive(Debug)]
@@ -106,40 +106,15 @@ async fn prepare_calendar_request_context(
     .token_cache
     .get_or_login(&state.config, &state.api)
     .await?;
-
-  let student_data = state.api.get_student_data(&token).await?;
-  let student_id = student_data.student_id;
-  // When exams are disabled, skip index resolution entirely and render only schedule entries.
-  let mut index_id = if state.config.exams_enabled {
-    student_data.index_id
-  } else {
-    None
-  };
-
-  if state.config.exams_enabled && index_id.is_none() {
-    match state.api.get_student_indexes(&token).await {
-      Ok(indexes) => {
-        index_id = pick_index_id(&indexes);
-        if let Some(found) = index_id {
-          tracing::debug!(
-            student_id,
-            index_id = found,
-            "IndeksID resolved from indeks list"
-          );
-        } else {
-          tracing::warn!(student_id, "student indeks list is empty, skipping exams");
-        }
-      }
-      Err(error) => {
-        tracing::warn!(student_id, error = %error, "failed to fetch indeks list, skipping exams");
-      }
-    }
-  }
+  let student_context = state
+    .student_context_cache
+    .get_or_fetch(&state.config, &state.api, &token)
+    .await?;
 
   Ok(CalendarRequestContext {
     token,
-    student_id,
-    index_id,
+    student_id: student_context.student_id,
+    index_id: student_context.index_id,
     from,
     to,
   })
@@ -206,18 +181,4 @@ fn extract_token(query: &CalendarQueryParams, headers: &HeaderMap) -> Option<Str
     .map(str::to_string);
 
   query.token.clone().or(header_token).or(bearer_token)
-}
-
-fn pick_index_id(indexes: &[StudentIndex]) -> Option<i64> {
-  indexes
-    .iter()
-    .max_by_key(|item| {
-      (
-        item.status_symbol.as_deref() == Some("S"),
-        item.year.unwrap_or_default(),
-        item.semester.unwrap_or_default(),
-        item.index_id,
-      )
-    })
-    .map(|item| item.index_id)
 }
