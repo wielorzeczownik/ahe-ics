@@ -1,19 +1,26 @@
 [changelog]
 header = """
-# Changelog
-
-All notable changes to this project are documented in this file.
+{% if version %}
+# Release Notes for Version {{ version }}
+{% endif %}
 """
 body = """
 {% if version %}
-## {{ version }} - {{ timestamp | date(format="%Y-%m-%d") }}
+**Release Date: {{ timestamp | date(format="%Y-%m-%d") }}**
+
+### What's Changed
+{% for group, grouped_commits in commits | group_by(attribute="group") %}
+#### {{ group }}
+{% for commit in grouped_commits %}
+- {{ commit.id | truncate(length=7, end="") }} {{ commit.message | split(pat="\n") | first | trim | split(pat=": ") | last }}
+{% endfor %}
+{% endfor %}
+{% if previous.version and remote.github.owner and remote.github.repo %}
+#### Full Changelog: [{{ previous.version }}...{{ version }}](https://github.com/{{ remote.github.owner }}/{{ remote.github.repo }}/compare/{{ previous.version }}...{{ version }})
+{% elif previous.version %}
+#### Full Changelog: {{ previous.version }}...{{ version }}
 {% endif %}
-{% for group, commits in commits | group_by(attribute="group") %}
-### {{ group }}
-{% for commit in commits %}
-- {{ commit.message | split(pat="\n") | first | trim }}
-{% endfor %}
-{% endfor %}
+{% endif %}
 """
 trim = true
 
