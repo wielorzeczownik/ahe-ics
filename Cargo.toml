@@ -27,7 +27,7 @@ chrono = { version = "0.4.43", features = ["serde"] }
 
 # ICS generation
 icalendar = "0.17.6"
-utoipa = { version = "5.4.0", features = ["axum_extras"] }
+utoipa = { version = "5.4.0", features = ["axum_extras", "chrono"] }
 
 # Caching
 moka = { version = "0.12.13", features = ["future"] }

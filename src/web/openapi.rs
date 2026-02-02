@@ -5,8 +5,10 @@ use utoipa::{Modify, OpenApi};
 #[derive(OpenApi)]
 #[openapi(
   paths(
-    crate::web::routes::calendar,
-    crate::web::routes::calendar_me,
+    crate::web::routes::calendar::calendar,
+    crate::web::routes::calendar::calendar_me,
+    crate::web::routes::calendar::calendar_json,
+    crate::web::routes::calendar::calendar_me_json,
     crate::web::routes::openapi_json
   ),
   tags((name = "calendar", description = "Calendar feed endpoints")),
