@@ -2,35 +2,35 @@ use chrono::NaiveDateTime;
 use serde::Deserialize;
 
 #[derive(Debug, Clone, Deserialize)]
-pub struct Dydaktyk {
+pub struct Instructor {
   #[serde(rename = "ImieNazwisko")]
-  pub imie_nazwisko: String,
+  pub full_name: String,
 }
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct PlanItem {
   #[serde(rename = "DataOD")]
-  pub data_od: NaiveDateTime,
+  pub starts_at: NaiveDateTime,
   #[serde(rename = "DataDO")]
-  pub data_do: NaiveDateTime,
+  pub ends_at: NaiveDateTime,
   #[serde(rename = "PNazwa")]
-  pub p_nazwa: String,
+  pub subject_name: String,
   #[serde(rename = "TypZajec")]
-  pub typ_zajec: String,
+  pub class_type: String,
   #[serde(rename = "TypZajecSkrot")]
-  pub typ_zajec_skrot: String,
+  pub class_type_short: String,
   #[serde(rename = "SalaNumer")]
   #[serde(default)]
-  pub sala_numer: Option<String>,
+  pub room_number: Option<String>,
   #[serde(rename = "SalaAdres")]
   #[serde(default)]
-  pub sala_adres: Option<String>,
+  pub room_address: Option<String>,
   #[serde(rename = "Webinar")]
   #[serde(default)]
   pub webinar: bool,
   #[serde(rename = "Dydaktyk")]
   #[serde(default)]
-  pub dydaktyk: Vec<Dydaktyk>,
+  pub instructors: Vec<Instructor>,
   #[serde(rename = "IDPlanZajecPoz")]
-  pub id_plan_zajec_poz: i64,
+  pub schedule_item_id: i64,
 }

@@ -128,17 +128,17 @@ async fn calendar_core(
     .await?;
 
   let student_data = state.api.get_student_data(&token).await?;
-  let student_id = student_data.id_student;
-  let mut indeks_id = student_data.indeks_id;
+  let student_id = student_data.student_id;
+  let mut index_id = student_data.index_id;
 
-  if indeks_id.is_none() {
+  if index_id.is_none() {
     match state.api.get_student_indexes(&token).await {
       Ok(indexes) => {
-        indeks_id = pick_indeks_id(&indexes);
-        if let Some(found) = indeks_id {
+        index_id = pick_index_id(&indexes);
+        if let Some(found) = index_id {
           tracing::debug!(
             student_id,
-            indeks_id = found,
+            index_id = found,
             "IndeksID resolved from indeks list"
           );
         } else {
@@ -169,8 +169,8 @@ async fn calendar_core(
     .api
     .get_plan(&token, student_id, &date_from, &date_to)
     .await?;
-  let exams = if let Some(indeks_id) = indeks_id {
-    match state.api.get_exams(&token, indeks_id, from, to).await {
+  let exams = if let Some(index_id) = index_id {
+    match state.api.get_exams(&token, index_id, from, to).await {
       Ok(items) => items,
       Err(error) => {
         tracing::warn!(student_id, error = %error, "failed to fetch exams, continuing with schedule only");
@@ -207,18 +207,18 @@ fn extract_token(query: &CalendarQuery, headers: &HeaderMap) -> Option<String> {
   query.token.clone().or(header_token).or(bearer_token)
 }
 
-fn pick_indeks_id(indexes: &[StudentIndex]) -> Option<i64> {
+fn pick_index_id(indexes: &[StudentIndex]) -> Option<i64> {
   indexes
     .iter()
     .max_by_key(|item| {
       (
         item.status_symbol.as_deref() == Some("S"),
-        item.rok.unwrap_or_default(),
-        item.semestr.unwrap_or_default(),
-        item.id_indeks,
+        item.year.unwrap_or_default(),
+        item.semester.unwrap_or_default(),
+        item.index_id,
       )
     })
-    .map(|item| item.id_indeks)
+    .map(|item| item.index_id)
 }
 
 async fn not_found() -> impl IntoResponse {

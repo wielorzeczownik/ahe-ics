@@ -4,29 +4,29 @@ use serde::Deserialize;
 #[allow(dead_code)]
 pub struct StudentData {
   #[serde(rename = "IDStudent")]
-  pub id_student: i64,
+  pub student_id: i64,
   #[serde(rename = "IndeksID", alias = "IDIndeks", default)]
-  pub indeks_id: Option<i64>,
+  pub index_id: Option<i64>,
   #[serde(rename = "Imie", default)]
-  pub imie: Option<String>,
+  pub first_name: Option<String>,
   #[serde(rename = "DrugieImie", default)]
-  pub drugie_imie: Option<String>,
+  pub middle_name: Option<String>,
   #[serde(rename = "Nazwisko", default)]
-  pub nazwisko: Option<String>,
+  pub last_name: Option<String>,
   #[serde(rename = "Email1", default)]
-  pub email1: Option<String>,
+  pub primary_email: Option<String>,
   #[serde(rename = "TelefonKom", default)]
-  pub telefon_kom: Option<String>,
+  pub mobile_phone: Option<String>,
 }
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct StudentIndex {
   #[serde(rename = "IDIndeks")]
-  pub id_indeks: i64,
+  pub index_id: i64,
   #[serde(rename = "StatusSymbol", default)]
   pub status_symbol: Option<String>,
   #[serde(rename = "Rok", default)]
-  pub rok: Option<i32>,
+  pub year: Option<i32>,
   #[serde(rename = "Semestr", default)]
-  pub semestr: Option<i32>,
+  pub semester: Option<i32>,
 }
