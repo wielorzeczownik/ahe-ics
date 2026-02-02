@@ -88,9 +88,11 @@ Release artifact names follow:
 
 - `GET /calendar.ics` - primary ICS feed endpoint (`text/calendar`).
 - `GET /calendar/me.ics` - alias of `/calendar.ics` (same output).
+- `GET /calendar.json` - JSON with source data used to render the ICS feed.
+- `GET /calendar/me.json` - alias of `/calendar.json` (same output).
 - `GET /openapi.json` - OpenAPI spec for integrations/tools.
 
-Calendar query params (`/calendar.ics` and `/calendar/me.ics`):
+Calendar query params (`/calendar.ics`, `/calendar/me.ics`, `/calendar.json`, `/calendar/me.json`):
 - `from=YYYY-MM-DD` - start date; when omitted, service uses `AHE_CAL_PAST_DAYS`.
 - `to=YYYY-MM-DD` - end date; when omitted, service uses `AHE_CAL_FUTURE_DAYS`.
 - `token=...` - optional request token if `AHE_CAL_TOKEN` is configured.
