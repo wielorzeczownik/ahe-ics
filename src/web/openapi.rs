@@ -20,6 +20,22 @@ use utoipa::{Modify, OpenApi};
 )]
 pub struct ApiDoc;
 
+#[derive(OpenApi)]
+#[openapi(
+  paths(
+    crate::web::routes::calendar::calendar,
+    crate::web::routes::calendar::calendar_me,
+    crate::web::routes::openapi_json
+  ),
+  tags((name = "calendar", description = "Calendar feed endpoints")),
+  modifiers(&SecurityAddon),
+  info(
+    title = "AHE-ICS API",
+    description = "Generates a subscribable ICS feed from AHE WPS schedule data."
+  )
+)]
+pub struct ApiDocNoJson;
+
 struct SecurityAddon;
 
 impl Modify for SecurityAddon {
@@ -43,6 +59,11 @@ impl Modify for SecurityAddon {
   }
 }
 
-pub fn spec_json() -> Result<String> {
-  Ok(serde_json::to_string(&ApiDoc::openapi())?)
+pub fn spec_json(json_enabled: bool) -> Result<String> {
+  let spec = if json_enabled {
+    ApiDoc::openapi()
+  } else {
+    ApiDocNoJson::openapi()
+  };
+  Ok(serde_json::to_string(&spec)?)
 }

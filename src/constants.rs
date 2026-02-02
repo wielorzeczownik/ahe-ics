@@ -23,6 +23,8 @@ pub const DEFAULT_CAL_PAST_DAYS: i64 = 60;
 pub const DEFAULT_CAL_FUTURE_DAYS: i64 = 60;
 pub const DEFAULT_CAL_LANG: &str = "pl";
 pub const DEFAULT_EXAMS_ENABLED: bool = true;
+pub const DEFAULT_JSON_ENABLED: bool = true;
+pub const DEFAULT_OPENAPI_ENABLED: bool = true;
 
 pub const TOKEN_REFRESH_GRACE_SECONDS: u64 = 30;
 pub const ICS_CACHE_TTL_SECONDS: u64 = 600;

@@ -1,6 +1,7 @@
 pub(crate) mod calendar;
 
 use axum::Router;
+use axum::extract::State;
 use axum::http::StatusCode;
 use axum::http::header::CONTENT_TYPE;
 use axum::response::IntoResponse;
@@ -15,14 +16,22 @@ pub(crate) use self::calendar::{calendar, calendar_json, calendar_me, calendar_m
 
 /// Builds the HTTP router with calendar endpoints.
 pub fn router(state: AppState) -> Router {
-  Router::new()
+  let mut router = Router::new()
     .route("/calendar.ics", get(calendar))
     .route("/calendar/me.ics", get(calendar_me))
-    .route("/calendar.json", get(calendar_json))
-    .route("/calendar/me.json", get(calendar_me_json))
-    .route("/openapi.json", get(openapi_json))
-    .fallback(not_found)
-    .with_state(state)
+    .fallback(not_found);
+
+  if state.config.json_enabled {
+    router = router
+      .route("/calendar.json", get(calendar_json))
+      .route("/calendar/me.json", get(calendar_me_json));
+  }
+
+  if state.config.openapi_enabled {
+    router = router.route("/openapi.json", get(openapi_json));
+  }
+
+  router.with_state(state)
 }
 
 async fn not_found() -> impl IntoResponse {
@@ -40,7 +49,9 @@ async fn not_found() -> impl IntoResponse {
     content_type = "application/json",
   ))
 )]
-pub(crate) async fn openapi_json() -> Result<impl IntoResponse, AppError> {
-  let body = openapi::spec_json()?;
+pub(crate) async fn openapi_json(
+  State(state): State<AppState>,
+) -> Result<impl IntoResponse, AppError> {
+  let body = openapi::spec_json(state.config.json_enabled)?;
   Ok(([(CONTENT_TYPE, JSON_CONTENT_TYPE)], body))
 }

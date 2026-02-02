@@ -2,7 +2,7 @@ use anyhow::{Context, Result, bail};
 
 use crate::constants::{
   DEFAULT_BIND_ADDR, DEFAULT_CAL_FUTURE_DAYS, DEFAULT_CAL_LANG, DEFAULT_CAL_PAST_DAYS,
-  DEFAULT_EXAMS_ENABLED,
+  DEFAULT_EXAMS_ENABLED, DEFAULT_JSON_ENABLED, DEFAULT_OPENAPI_ENABLED,
 };
 
 #[derive(Clone, Copy, Debug)]
@@ -31,6 +31,8 @@ pub struct Config {
   pub calendar_token: Option<String>,
   pub calendar_lang: CalendarLanguage,
   pub exams_enabled: bool,
+  pub json_enabled: bool,
+  pub openapi_enabled: bool,
 }
 
 impl Config {
@@ -49,6 +51,8 @@ impl Config {
       .filter(|value| !value.is_empty());
     let calendar_lang = parse_lang_env("AHE_CAL_LANG", DEFAULT_CAL_LANG)?;
     let exams_enabled = parse_bool_env("AHE_CAL_EXAMS_ENABLED", DEFAULT_EXAMS_ENABLED)?;
+    let json_enabled = parse_bool_env("AHE_CAL_JSON_ENABLED", DEFAULT_JSON_ENABLED)?;
+    let openapi_enabled = parse_bool_env("AHE_OPENAPI_ENABLED", DEFAULT_OPENAPI_ENABLED)?;
 
     Ok(Self {
       username,
@@ -59,6 +63,8 @@ impl Config {
       calendar_token,
       calendar_lang,
       exams_enabled,
+      json_enabled,
+      openapi_enabled,
     })
   }
 }
