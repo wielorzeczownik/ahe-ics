@@ -83,8 +83,25 @@ Release artifact names follow:
 | `AHE_CAL_EXAMS_ENABLED` | no | `true` | Enable or disable exam fetching (`true`/`false`); useful when exam entries are noisy |
 | `AHE_CAL_JSON_ENABLED` | no | `true` | Enable or disable JSON calendar endpoints (`/calendar.json`, `/calendar/me.json`) |
 | `AHE_OPENAPI_ENABLED` | no | `true` | Enable or disable the `/openapi.json` endpoint |
-| `AHE_CAL_TOKEN` | no | - | Optional access token required for calendar endpoints |
+| `AHE_CAL_TOKEN` | no | - | Optional access token for calendar endpoints (plain string or Argon2id hash) |
 | `RUST_LOG` | no | `info` | Log level (`debug`, `info`, etc.) |
+
+`AHE_CAL_TOKEN` supports:
+- plain token (e.g. `AHE_CAL_TOKEN=my-secret`),
+- Argon2id hash (`$argon2id$...`),
+- explicit Argon2id mode (`AHE_CAL_TOKEN=argon2:$argon2id$...`).
+
+When hash mode is used, clients still send the normal plain `token=...` (or header), and the server verifies it against the hash.
+
+Example Argon2id generation via Docker:
+```bash
+docker run --rm -e TOKEN='your-token' python:3.12-alpine sh -lc "pip install --quiet argon2-cffi && python - <<'PY'
+import os
+from argon2 import PasswordHasher
+
+print(PasswordHasher(time_cost=3, memory_cost=65536, parallelism=1).hash(os.environ['TOKEN']))
+PY"
+```
 
 ## Endpoints
 
