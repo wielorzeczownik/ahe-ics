@@ -1,4 +1,6 @@
-use anyhow::{Context, Result, bail};
+use anyhow::{Context, Result, anyhow, bail};
+use argon2::password_hash::PasswordHash;
+use argon2::{Argon2, PasswordVerifier};
 
 use crate::constants::{
   DEFAULT_BIND_ADDR, DEFAULT_CAL_FUTURE_DAYS, DEFAULT_CAL_LANG, DEFAULT_CAL_PAST_DAYS,
@@ -22,13 +24,61 @@ impl CalendarLanguage {
 }
 
 #[derive(Clone, Debug)]
+pub enum CalendarToken {
+  Plain(String),
+  Argon2id(String),
+}
+
+impl CalendarToken {
+  fn from_env_value(value: &str) -> Result<Self> {
+    let trimmed = value.trim();
+
+    if trimmed.is_empty() {
+      bail!("AHE_CAL_TOKEN cannot be empty");
+    }
+
+    if let Some(raw) = trimmed.strip_prefix("plain:") {
+      let token = raw.trim();
+      if token.is_empty() {
+        bail!("AHE_CAL_TOKEN plain token cannot be empty");
+      }
+      return Ok(Self::Plain(token.to_string()));
+    }
+
+    if let Some(raw) = trimmed.strip_prefix("argon2:") {
+      return parse_argon2_calendar_token(raw.trim());
+    }
+
+    if looks_like_argon2id_hash(trimmed) {
+      return parse_argon2_calendar_token(trimmed);
+    }
+
+    Ok(Self::Plain(trimmed.to_string()))
+  }
+
+  pub fn verify(&self, provided: &str) -> bool {
+    match self {
+      Self::Plain(expected) => provided == expected,
+      Self::Argon2id(hash) => {
+        let Ok(parsed) = PasswordHash::new(hash) else {
+          return false;
+        };
+        Argon2::default()
+          .verify_password(provided.as_bytes(), &parsed)
+          .is_ok()
+      }
+    }
+  }
+}
+
+#[derive(Clone, Debug)]
 pub struct Config {
   pub username: String,
   pub password: String,
   pub bind_addr: String,
   pub calendar_past_days: i64,
   pub calendar_future_days: i64,
-  pub calendar_token: Option<String>,
+  pub calendar_token: Option<CalendarToken>,
   pub calendar_lang: CalendarLanguage,
   pub exams_enabled: bool,
   pub json_enabled: bool,
@@ -45,10 +95,7 @@ impl Config {
     let bind_addr = std::env::var("BIND_ADDR").unwrap_or_else(|_| DEFAULT_BIND_ADDR.to_string());
     let calendar_past_days = parse_days_env("AHE_CAL_PAST_DAYS", DEFAULT_CAL_PAST_DAYS)?;
     let calendar_future_days = parse_days_env("AHE_CAL_FUTURE_DAYS", DEFAULT_CAL_FUTURE_DAYS)?;
-    let calendar_token = std::env::var("AHE_CAL_TOKEN")
-      .ok()
-      .map(|value| value.trim().to_string())
-      .filter(|value| !value.is_empty());
+    let calendar_token = parse_calendar_token_env("AHE_CAL_TOKEN")?;
     let calendar_lang = parse_lang_env("AHE_CAL_LANG", DEFAULT_CAL_LANG)?;
     let exams_enabled = parse_bool_env("AHE_CAL_EXAMS_ENABLED", DEFAULT_EXAMS_ENABLED)?;
     let json_enabled = parse_bool_env("AHE_CAL_JSON_ENABLED", DEFAULT_JSON_ENABLED)?;
@@ -67,6 +114,36 @@ impl Config {
       openapi_enabled,
     })
   }
+}
+
+fn parse_calendar_token_env(key: &str) -> Result<Option<CalendarToken>> {
+  let Some(raw) = std::env::var(key).ok() else {
+    return Ok(None);
+  };
+
+  let token = CalendarToken::from_env_value(raw.trim())
+    .with_context(|| format!("{key} is invalid; provide plain token or Argon2id hash"))?;
+
+  Ok(Some(token))
+}
+
+fn parse_argon2_calendar_token(hash: &str) -> Result<CalendarToken> {
+  if hash.is_empty() {
+    bail!("AHE_CAL_TOKEN Argon2id hash cannot be empty");
+  }
+
+  let parsed = PasswordHash::new(hash)
+    .map_err(|_| anyhow!("AHE_CAL_TOKEN Argon2id hash is invalid PHC string"))?;
+
+  if parsed.algorithm.as_str() != "argon2id" {
+    bail!("AHE_CAL_TOKEN must use Argon2id (expected prefix '$argon2id$')");
+  }
+
+  Ok(CalendarToken::Argon2id(hash.to_string()))
+}
+
+fn looks_like_argon2id_hash(value: &str) -> bool {
+  value.starts_with("$argon2id$")
 }
 
 fn parse_days_env(key: &str, default_value: i64) -> Result<i64> {

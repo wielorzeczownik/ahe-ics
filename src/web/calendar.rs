@@ -83,9 +83,13 @@ async fn prepare_calendar_request_context(
   addr: SocketAddr,
 ) -> Result<CalendarRequestContext, AppError> {
   tracing::info!(client_ip = %addr.ip(), "calendar request");
-  if let Some(expected) = state.config.calendar_token.as_deref() {
+  if let Some(expected) = state.config.calendar_token.as_ref() {
     let provided = extract_token(&query, &headers);
-    if provided.as_deref() != Some(expected) {
+    let is_valid = provided
+      .as_deref()
+      .is_some_and(|value| expected.verify(value));
+
+    if !is_valid {
       return Err(AppError::unauthorized("invalid calendar token"));
     }
   }
