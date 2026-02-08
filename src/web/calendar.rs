@@ -7,6 +7,7 @@ use crate::cache::IcsCacheKey;
 use crate::ics::render_calendar;
 use crate::models::{ExamEvent, PlanItem};
 use crate::web::AppError;
+use crate::web::real_ip::resolve_client_ip;
 
 #[derive(Debug)]
 pub(crate) struct CalendarQueryParams {
@@ -82,7 +83,14 @@ async fn prepare_calendar_request_context(
   headers: HeaderMap,
   addr: SocketAddr,
 ) -> Result<CalendarRequestContext, AppError> {
-  tracing::info!(client_ip = %addr.ip(), "calendar request");
+  let peer_ip = addr.ip();
+  let resolved_ip = resolve_client_ip(peer_ip, &headers, &state.config);
+  tracing::info!(
+    peer_ip = %peer_ip,
+    client_ip = %resolved_ip.ip,
+    client_ip_source = %resolved_ip.source,
+    "calendar request"
+  );
   if let Some(expected) = state.config.calendar_token.as_ref() {
     let provided = extract_token(&query, &headers);
     let is_valid = provided

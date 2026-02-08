@@ -84,6 +84,7 @@ Release artifact names follow:
 | `AHE_CAL_JSON_ENABLED` | no | `true` | Enable or disable JSON calendar endpoints (`/calendar.json`, `/calendar/me.json`) |
 | `AHE_OPENAPI_ENABLED` | no | `true` | Enable or disable the `/openapi.json` endpoint |
 | `AHE_CAL_TOKEN` | no | - | Optional access token for calendar endpoints (plain string or Argon2id hash) |
+| `REAL_IP_HEADER` | no | - | Header name with client IP (e.g. `CF-Connecting-IP`, `X-Forwarded-For`, `Forwarded`) |
 | `RUST_LOG` | no | `info` | Log level (`debug`, `info`, etc.) |
 
 `AHE_CAL_TOKEN` supports:

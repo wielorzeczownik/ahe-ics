@@ -83,6 +83,7 @@ pub struct Config {
   pub exams_enabled: bool,
   pub json_enabled: bool,
   pub openapi_enabled: bool,
+  pub real_ip_header: Option<String>,
 }
 
 impl Config {
@@ -100,6 +101,7 @@ impl Config {
     let exams_enabled = parse_bool_env("AHE_CAL_EXAMS_ENABLED", DEFAULT_EXAMS_ENABLED)?;
     let json_enabled = parse_bool_env("AHE_CAL_JSON_ENABLED", DEFAULT_JSON_ENABLED)?;
     let openapi_enabled = parse_bool_env("AHE_OPENAPI_ENABLED", DEFAULT_OPENAPI_ENABLED)?;
+    let real_ip_header = parse_real_ip_header_env()?;
 
     Ok(Self {
       username,
@@ -112,6 +114,7 @@ impl Config {
       exams_enabled,
       json_enabled,
       openapi_enabled,
+      real_ip_header,
     })
   }
 }
@@ -177,4 +180,21 @@ fn parse_bool_env(key: &str, default_value: bool) -> Result<bool> {
     "0" | "false" | "no" | "off" => Ok(false),
     _ => bail!("{key} must be a boolean value (true/false, 1/0, yes/no, on/off)"),
   }
+}
+
+fn parse_real_ip_header_env() -> Result<Option<String>> {
+  let raw = std::env::var("REAL_IP_HEADER")
+    .ok()
+    .or_else(|| std::env::var("AHE_REAL_IP_HEADER").ok());
+
+  let Some(raw) = raw else {
+    return Ok(None);
+  };
+
+  let value = raw.trim();
+  if value.is_empty() {
+    bail!("REAL_IP_HEADER cannot be empty");
+  }
+
+  Ok(Some(value.to_ascii_lowercase()))
 }
