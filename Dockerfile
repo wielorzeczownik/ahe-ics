@@ -20,5 +20,5 @@ COPY --from=builder /app/target/release/ahe-ics /usr/local/bin/ahe-ics
 ENV BIND_ADDR=0.0.0.0:8080
 EXPOSE 8080
 HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
-  CMD-SHELL curl -fsS "http://127.0.0.1:${BIND_ADDR##*:}/healthz" || exit 1
+  CMD curl -fsS "http://127.0.0.1:${BIND_ADDR##*:}/healthz" || exit 1
 CMD ["ahe-ics"]
