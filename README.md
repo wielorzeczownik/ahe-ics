@@ -111,6 +111,7 @@ PY"
 - `GET /calendar.json` - JSON with source data used to render the ICS feed (when `AHE_CAL_JSON_ENABLED=true`).
 - `GET /calendar/me.json` - alias of `/calendar.json` (when `AHE_CAL_JSON_ENABLED=true`).
 - `GET /openapi.json` - OpenAPI spec for integrations/tools (when `AHE_OPENAPI_ENABLED=true`).
+- `GET /healthz` - health check that verifies connectivity to the AHE API (returns `204 No Content`, otherwise `503`).
 
 Calendar query params (`/calendar.ics`, `/calendar/me.ics`, and JSON endpoints when enabled):
 - `from=YYYY-MM-DD` - start date; when omitted, service uses `AHE_CAL_PAST_DAYS`.

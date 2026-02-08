@@ -1,4 +1,5 @@
 pub(crate) mod calendar;
+pub(crate) mod health;
 
 use axum::Router;
 use axum::extract::State;
@@ -13,12 +14,14 @@ use crate::web::AppError;
 use crate::web::openapi;
 
 pub(crate) use self::calendar::{calendar, calendar_json, calendar_me, calendar_me_json};
+pub(crate) use self::health::healthz;
 
 /// Builds the HTTP router with calendar endpoints.
 pub fn router(state: AppState) -> Router {
   let mut router = Router::new()
     .route("/calendar.ics", get(calendar))
     .route("/calendar/me.ics", get(calendar_me))
+    .route("/healthz", get(healthz))
     .fallback(not_found);
 
   if state.config.json_enabled {

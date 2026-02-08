@@ -9,9 +9,13 @@ use utoipa::{Modify, OpenApi};
     crate::web::routes::calendar::calendar_me,
     crate::web::routes::calendar::calendar_json,
     crate::web::routes::calendar::calendar_me_json,
+    crate::web::routes::health::healthz,
     crate::web::routes::openapi_json
   ),
-  tags((name = "calendar", description = "Calendar feed endpoints")),
+  tags(
+    (name = "calendar", description = "Calendar feed endpoints"),
+    (name = "health", description = "Service health check")
+  ),
   modifiers(&SecurityAddon),
   info(
     title = "AHE-ICS API",
@@ -25,9 +29,13 @@ pub struct ApiDoc;
   paths(
     crate::web::routes::calendar::calendar,
     crate::web::routes::calendar::calendar_me,
+    crate::web::routes::health::healthz,
     crate::web::routes::openapi_json
   ),
-  tags((name = "calendar", description = "Calendar feed endpoints")),
+  tags(
+    (name = "calendar", description = "Calendar feed endpoints"),
+    (name = "health", description = "Service health check")
+  ),
   modifiers(&SecurityAddon),
   info(
     title = "AHE-ICS API",
