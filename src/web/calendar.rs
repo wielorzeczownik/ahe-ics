@@ -7,7 +7,7 @@ use crate::cache::IcsCacheKey;
 use crate::ics::render_calendar;
 use crate::models::{ExamEvent, PlanItem};
 use crate::web::AppError;
-use crate::web::real_ip::resolve_client_ip;
+use crate::web::utils::real_ip::resolve_client_ip;
 
 #[derive(Debug)]
 pub(crate) struct CalendarQueryParams {
