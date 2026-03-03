@@ -1,6 +1,6 @@
 use super::IcsTexts;
 
-pub const ICS_TEXTS: IcsTexts = IcsTexts {
+pub static PL: IcsTexts = IcsTexts {
   calendar_name: "Plan AHE",
   location_webinar: "Webinar",
   location_default: "Sala",

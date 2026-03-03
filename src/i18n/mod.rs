@@ -1,5 +1,5 @@
-mod en;
-mod pl;
+pub mod en;
+pub mod pl;
 
 use crate::config::CalendarLanguage;
 
@@ -17,7 +17,7 @@ pub struct IcsTexts {
 
 pub fn ics_texts(lang: CalendarLanguage) -> &'static IcsTexts {
   match lang {
-    CalendarLanguage::Pl => &pl::ICS_TEXTS,
-    CalendarLanguage::En => &en::ICS_TEXTS,
+    CalendarLanguage::Pl => &pl::PL,
+    CalendarLanguage::En => &en::EN,
   }
 }
