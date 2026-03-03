@@ -31,14 +31,16 @@ commit_preprocessors = [
   { pattern = "\\((.*)\\)", replace = "" },
 ]
 commit_parsers = [
+  { message = "^chore\\(release\\)", skip = true },
+  { message = "^chore\\(deps\\)", group = "Dependencies" },
+  { message = "^chore", skip = true },
+  { message = "^ci", skip = true },
+  { message = "^refactor", skip = true },
+  { message = "^test", skip = true },
+  { message = "^docs", skip = true },
   { message = "^feat", group = "Features" },
-  { message = "^fix", group = "Fixes" },
+  { message = "^fix", group = "Bug Fixes" },
   { message = "^perf", group = "Performance" },
-  { message = "^refactor", group = "Refactor" },
-  { message = "^docs", group = "Documentation" },
-  { message = "^test", group = "Tests" },
-  { message = "^chore", group = "Chores" },
-  { message = "^ci", group = "CI" },
 ]
 protect_breaking_commits = false
 filter_commits = false
