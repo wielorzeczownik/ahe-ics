@@ -1,4 +1,4 @@
-use std::collections::{BTreeMap, HashMap, HashSet};
+use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet};
 
 use anyhow::{Context, Result};
 use chrono::{Duration, NaiveDate, NaiveTime};
@@ -14,17 +14,6 @@ use crate::models::{
   ExamScheduleItem, TermQuery,
 };
 
-#[derive(Debug, Clone, Default)]
-struct TermSubjects {
-  names: std::collections::BTreeSet<String>,
-}
-
-impl TermSubjects {
-  fn is_empty(&self) -> bool {
-    self.names.is_empty()
-  }
-}
-
 pub async fn get_exams(
   client: &Client,
   access_token: &str,
@@ -35,7 +24,7 @@ pub async fn get_exams(
   let academic_year = get_current_academic_year(client, access_token).await?;
   let terms = build_terms_for_year(academic_year);
 
-  let mut subjects_by_term: BTreeMap<TermQuery, TermSubjects> = BTreeMap::new();
+  let mut subjects_by_term: BTreeMap<TermQuery, BTreeSet<String>> = BTreeMap::new();
   for term in terms {
     match get_exam_protocol(client, access_token, index_id, term).await {
       Ok(items) => {
@@ -73,7 +62,7 @@ pub async fn get_exams(
           let Some(normalized_subject) = normalize_subject(&item.exam_subject) else {
             continue;
           };
-          if !subjects.names.contains(&normalized_subject) {
+          if !subjects.contains(&normalized_subject) {
             continue;
           }
 
@@ -180,10 +169,10 @@ async fn resolve_exam_subjects_for_term(
   access_token: &str,
   term: TermQuery,
   items: Vec<ExamProtocolItem>,
-) -> TermSubjects {
+) -> BTreeSet<String> {
   // We only keep subjects that are explicitly settled as an exam.
   // If "Szczegolowy" has null settlement, we resolve it via the "Posredni" endpoint.
-  let mut subjects = TermSubjects::default();
+  let mut subjects = BTreeSet::new();
   let mut settlement_cache: HashMap<(i64, i64), bool> = HashMap::new();
 
   for item in items {
@@ -192,7 +181,7 @@ async fn resolve_exam_subjects_for_term(
     };
 
     if is_exam_settlement(item.settlement_method_name.as_deref()) {
-      subjects.names.insert(normalized_subject);
+      subjects.insert(normalized_subject);
       continue;
     }
 
@@ -235,7 +224,7 @@ async fn resolve_exam_subjects_for_term(
     };
 
     if is_exam {
-      subjects.names.insert(normalized_subject);
+      subjects.insert(normalized_subject);
     }
   }
 

@@ -24,8 +24,8 @@ impl AppState {
     Ok(Self {
       config,
       api,
-      token_cache: Arc::new(TokenCache::new()),
-      student_context_cache: Arc::new(StudentContextCache::new()),
+      token_cache: Arc::new(TokenCache::default()),
+      student_context_cache: Arc::new(StudentContextCache::default()),
       ics_cache: IcsCache::new(),
     })
   }

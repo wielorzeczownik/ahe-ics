@@ -1,4 +1,3 @@
-use std::hash::{Hash, Hasher};
 use std::time::Duration;
 
 use anyhow::Result;
@@ -43,13 +42,6 @@ pub struct StudentContextCache {
 }
 
 impl StudentContextCache {
-  /// Creates an empty student context cache.
-  pub fn new() -> Self {
-    Self {
-      inner: RwLock::new(None),
-    }
-  }
-
   /// Returns cached student metadata, loading it from API when needed.
   pub async fn get_or_fetch(
     &self,
@@ -125,13 +117,6 @@ impl StudentContextCache {
 }
 
 impl TokenCache {
-  /// Creates an empty token cache.
-  pub fn new() -> Self {
-    Self {
-      inner: RwLock::new(None),
-    }
-  }
-
   /// Returns a valid access token, logging in only if required.
   pub async fn get_or_login(&self, config: &Config, api: &ApiClient) -> Result<String> {
     if let Some(token) = self.valid_token().await {
@@ -170,25 +155,11 @@ impl TokenCache {
   }
 }
 
-#[derive(Clone, Debug, Eq)]
+#[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub struct IcsCacheKey {
   pub student_id: i64,
   pub from: NaiveDate,
   pub to: NaiveDate,
-}
-
-impl PartialEq for IcsCacheKey {
-  fn eq(&self, other: &Self) -> bool {
-    self.student_id == other.student_id && self.from == other.from && self.to == other.to
-  }
-}
-
-impl Hash for IcsCacheKey {
-  fn hash<H: Hasher>(&self, state: &mut H) {
-    self.student_id.hash(state);
-    self.from.hash(state);
-    self.to.hash(state);
-  }
 }
 
 #[derive(Clone, Debug)]

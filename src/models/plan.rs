@@ -19,17 +19,13 @@ pub struct PlanItem {
   pub class_type: String,
   #[serde(rename = "TypZajecSkrot")]
   pub class_type_short: String,
-  #[serde(rename = "SalaNumer")]
-  #[serde(default)]
+  #[serde(rename = "SalaNumer", default)]
   pub room_number: Option<String>,
-  #[serde(rename = "SalaAdres")]
-  #[serde(default)]
+  #[serde(rename = "SalaAdres", default)]
   pub room_address: Option<String>,
-  #[serde(rename = "Webinar")]
-  #[serde(default)]
+  #[serde(rename = "Webinar", default)]
   pub webinar: bool,
-  #[serde(rename = "Dydaktyk")]
-  #[serde(default)]
+  #[serde(rename = "Dydaktyk", default)]
   pub instructors: Vec<Instructor>,
   #[serde(rename = "IDPlanZajecPoz")]
   pub schedule_item_id: i64,
