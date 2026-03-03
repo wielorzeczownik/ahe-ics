@@ -1,13 +1,15 @@
+use std::net::SocketAddr;
+
 use axum::http::HeaderMap;
 use chrono::{Duration, NaiveDate};
-use std::net::SocketAddr;
+use tracing::{debug, info, warn};
 
 use crate::app::AppState;
 use crate::cache::IcsCacheKey;
 use crate::ics::render_calendar;
 use crate::models::{ExamEvent, PlanItem};
 use crate::web::AppError;
-use crate::web::utils::real_ip::resolve_client_ip;
+use crate::web::real_ip::resolve_client_ip;
 
 #[derive(Debug)]
 pub(crate) struct CalendarQueryParams {
@@ -49,11 +51,11 @@ pub(crate) async fn render_calendar_ics(
   };
 
   if let Some(cached) = state.ics_cache.get(&key).await {
-    tracing::debug!("ics cache hit");
+    debug!("ics cache hit");
     return Ok(cached);
   }
 
-  tracing::debug!("ics cache miss");
+  debug!("ics cache miss");
   let data = fetch_calendar_render_data(&state, &context).await?;
   let ics = render_calendar(
     data.student_id,
@@ -85,7 +87,7 @@ async fn prepare_calendar_request_context(
 ) -> Result<CalendarRequestContext, AppError> {
   let peer_ip = addr.ip();
   let resolved_ip = resolve_client_ip(peer_ip, &headers, &state.config);
-  tracing::info!(
+  info!(
     peer_ip = %peer_ip,
     client_ip = %resolved_ip.ip,
     client_ip_source = %resolved_ip.source,
@@ -151,7 +153,7 @@ async fn fetch_calendar_render_data(
       {
         Ok(items) => items,
         Err(error) => {
-          tracing::warn!(
+          warn!(
             context.student_id,
             error = %error,
             "failed to fetch exams, continuing with schedule only"
@@ -160,14 +162,14 @@ async fn fetch_calendar_render_data(
         }
       }
     } else {
-      tracing::warn!(
+      warn!(
         context.student_id,
         "IndeksID not found in student data, skipping exams"
       );
       Vec::new()
     }
   } else {
-    tracing::info!("exam fetching disabled by AHE_CAL_EXAMS_ENABLED");
+    info!("exam fetching disabled by AHE_CAL_EXAMS_ENABLED");
     Vec::new()
   };
 

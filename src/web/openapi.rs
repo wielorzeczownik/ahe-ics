@@ -5,11 +5,9 @@ use utoipa::{Modify, OpenApi};
 #[derive(OpenApi)]
 #[openapi(
   paths(
-    crate::web::routes::calendar::calendar,
-    crate::web::routes::calendar::calendar_me,
-    crate::web::routes::calendar::calendar_json,
-    crate::web::routes::calendar::calendar_me_json,
-    crate::web::routes::health::healthz,
+    crate::web::routes::calendar_ics,
+    crate::web::routes::calendar_json,
+    crate::web::routes::healthz,
     crate::web::routes::openapi_json
   ),
   tags(
@@ -27,9 +25,8 @@ pub struct ApiDoc;
 #[derive(OpenApi)]
 #[openapi(
   paths(
-    crate::web::routes::calendar::calendar,
-    crate::web::routes::calendar::calendar_me,
-    crate::web::routes::health::healthz,
+    crate::web::routes::calendar_ics,
+    crate::web::routes::healthz,
     crate::web::routes::openapi_json
   ),
   tags(

@@ -69,11 +69,7 @@ impl From<PlanItem> for CalendarPlanJsonItem {
       room_number: value.room_number,
       room_address: value.room_address,
       webinar: value.webinar,
-      instructors: value
-        .instructors
-        .into_iter()
-        .map(|instructor| instructor.full_name)
-        .collect(),
+      instructors: value.instructors.into_iter().map(|i| i.full_name).collect(),
     }
   }
 }

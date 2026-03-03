@@ -25,8 +25,8 @@ pub fn render_calendar(
       item.schedule_item_id
     );
     let summary = build_summary(item);
-    let location = build_location(item, &t);
-    let description = build_description(item, &t);
+    let location = build_location(item, t);
+    let description = build_description(item, t);
 
     let event = Event::new()
       .uid(&uid)
@@ -46,9 +46,9 @@ pub fn render_calendar(
       exam.published_data_id,
       exam.starts.and_utc().timestamp()
     );
-    let summary = build_exam_summary(exam, &t);
-    let location = build_exam_location(exam, &t);
-    let description = build_exam_description(exam, &t);
+    let summary = build_exam_summary(exam, t);
+    let location = build_exam_location(exam, t);
+    let description = build_exam_description(exam, t);
 
     let event = Event::new()
       .uid(&uid)
@@ -66,11 +66,10 @@ pub fn render_calendar(
 }
 
 fn build_summary(item: &PlanItem) -> String {
-  let mut typ = item.class_type.clone();
-  if !item.class_type_short.trim().is_empty() {
-    typ = format!("{} {}", item.class_type, item.class_type_short);
-  }
-
+  let typ = match item.class_type_short.trim() {
+    "" => item.class_type.clone(),
+    short => format!("{} {short}", item.class_type),
+  };
   format!("{} [{typ}]", item.subject_name)
 }
 
