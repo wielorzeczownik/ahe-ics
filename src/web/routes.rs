@@ -2,8 +2,8 @@ use std::net::SocketAddr;
 
 use axum::Router;
 use axum::extract::{ConnectInfo, Query, State};
-use axum::http::{HeaderMap, StatusCode};
 use axum::http::header::CONTENT_TYPE;
+use axum::http::{HeaderMap, StatusCode};
 use axum::response::IntoResponse;
 use axum::routing::get;
 use chrono::NaiveDate;
@@ -170,9 +170,7 @@ async fn healthz(State(state): State<AppState>) -> impl IntoResponse {
     content_type = "application/json",
   ))
 )]
-async fn openapi_json(
-  State(state): State<AppState>,
-) -> Result<impl IntoResponse, AppError> {
+async fn openapi_json(State(state): State<AppState>) -> Result<impl IntoResponse, AppError> {
   let body = openapi::spec_json(state.config.json_enabled)?;
   Ok(([(CONTENT_TYPE, JSON_CONTENT_TYPE)], body))
 }

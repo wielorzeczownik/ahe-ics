@@ -71,7 +71,10 @@ fn parse_forwarded_ip(value: &str) -> Option<IpAddr> {
   }
 
   let mut candidate = first.trim_matches('"');
-  if let Some(stripped) = candidate.strip_prefix("for=").or_else(|| candidate.strip_prefix("For=")) {
+  if let Some(stripped) = candidate
+    .strip_prefix("for=")
+    .or_else(|| candidate.strip_prefix("For="))
+  {
     candidate = stripped.trim();
   }
 
