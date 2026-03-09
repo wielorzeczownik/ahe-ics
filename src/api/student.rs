@@ -25,10 +25,8 @@ pub async fn get_student_data(client: &Client, access_token: &str) -> Result<Stu
   }
 
   debug!(?status, "student data fetch ok");
-  Ok(
-    resp
-      .json::<StudentData>()
-      .await
-      .context("invalid student data json")?,
-  )
+  resp
+    .json::<StudentData>()
+    .await
+    .context("invalid student data json")
 }

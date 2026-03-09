@@ -55,11 +55,11 @@ impl StudentContextCache {
     }
 
     let mut guard = self.inner.write().await;
-    if let Some(entry) = guard.as_ref() {
-      if entry.expires_at > Utc::now() {
-        debug!("student context cache hit after lock");
-        return Ok(entry.value.clone());
-      }
+    if let Some(entry) = guard.as_ref()
+      && entry.expires_at > Utc::now()
+    {
+      debug!("student context cache hit after lock");
+      return Ok(entry.value.clone());
     }
 
     debug!("student context cache miss, fetching from API");
@@ -125,11 +125,11 @@ impl TokenCache {
     }
 
     let mut guard = self.inner.write().await;
-    if let Some(entry) = guard.as_ref() {
-      if entry.expires_at > Utc::now() {
-        debug!("token cache hit after lock");
-        return Ok(entry.token.clone());
-      }
+    if let Some(entry) = guard.as_ref()
+      && entry.expires_at > Utc::now()
+    {
+      debug!("token cache hit after lock");
+      return Ok(entry.token.clone());
     }
 
     debug!("token cache miss, logging in");

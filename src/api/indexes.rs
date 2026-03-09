@@ -25,10 +25,8 @@ pub async fn get_student_indexes(client: &Client, access_token: &str) -> Result<
   }
 
   debug!(?status, "student indexes fetch ok");
-  Ok(
-    resp
-      .json::<Vec<StudentIndex>>()
-      .await
-      .context("invalid student indexes json")?,
-  )
+  resp
+    .json::<Vec<StudentIndex>>()
+    .await
+    .context("invalid student indexes json")
 }

@@ -30,10 +30,8 @@ pub async fn login(client: &Client, username: &str, password: &str) -> Result<To
   }
 
   debug!(?status, "login ok");
-  Ok(
-    resp
-      .json::<TokenResponse>()
-      .await
-      .context("invalid token json")?,
-  )
+  resp
+    .json::<TokenResponse>()
+    .await
+    .context("invalid token json")
 }

@@ -155,12 +155,10 @@ async fn get_exam_protocol(
     anyhow::bail!("exam protocol failed: {status} body={text}");
   }
 
-  Ok(
-    resp
-      .json::<Vec<ExamProtocolItem>>()
-      .await
-      .context("invalid exam protocol json")?,
-  )
+  resp
+    .json::<Vec<ExamProtocolItem>>()
+    .await
+    .context("invalid exam protocol json")
 }
 
 /// Resolves subjects that should be treated as exams for a given term.
@@ -259,12 +257,10 @@ async fn get_exam_protocol_intermediate(
     anyhow::bail!("exam protocol intermediate failed: {status} body={text}");
   }
 
-  Ok(
-    resp
-      .json::<Vec<ExamProtocolIntermediateItem>>()
-      .await
-      .context("invalid exam protocol intermediate json")?,
-  )
+  resp
+    .json::<Vec<ExamProtocolIntermediateItem>>()
+    .await
+    .context("invalid exam protocol intermediate json")
 }
 
 /// Fetches public exam schedule entries for the selected academic term.
@@ -296,12 +292,10 @@ async fn get_exam_schedule(
     anyhow::bail!("exam schedule failed: {status} body={text}");
   }
 
-  Ok(
-    resp
-      .json::<Vec<ExamScheduleItem>>()
-      .await
-      .context("invalid exam schedule json")?,
-  )
+  resp
+    .json::<Vec<ExamScheduleItem>>()
+    .await
+    .context("invalid exam schedule json")
 }
 
 /// Normalizes free text values for case-insensitive matching.

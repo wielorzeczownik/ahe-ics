@@ -33,10 +33,8 @@ pub async fn get_plan(
   }
 
   debug!(?status, "plan fetch ok");
-  Ok(
-    resp
-      .json::<Vec<PlanItem>>()
-      .await
-      .context("invalid plan json")?,
-  )
+  resp
+    .json::<Vec<PlanItem>>()
+    .await
+    .context("invalid plan json")
 }
