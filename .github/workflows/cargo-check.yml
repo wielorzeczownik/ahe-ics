@@ -15,6 +15,20 @@ jobs:
 
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy
+
+      - name: Cache Cargo
+        uses: Swatinem/rust-cache@v2
 
       - name: Cargo check
         run: cargo check --all-targets --locked
+
+      - name: Clippy
+        run: cargo clippy --all-targets -- -D warnings
+
+      - name: Install cargo-audit
+        uses: taiki-e/install-action@cargo-audit
+
+      - name: Cargo audit
+        run: cargo audit
