@@ -3,6 +3,15 @@
   "platformAutomerge": true,
   "automergeType": "pr",
   "semanticCommits": "enabled",
+  "customManagers": [
+    {
+      "customType": "regex",
+      "fileMatch": ["^README(\\.pl)?\\.md$"],
+      "matchStrings": ["python:(?<currentValue>[^\\s\"']+)"],
+      "depNameTemplate": "python",
+      "datasourceTemplate": "docker"
+    }
+  ],
   "packageRules": [
     {
       "matchUpdateTypes": [
@@ -28,6 +37,12 @@
         "dockerfile"
       ],
       "semanticCommitType": "build"
+    },
+    {
+      "matchManagers": [
+        "regex"
+      ],
+      "semanticCommitType": "docs"
     }
   ]
 }
