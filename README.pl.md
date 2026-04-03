@@ -98,7 +98,7 @@ W trybie hasha klient wysyła token jako zwykły tekst (`token=...`), a serwer w
 Przykład generowania hasha Argon2id przez Docker:
 
 ```bash
-docker run --rm -e TOKEN='twoj-token' python:3.12-alpine sh -lc "pip install --quiet argon2-cffi && python - <<'PY'
+docker run --rm -e TOKEN='twoj-token' python:3.14-alpine sh -lc "pip install --quiet argon2-cffi && python - <<'PY'
 import os
 from argon2 import PasswordHasher
 
