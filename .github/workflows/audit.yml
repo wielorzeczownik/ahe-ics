@@ -1,0 +1,53 @@
+name: Security Audit
+
+on:
+  schedule:
+    - cron: "0 3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache Cargo
+        uses: Swatinem/rust-cache@v2
+
+      - name: Install cargo-audit
+        uses: taiki-e/install-action@cargo-audit
+
+      - name: Run audit
+        id: audit
+        run: |
+          if cargo audit; then
+            echo "vulnerable=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "vulnerable=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Try cargo update
+        if: steps.audit.outputs.vulnerable == 'true'
+        run: cargo update
+
+      - name: Re-run audit after update
+        if: steps.audit.outputs.vulnerable == 'true'
+        run: cargo audit
+
+      - name: Commit updated Cargo.lock
+        if: steps.audit.outputs.vulnerable == 'true'
+        uses: EndBug/add-and-commit@v10
+        with:
+          add: "Cargo.lock"
+          default_author: github_actions
+          message: "fix(deps): update Cargo.lock to resolve audit advisories"
+          push: true
