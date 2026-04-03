@@ -1,4 +1,4 @@
-name: Cargo Check
+name: Validate
 
 on:
   pull_request:
@@ -7,7 +7,7 @@ permissions:
   contents: read
 
 jobs:
-  cargo-check:
+  validate:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
