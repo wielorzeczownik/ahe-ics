@@ -10,6 +10,24 @@
         "patch"
       ],
       "automerge": true
+    },
+    {
+      "matchDepTypes": [
+        "buildDependencies"
+      ],
+      "semanticCommitType": "build"
+    },
+    {
+      "matchManagers": [
+        "github-actions"
+      ],
+      "semanticCommitType": "ci"
+    },
+    {
+      "matchManagers": [
+        "dockerfile"
+      ],
+      "semanticCommitType": "build"
     }
   ]
 }
