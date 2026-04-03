@@ -98,7 +98,7 @@ When hash mode is used, clients still send the normal plain `token=...` (or head
 Example Argon2id generation via Docker:
 
 ```bash
-docker run --rm -e TOKEN='your-token' python:3.12-alpine sh -lc "pip install --quiet argon2-cffi && python - <<'PY'
+docker run --rm -e TOKEN='your-token' python:3.14-alpine sh -lc "pip install --quiet argon2-cffi && python - <<'PY'
 import os
 from argon2 import PasswordHasher
 
