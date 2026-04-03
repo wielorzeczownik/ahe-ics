@@ -213,7 +213,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p dist
-          asset="ahe-ics-${{ needs.prepare-release.outputs.version }}-${{ matrix.target }}.tar.gz"
+          asset="ahe-ics-${{ matrix.target }}.tar.gz"
           tar -C "target/${{ matrix.target }}/release" -czf "dist/${asset}" "${{ matrix.binary }}"
 
       - name: Package (zip)
@@ -221,7 +221,7 @@ jobs:
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force dist | Out-Null
-          $asset = "ahe-ics-${{ needs.prepare-release.outputs.version }}-${{ matrix.target }}.zip"
+          $asset = "ahe-ics-${{ matrix.target }}.zip"
           Compress-Archive -Path "target/${{ matrix.target }}/release/${{ matrix.binary }}" -DestinationPath "dist/$asset"
 
       - name: Upload artifact
