@@ -35,19 +35,19 @@ jobs:
             echo "vulnerable=true" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Try cargo update
+      - name: Try cargo audit fix
         if: steps.audit.outputs.vulnerable == 'true'
-        run: cargo update
+        run: cargo audit fix
 
-      - name: Re-run audit after update
+      - name: Re-run audit after fix
         if: steps.audit.outputs.vulnerable == 'true'
         run: cargo audit
 
-      - name: Commit updated Cargo.lock
+      - name: Commit fixed Cargo.lock
         if: steps.audit.outputs.vulnerable == 'true'
         uses: EndBug/add-and-commit@v10
         with:
           add: "Cargo.lock"
           default_author: github_actions
-          message: "fix(deps): update Cargo.lock to resolve audit advisories"
+          message: "fix(deps): resolve audit advisories [skip ci]"
           push: true
