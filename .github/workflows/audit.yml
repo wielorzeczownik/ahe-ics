@@ -49,5 +49,5 @@ jobs:
         with:
           add: "Cargo.lock"
           default_author: github_actions
-          message: "fix(deps): resolve audit advisories [skip ci]"
+          message: "fix(deps): resolve audit advisories"
           push: true
