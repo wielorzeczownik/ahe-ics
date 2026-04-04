@@ -64,11 +64,22 @@ Invoke-WebRequest -Uri "https://raw.githubusercontent.com/wielorzeczownik/ahe-ic
 
 Download the latest release asset for your platform:
 
+**Linux (glibc — requires glibc 2.35+):**
 - [ahe-ics-x86_64-unknown-linux-gnu.tar.gz](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-x86_64-unknown-linux-gnu.tar.gz) – Linux (Intel/AMD 64-bit)
 - [ahe-ics-aarch64-unknown-linux-gnu.tar.gz](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-aarch64-unknown-linux-gnu.tar.gz) – Linux (ARM64, e.g. Raspberry Pi 64-bit)
+
+**Linux (musl — fully static, no glibc dependency):**
+- [ahe-ics-x86_64-unknown-linux-musl.tar.gz](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-x86_64-unknown-linux-musl.tar.gz) – Linux (Intel/AMD 64-bit)
+- [ahe-ics-aarch64-unknown-linux-musl.tar.gz](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-aarch64-unknown-linux-musl.tar.gz) – Linux (ARM64)
+
+**macOS:**
 - [ahe-ics-x86_64-apple-darwin.tar.gz](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-x86_64-apple-darwin.tar.gz) – macOS on Intel Macs
-- [ahe-ics-aarch64-apple-darwin.tar.gz](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-aarch64-apple-darwin.tar.gz) – macOS on Apple Silicon (M1/M2/M3)
+- [ahe-ics-aarch64-apple-darwin.tar.gz](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-aarch64-apple-darwin.tar.gz) – macOS on Apple Silicon (M1/M2/M3/M4)
+
+**Windows:**
 - [ahe-ics-x86_64-pc-windows-msvc.zip](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-x86_64-pc-windows-msvc.zip) – Windows 64-bit (x86_64)
+- [ahe-ics-aarch64-pc-windows-msvc.zip](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-aarch64-pc-windows-msvc.zip) – Windows ARM64
+- [ahe-ics-i686-pc-windows-msvc.zip](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-i686-pc-windows-msvc.zip) – Windows 32-bit (x86)
 
 ## Environment variables
 
