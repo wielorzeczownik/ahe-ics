@@ -159,7 +159,6 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # Build GNU Linux binaries on 22.04 so they stay compatible with older glibc (2.35+).
           - os: ubuntu-22.04
             target: x86_64-unknown-linux-gnu
             binary: ahe-ics
@@ -180,6 +179,24 @@ jobs:
             target: x86_64-pc-windows-msvc
             binary: ahe-ics.exe
             archive: zip
+          - os: windows-latest
+            target: i686-pc-windows-msvc
+            binary: ahe-ics.exe
+            archive: zip
+          - os: windows-11-arm
+            target: aarch64-pc-windows-msvc
+            binary: ahe-ics.exe
+            archive: zip
+          - os: ubuntu-22.04
+            target: x86_64-unknown-linux-musl
+            binary: ahe-ics
+            archive: tar.gz
+            build_cmd: cargo zigbuild
+          - os: ubuntu-22.04
+            target: aarch64-unknown-linux-musl
+            binary: ahe-ics
+            archive: tar.gz
+            build_cmd: cargo zigbuild
     steps:
       - name: Checkout tag
         uses: actions/checkout@v6
@@ -202,10 +219,20 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y gcc-aarch64-linux-gnu
 
+      - name: Install Zig
+        if: ${{ matrix.build_cmd == 'cargo zigbuild' }}
+        run: pip install ziglang
+
+      - name: Install cargo-zigbuild
+        if: ${{ matrix.build_cmd == 'cargo zigbuild' }}
+        uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-zigbuild
+
       - name: Build binary
         env:
           CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER: aarch64-linux-gnu-gcc
-        run: cargo build --release --target ${{ matrix.target }}
+        run: ${{ matrix.build_cmd || 'cargo build' }} --release --target ${{ matrix.target }}
 
       - name: Package (tar.gz)
         if: ${{ matrix.archive == 'tar.gz' }}
