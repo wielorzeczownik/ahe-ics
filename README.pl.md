@@ -12,7 +12,7 @@
 
 <p align="center">🇬🇧 <a href="README.md">English</a> | 🇵🇱 Polski</p>
 
-Lekki serwis do samodzielnego hostowania, który eksportuje plan zajęć [Akademii Humanistyczno-Ekonomicznej (AHE) w Łodzi](https://www.ahe.lodz.pl) jako subskrybowalny kanał ICS - kompatybilny z Google Calendar, Apple Calendar i Outlookiem.
+Lekki serwis do samodzielnego hostowania, który eksportuje plan zajęć [Akademii Humanistyczno-Ekonomicznej (AHE) w Łodzi](https://www.ahe.lodz.pl) jako subskrybowalny kanał ICS – kompatybilny z Google Calendar, Apple Calendar i Outlookiem.
 
 Wystarczy dodać jeden adres URL, a plan zajęć AHE będzie automatycznie aktualizowany w dowolnej aplikacji kalendarza.
 
@@ -64,11 +64,11 @@ Invoke-WebRequest -Uri "https://raw.githubusercontent.com/wielorzeczownik/ahe-ic
 
 Pobierz najnowsze archiwum dla swojej platformy:
 
-- [ahe-ics-x86_64-unknown-linux-gnu.tar.gz](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-x86_64-unknown-linux-gnu.tar.gz) — Linux (Intel/AMD 64-bit)
-- [ahe-ics-aarch64-unknown-linux-gnu.tar.gz](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-aarch64-unknown-linux-gnu.tar.gz) — Linux (ARM64, np. Raspberry Pi 64-bit)
-- [ahe-ics-x86_64-apple-darwin.tar.gz](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-x86_64-apple-darwin.tar.gz) — macOS na Intel
-- [ahe-ics-aarch64-apple-darwin.tar.gz](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-aarch64-apple-darwin.tar.gz) — macOS na Apple Silicon (M1/M2/M3)
-- [ahe-ics-x86_64-pc-windows-msvc.zip](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-x86_64-pc-windows-msvc.zip) — Windows 64-bit
+- [ahe-ics-x86_64-unknown-linux-gnu.tar.gz](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-x86_64-unknown-linux-gnu.tar.gz) – Linux (Intel/AMD 64-bit)
+- [ahe-ics-aarch64-unknown-linux-gnu.tar.gz](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-aarch64-unknown-linux-gnu.tar.gz) – Linux (ARM64, np. Raspberry Pi 64-bit)
+- [ahe-ics-x86_64-apple-darwin.tar.gz](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-x86_64-apple-darwin.tar.gz) – macOS na Intel
+- [ahe-ics-aarch64-apple-darwin.tar.gz](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-aarch64-apple-darwin.tar.gz) – macOS na Apple Silicon (M1/M2/M3)
+- [ahe-ics-x86_64-pc-windows-msvc.zip](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-x86_64-pc-windows-msvc.zip) – Windows 64-bit
 
 ## Zmienne środowiskowe
 
@@ -108,18 +108,18 @@ PY"
 
 ## Endpointy
 
-- `GET /calendar.ics` - główny endpoint kanału ICS (`text/calendar`).
-- `GET /calendar/me.ics` - alias `/calendar.ics` (identyczny wynik).
-- `GET /calendar.json` - JSON z danymi źródłowymi kalendarza (gdy `AHE_CAL_JSON_ENABLED=true`).
-- `GET /calendar/me.json` - alias `/calendar.json` (gdy `AHE_CAL_JSON_ENABLED=true`).
-- `GET /openapi.json` - specyfikacja OpenAPI (gdy `AHE_OPENAPI_ENABLED=true`).
-- `GET /healthz` - health check weryfikujący połączenie z API AHE (zwraca `204 No Content`, w przeciwnym razie `503`).
+- `GET /calendar.ics` – główny endpoint kanału ICS (`text/calendar`).
+- `GET /calendar/me.ics` – alias `/calendar.ics` (identyczny wynik).
+- `GET /calendar.json` – JSON z danymi źródłowymi kalendarza (gdy `AHE_CAL_JSON_ENABLED=true`).
+- `GET /calendar/me.json` – alias `/calendar.json` (gdy `AHE_CAL_JSON_ENABLED=true`).
+- `GET /openapi.json` – specyfikacja OpenAPI (gdy `AHE_OPENAPI_ENABLED=true`).
+- `GET /healthz` – health check weryfikujący połączenie z API AHE (zwraca `204 No Content`, w przeciwnym razie `503`).
 
 Parametry zapytania (`/calendar.ics`, `/calendar/me.ics` i endpointy JSON):
 
-- `from=RRRR-MM-DD` - data początkowa; gdy pominięta, serwis używa `AHE_CAL_PAST_DAYS`.
-- `to=RRRR-MM-DD` - data końcowa; gdy pominięta, serwis używa `AHE_CAL_FUTURE_DAYS`.
-- `token=...` - opcjonalny token dostępu, jeśli skonfigurowano `AHE_CAL_TOKEN`.
+- `from=RRRR-MM-DD` – data początkowa; gdy pominięta, serwis używa `AHE_CAL_PAST_DAYS`.
+- `to=RRRR-MM-DD` – data końcowa; gdy pominięta, serwis używa `AHE_CAL_FUTURE_DAYS`.
+- `token=...` – opcjonalny token dostępu, jeśli skonfigurowano `AHE_CAL_TOKEN`.
 
 Przykład:
 
@@ -129,7 +129,7 @@ http://localhost:8080/calendar.ics?from=2026-01-01&to=2026-03-01
 
 ## Subskrypcja w Google Calendar / Apple Calendar / Outlook
 
-Dodaj adres URL kanału ICS w swojej aplikacji kalendarza - plan zajęć będzie synchronizowany automatycznie:
+Dodaj adres URL kanału ICS w swojej aplikacji kalendarza – plan zajęć będzie synchronizowany automatycznie:
 
 - **Google Calendar** → Inne kalendarze → Dodaj przez URL
 - **Apple Calendar** → Plik → Nowa subskrypcja kalendarza

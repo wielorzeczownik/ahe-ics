@@ -12,7 +12,7 @@
 
 <p align="center">🇬🇧 English | 🇵🇱 <a href="README.pl.md">Polski</a></p>
 
-A lightweight self-hosted service that exports the [Akademia Humanistyczno-Ekonomiczna (AHE) Łódź](https://www.ahe.lodz.pl) class schedule as a subscribable ICS feed - compatible with Google Calendar, Apple Calendar, and Outlook.
+A lightweight self-hosted service that exports the [Akademia Humanistyczno-Ekonomiczna (AHE) Łódź](https://www.ahe.lodz.pl) class schedule as a subscribable ICS feed – compatible with Google Calendar, Apple Calendar, and Outlook.
 
 Subscribe once with a single URL and your AHE class schedule stays automatically up to date in any calendar app.
 
@@ -64,11 +64,11 @@ Invoke-WebRequest -Uri "https://raw.githubusercontent.com/wielorzeczownik/ahe-ic
 
 Download the latest release asset for your platform:
 
-- [ahe-ics-x86_64-unknown-linux-gnu.tar.gz](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-x86_64-unknown-linux-gnu.tar.gz) — Linux (Intel/AMD 64-bit)
-- [ahe-ics-aarch64-unknown-linux-gnu.tar.gz](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-aarch64-unknown-linux-gnu.tar.gz) — Linux (ARM64, e.g. Raspberry Pi 64-bit)
-- [ahe-ics-x86_64-apple-darwin.tar.gz](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-x86_64-apple-darwin.tar.gz) — macOS on Intel Macs
-- [ahe-ics-aarch64-apple-darwin.tar.gz](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-aarch64-apple-darwin.tar.gz) — macOS on Apple Silicon (M1/M2/M3)
-- [ahe-ics-x86_64-pc-windows-msvc.zip](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-x86_64-pc-windows-msvc.zip) — Windows 64-bit (x86_64)
+- [ahe-ics-x86_64-unknown-linux-gnu.tar.gz](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-x86_64-unknown-linux-gnu.tar.gz) – Linux (Intel/AMD 64-bit)
+- [ahe-ics-aarch64-unknown-linux-gnu.tar.gz](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-aarch64-unknown-linux-gnu.tar.gz) – Linux (ARM64, e.g. Raspberry Pi 64-bit)
+- [ahe-ics-x86_64-apple-darwin.tar.gz](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-x86_64-apple-darwin.tar.gz) – macOS on Intel Macs
+- [ahe-ics-aarch64-apple-darwin.tar.gz](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-aarch64-apple-darwin.tar.gz) – macOS on Apple Silicon (M1/M2/M3)
+- [ahe-ics-x86_64-pc-windows-msvc.zip](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-x86_64-pc-windows-msvc.zip) – Windows 64-bit (x86_64)
 
 ## Environment variables
 
@@ -108,18 +108,18 @@ PY"
 
 ## Endpoints
 
-- `GET /calendar.ics` - primary ICS feed endpoint (`text/calendar`).
-- `GET /calendar/me.ics` - alias of `/calendar.ics` (same output).
-- `GET /calendar.json` - JSON with source data used to render the ICS feed (when `AHE_CAL_JSON_ENABLED=true`).
-- `GET /calendar/me.json` - alias of `/calendar.json` (when `AHE_CAL_JSON_ENABLED=true`).
-- `GET /openapi.json` - OpenAPI spec for integrations/tools (when `AHE_OPENAPI_ENABLED=true`).
-- `GET /healthz` - health check that verifies connectivity to the AHE API (returns `204 No Content`, otherwise `503`).
+- `GET /calendar.ics` – primary ICS feed endpoint (`text/calendar`).
+- `GET /calendar/me.ics` – alias of `/calendar.ics` (same output).
+- `GET /calendar.json` – JSON with source data used to render the ICS feed (when `AHE_CAL_JSON_ENABLED=true`).
+- `GET /calendar/me.json` – alias of `/calendar.json` (when `AHE_CAL_JSON_ENABLED=true`).
+- `GET /openapi.json` – OpenAPI spec for integrations/tools (when `AHE_OPENAPI_ENABLED=true`).
+- `GET /healthz` – health check that verifies connectivity to the AHE API (returns `204 No Content`, otherwise `503`).
 
 Calendar query params (`/calendar.ics`, `/calendar/me.ics`, and JSON endpoints when enabled):
 
-- `from=YYYY-MM-DD` - start date; when omitted, service uses `AHE_CAL_PAST_DAYS`.
-- `to=YYYY-MM-DD` - end date; when omitted, service uses `AHE_CAL_FUTURE_DAYS`.
-- `token=...` - optional request token if `AHE_CAL_TOKEN` is configured.
+- `from=YYYY-MM-DD` – start date; when omitted, service uses `AHE_CAL_PAST_DAYS`.
+- `to=YYYY-MM-DD` – end date; when omitted, service uses `AHE_CAL_FUTURE_DAYS`.
+- `token=...` – optional request token if `AHE_CAL_TOKEN` is configured.
 
 Example:
 
