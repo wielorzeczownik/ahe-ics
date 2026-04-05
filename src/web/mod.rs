@@ -1,6 +1,5 @@
 mod calendar;
 mod dto;
-mod openapi;
 mod real_ip;
 mod routes;
 

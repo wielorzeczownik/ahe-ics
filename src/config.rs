@@ -4,7 +4,7 @@ use argon2::{Argon2, PasswordVerifier};
 
 use crate::constants::{
   DEFAULT_BIND_ADDR, DEFAULT_CAL_FUTURE_DAYS, DEFAULT_CAL_LANG, DEFAULT_CAL_PAST_DAYS,
-  DEFAULT_EXAMS_ENABLED, DEFAULT_JSON_ENABLED, DEFAULT_OPENAPI_ENABLED,
+  DEFAULT_EXAMS_ENABLED, DEFAULT_JSON_ENABLED,
 };
 
 #[derive(Clone, Copy, Debug)]
@@ -82,7 +82,6 @@ pub struct Config {
   pub calendar_lang: CalendarLanguage,
   pub exams_enabled: bool,
   pub json_enabled: bool,
-  pub openapi_enabled: bool,
   pub real_ip_header: Option<String>,
 }
 
@@ -100,7 +99,6 @@ impl Config {
     let calendar_lang = parse_lang_env("AHE_CAL_LANG", DEFAULT_CAL_LANG)?;
     let exams_enabled = parse_bool_env("AHE_CAL_EXAMS_ENABLED", DEFAULT_EXAMS_ENABLED)?;
     let json_enabled = parse_bool_env("AHE_CAL_JSON_ENABLED", DEFAULT_JSON_ENABLED)?;
-    let openapi_enabled = parse_bool_env("AHE_OPENAPI_ENABLED", DEFAULT_OPENAPI_ENABLED)?;
     let real_ip_header = parse_real_ip_header_env()?;
 
     Ok(Self {
@@ -113,7 +111,6 @@ impl Config {
       calendar_lang,
       exams_enabled,
       json_enabled,
-      openapi_enabled,
       real_ip_header,
     })
   }

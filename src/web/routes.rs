@@ -15,7 +15,6 @@ use crate::constants::{ICS_CONTENT_TYPE, JSON_CONTENT_TYPE};
 use crate::web::AppError;
 use crate::web::calendar::{CalendarQueryParams, fetch_calendar_data, render_calendar_ics};
 use crate::web::dto::CalendarJsonResponse;
-use crate::web::openapi;
 
 #[derive(Debug, Deserialize)]
 struct CalendarQuery {
@@ -48,10 +47,6 @@ pub fn router(state: AppState) -> Router {
       .route("/calendar/me.json", get(calendar_json));
   }
 
-  if state.config.openapi_enabled {
-    router = router.route("/openapi.json", get(openapi_json));
-  }
-
   router.with_state(state)
 }
 
@@ -59,27 +54,6 @@ async fn not_found() -> impl IntoResponse {
   (StatusCode::NOT_FOUND, "Not Found")
 }
 
-#[utoipa::path(
-  get,
-  path = "/calendar.ics",
-  tag = "calendar",
-  params(
-    ("from" = Option<String>, Query, description = "Start date in YYYY-MM-DD"),
-    ("to" = Option<String>, Query, description = "End date in YYYY-MM-DD"),
-    ("token" = Option<String>, Query, description = "Calendar token when token protection is enabled")
-  ),
-  responses(
-    (status = 200, description = "ICS calendar feed", body = String, content_type = "text/calendar"),
-    (status = 400, description = "Invalid query parameters", body = String, content_type = "text/plain"),
-    (status = 401, description = "Invalid token", body = String, content_type = "text/plain"),
-    (status = 500, description = "Internal server error", body = String, content_type = "text/plain")
-  ),
-  security(
-    ("calendarTokenQuery" = []),
-    ("calendarTokenHeader" = []),
-    ("calendarTokenBearer" = [])
-  )
-)]
 async fn calendar_ics(
   State(state): State<AppState>,
   Query(query): Query<CalendarQuery>,
@@ -90,27 +64,6 @@ async fn calendar_ics(
   Ok(([(CONTENT_TYPE, ICS_CONTENT_TYPE)], ics))
 }
 
-#[utoipa::path(
-  get,
-  path = "/calendar.json",
-  tag = "calendar",
-  params(
-    ("from" = Option<String>, Query, description = "Start date in YYYY-MM-DD"),
-    ("to" = Option<String>, Query, description = "End date in YYYY-MM-DD"),
-    ("token" = Option<String>, Query, description = "Calendar token when token protection is enabled")
-  ),
-  responses(
-    (status = 200, description = "Calendar source data used for ICS rendering", body = CalendarJsonResponse, content_type = "application/json"),
-    (status = 400, description = "Invalid query parameters", body = String, content_type = "text/plain"),
-    (status = 401, description = "Invalid token", body = String, content_type = "text/plain"),
-    (status = 500, description = "Internal server error", body = String, content_type = "text/plain")
-  ),
-  security(
-    ("calendarTokenQuery" = []),
-    ("calendarTokenHeader" = []),
-    ("calendarTokenBearer" = [])
-  )
-)]
 async fn calendar_json(
   State(state): State<AppState>,
   Query(query): Query<CalendarQuery>,
@@ -129,15 +82,6 @@ async fn calendar_json(
   Ok(([(CONTENT_TYPE, JSON_CONTENT_TYPE)], body))
 }
 
-#[utoipa::path(
-  get,
-  path = "/healthz",
-  tag = "health",
-  responses(
-    (status = 204, description = "Service is healthy"),
-    (status = 503, description = "Upstream API unavailable", body = String, content_type = "text/plain")
-  )
-)]
 async fn healthz(State(state): State<AppState>) -> impl IntoResponse {
   let token = match state
     .token_cache
@@ -157,20 +101,4 @@ async fn healthz(State(state): State<AppState>) -> impl IntoResponse {
   }
 
   (StatusCode::NO_CONTENT, "")
-}
-
-#[utoipa::path(
-  get,
-  path = "/openapi.json",
-  tag = "calendar",
-  responses((
-    status = 200,
-    description = "OpenAPI specification",
-    body = String,
-    content_type = "application/json",
-  ))
-)]
-async fn openapi_json(State(state): State<AppState>) -> Result<impl IntoResponse, AppError> {
-  let body = openapi::spec_json(state.config.json_enabled)?;
-  Ok(([(CONTENT_TYPE, JSON_CONTENT_TYPE)], body))
 }

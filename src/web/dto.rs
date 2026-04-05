@@ -1,10 +1,9 @@
 use chrono::{NaiveDate, NaiveDateTime};
 use serde::Serialize;
-use utoipa::ToSchema;
 
 use crate::models::{ExamEvent, PlanItem};
 
-#[derive(Debug, Serialize, ToSchema)]
+#[derive(Debug, Serialize)]
 pub(crate) struct CalendarJsonResponse {
   student_id: i64,
   from: NaiveDate,
@@ -13,7 +12,7 @@ pub(crate) struct CalendarJsonResponse {
   exams: Vec<CalendarExamJsonItem>,
 }
 
-#[derive(Debug, Serialize, ToSchema)]
+#[derive(Debug, Serialize)]
 struct CalendarPlanJsonItem {
   schedule_item_id: i64,
   starts_at: NaiveDateTime,
@@ -27,7 +26,7 @@ struct CalendarPlanJsonItem {
   instructors: Vec<String>,
 }
 
-#[derive(Debug, Serialize, ToSchema)]
+#[derive(Debug, Serialize)]
 struct CalendarExamJsonItem {
   published_data_id: i64,
   subject: String,
