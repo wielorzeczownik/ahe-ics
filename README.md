@@ -93,7 +93,6 @@ Download the latest release asset for your platform:
 | `AHE_CAL_LANG`          | no       | `pl`           | Generated labels language (`pl` or `en`)                                             |
 | `AHE_CAL_EXAMS_ENABLED` | no       | `true`         | Enable or disable exam fetching (`true`/`false`); useful when exam entries are noisy |
 | `AHE_CAL_JSON_ENABLED`  | no       | `true`         | Enable or disable JSON calendar endpoints (`/calendar.json`, `/calendar/me.json`)    |
-| `AHE_OPENAPI_ENABLED`   | no       | `true`         | Enable or disable the `/openapi.json` endpoint                                       |
 | `AHE_CAL_TOKEN`         | no       | -              | Optional access token for calendar endpoints (plain string or Argon2id hash)         |
 | `REAL_IP_HEADER`        | no       | -              | Header name with client IP (e.g. `CF-Connecting-IP`, `X-Forwarded-For`, `Forwarded`) |
 | `RUST_LOG`              | no       | `info`         | Log level (`debug`, `info`, etc.)                                                    |
@@ -123,7 +122,6 @@ PY"
 - `GET /calendar/me.ics` – alias of `/calendar.ics` (same output).
 - `GET /calendar.json` – JSON with source data used to render the ICS feed (when `AHE_CAL_JSON_ENABLED=true`).
 - `GET /calendar/me.json` – alias of `/calendar.json` (when `AHE_CAL_JSON_ENABLED=true`).
-- `GET /openapi.json` – OpenAPI spec for integrations/tools (when `AHE_OPENAPI_ENABLED=true`).
 - `GET /healthz` – health check that verifies connectivity to the AHE API (returns `204 No Content`, otherwise `503`).
 
 Calendar query params (`/calendar.ics`, `/calendar/me.ics`, and JSON endpoints when enabled):

@@ -93,7 +93,6 @@ Pobierz najnowsze archiwum dla swojej platformy:
 | `AHE_CAL_LANG`          | nie      | `pl`           | Język etykiet w kalendarzu (`pl` lub `en`)                                                      |
 | `AHE_CAL_EXAMS_ENABLED` | nie      | `true`         | Włącz lub wyłącz pobieranie egzaminów (`true`/`false`); przydatne gdy wpisy egzaminów są mylące |
 | `AHE_CAL_JSON_ENABLED`  | nie      | `true`         | Włącz lub wyłącz endpointy JSON (`/calendar.json`, `/calendar/me.json`)                         |
-| `AHE_OPENAPI_ENABLED`   | nie      | `true`         | Włącz lub wyłącz endpoint `/openapi.json`                                                       |
 | `AHE_CAL_TOKEN`         | nie      | -              | Opcjonalny token dostępu do endpointów kalendarza (zwykły ciąg lub hash Argon2id)               |
 | `REAL_IP_HEADER`        | nie      | -              | Nagłówek z adresem IP klienta (np. `CF-Connecting-IP`, `X-Forwarded-For`, `Forwarded`)          |
 | `RUST_LOG`              | nie      | `info`         | Poziom logowania (`debug`, `info` itp.)                                                         |
@@ -123,7 +122,6 @@ PY"
 - `GET /calendar/me.ics` – alias `/calendar.ics` (identyczny wynik).
 - `GET /calendar.json` – JSON z danymi źródłowymi kalendarza (gdy `AHE_CAL_JSON_ENABLED=true`).
 - `GET /calendar/me.json` – alias `/calendar.json` (gdy `AHE_CAL_JSON_ENABLED=true`).
-- `GET /openapi.json` – specyfikacja OpenAPI (gdy `AHE_OPENAPI_ENABLED=true`).
 - `GET /healthz` – health check weryfikujący połączenie z API AHE (zwraca `204 No Content`, w przeciwnym razie `503`).
 
 Parametry zapytania (`/calendar.ics`, `/calendar/me.ics` i endpointy JSON):
