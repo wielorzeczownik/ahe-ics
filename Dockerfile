@@ -5,10 +5,10 @@ COPY Cargo.toml Cargo.lock ./
 COPY src ./src
 RUN cargo build --release
 
-FROM debian:bookworm-slim
+FROM debian:bookworm-slim@sha256:f06537653ac770703bc45b4b113475bd402f451e85223f0f2837acbf89ab020a
 
 LABEL org.opencontainers.image.source="https://github.com/wielorzeczownik/ahe-ics" \
-  org.opencontainers.image.description="Unofficial tool for exporting AHE class schedules to iCalendar (ICS)"
+  org.opencontainers.image.description="Self-hosted AHE Łódź class schedule exporter to iCalendar (ICS)"
 
 RUN apt-get update \
   && apt-get install -y --no-install-recommends ca-certificates curl \
