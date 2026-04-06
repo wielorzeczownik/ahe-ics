@@ -6,8 +6,12 @@
   "customManagers": [
     {
       "customType": "regex",
-      "fileMatch": ["^README(\\.pl)?\\.md$"],
-      "matchStrings": ["python:(?<currentValue>[^\\s\"']+)"],
+      "fileMatch": [
+        "^README(\\.pl)?\\.md$"
+      ],
+      "matchStrings": [
+        "python:(?<currentValue>[^\\s\"']+)"
+      ],
       "depNameTemplate": "python",
       "datasourceTemplate": "docker"
     }
@@ -36,7 +40,18 @@
       "matchManagers": [
         "dockerfile"
       ],
+      "pinDigests": true,
       "semanticCommitType": "build"
+    },
+    {
+      "matchManagers": [
+        "dockerfile"
+      ],
+      "pinDigests": true,
+      "matchPackageNames": [
+        "debian"
+      ],
+      "semanticCommitType": "chore"
     },
     {
       "matchManagers": [
