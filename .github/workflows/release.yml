@@ -303,10 +303,12 @@ jobs:
             dockerfile: Dockerfile
             tag_suffix: ""
             latest_tag: latest
+            platforms: linux/amd64,linux/arm64,linux/arm/v7,linux/386,linux/ppc64le,linux/s390x
           - variant: alpine
             dockerfile: Dockerfile.alpine
             tag_suffix: "-alpine"
             latest_tag: alpine
+            platforms: linux/amd64,linux/arm64,linux/ppc64le
     steps:
       - name: Checkout tag
         uses: actions/checkout@v6
@@ -349,7 +351,7 @@ jobs:
           context: .
           file: ${{ matrix.dockerfile }}
           push: true
-          platforms: linux/amd64,linux/arm64,linux/arm/v7,linux/386
+          platforms: ${{ matrix.platforms }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
