@@ -1,0 +1,24 @@
+FROM rust:1.94-alpine@sha256:77237dd363a0b127bb5ef532c2d64c0deb380b738e43a9c4bdac73398d6d0a08 AS builder
+WORKDIR /app
+
+RUN apk add --no-cache musl-dev
+
+COPY Cargo.toml Cargo.lock ./
+COPY src ./src
+RUN cargo build --release
+
+FROM alpine:latest@sha256:5b10f432ef3da1b8d4c7eb6c487f2f5a8f096bc91145e68878dd4a5019afde11
+
+LABEL org.opencontainers.image.source="https://github.com/wielorzeczownik/ahe-ics" \
+  org.opencontainers.image.description="Self-hosted AHE Łódź class schedule exporter to iCalendar (ICS)"
+
+RUN apk add --no-cache ca-certificates curl
+
+WORKDIR /app
+COPY --from=builder /app/target/release/ahe-ics /usr/local/bin/ahe-ics
+
+ENV BIND_ADDR=0.0.0.0:8080
+EXPOSE 8080
+HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
+  CMD curl -fsS "http://127.0.0.1:${BIND_ADDR##*:}/healthz" || exit 1
+CMD ["ahe-ics"]

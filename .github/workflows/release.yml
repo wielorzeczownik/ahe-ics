@@ -9,6 +9,7 @@ on:
       - "Cargo.toml"
       - "Cargo.lock"
       - "Dockerfile"
+      - "Dockerfile.alpine"
 
 concurrency:
   group: release-main
@@ -294,6 +295,18 @@ jobs:
     permissions:
       contents: read
       packages: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - variant: debian
+            dockerfile: Dockerfile
+            tag_suffix: ""
+            latest_tag: latest
+          - variant: alpine
+            dockerfile: Dockerfile.alpine
+            tag_suffix: "-alpine"
+            latest_tag: alpine
     steps:
       - name: Checkout tag
         uses: actions/checkout@v6
@@ -327,15 +340,16 @@ jobs:
             ghcr.io/${{ github.repository }}
             docker.io/${{ secrets.DOCKERHUB_USERNAME || github.repository_owner  }}/ahe-ics
           tags: |
-            type=raw,value=${{ needs.prepare-release.outputs.version }}
-            type=raw,value=latest
+            type=raw,value=${{ needs.prepare-release.outputs.version }}${{ matrix.tag_suffix }}
+            type=raw,value=${{ matrix.latest_tag }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v7
         with:
           context: .
+          file: ${{ matrix.dockerfile }}
           push: true
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64,linux/arm64,linux/arm/v7,linux/386
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
