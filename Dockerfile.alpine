@@ -10,7 +10,12 @@ RUN cargo build --release
 FROM alpine:latest@sha256:5b10f432ef3da1b8d4c7eb6c487f2f5a8f096bc91145e68878dd4a5019afde11
 
 LABEL org.opencontainers.image.source="https://github.com/wielorzeczownik/ahe-ics" \
-  org.opencontainers.image.description="Self-hosted AHE Łódź class schedule exporter to iCalendar (ICS)"
+  org.opencontainers.image.url="https://github.com/wielorzeczownik/ahe-ics" \
+  org.opencontainers.image.documentation="https://github.com/wielorzeczownik/ahe-ics#readme" \
+  org.opencontainers.image.title="ahe-ics" \
+  org.opencontainers.image.description="Self-hosted AHE Łódź class schedule exporter to iCalendar (ICS)" \
+  org.opencontainers.image.authors="wielorzeczownik" \
+  org.opencontainers.image.vendor="wielorzeczownik"
 
 RUN apk add --no-cache ca-certificates curl
 

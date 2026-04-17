@@ -8,7 +8,12 @@ RUN cargo build --release
 FROM debian:bookworm-slim@sha256:4724b8cc51e33e398f0e2e15e18d5ec2851ff0c2280647e1310bc1642182655d
 
 LABEL org.opencontainers.image.source="https://github.com/wielorzeczownik/ahe-ics" \
-  org.opencontainers.image.description="Self-hosted AHE Łódź class schedule exporter to iCalendar (ICS)"
+  org.opencontainers.image.url="https://github.com/wielorzeczownik/ahe-ics" \
+  org.opencontainers.image.documentation="https://github.com/wielorzeczownik/ahe-ics#readme" \
+  org.opencontainers.image.title="ahe-ics" \
+  org.opencontainers.image.description="Self-hosted AHE Łódź class schedule exporter to iCalendar (ICS)" \
+  org.opencontainers.image.authors="wielorzeczownik" \
+  org.opencontainers.image.vendor="wielorzeczownik"
 
 RUN apt-get update \
   && apt-get install -y --no-install-recommends ca-certificates curl \
