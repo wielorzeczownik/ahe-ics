@@ -3,10 +3,13 @@ name = "ahe-ics"
 version = "1.1.1"
 edition = "2024"
 rust-version = "1.88"
-description = "Self-hosted AHE Łódź class schedule exporter as a subscribable ICS feed"
+description = "Self-hosted AHE Łódź class schedule exporter to iCalendar (ICS)"
 license = "MIT"
+authors = ["wielorzeczownik"]
 repository = "https://github.com/wielorzeczownik/ahe-ics"
+homepage = "https://github.com/wielorzeczownik/ahe-ics"
 readme = "README.md"
+publish = false
 keywords = ["ics", "calendar", "icalendar", "ahe", "schedule"]
 categories = ["web-programming", "command-line-utilities"]
 
