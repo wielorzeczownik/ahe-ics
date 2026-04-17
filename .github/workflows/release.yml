@@ -198,6 +198,16 @@ jobs:
             binary: ahe-ics
             archive: tar.gz
             build_cmd: cargo zigbuild
+          - os: ubuntu-22.04
+            target: armv7-unknown-linux-gnueabihf
+            binary: ahe-ics
+            archive: tar.gz
+            build_cmd: cargo zigbuild
+          - os: ubuntu-22.04
+            target: i686-unknown-linux-gnu
+            binary: ahe-ics
+            archive: tar.gz
+            build_cmd: cargo zigbuild
     steps:
       - name: Checkout tag
         uses: actions/checkout@v6
