@@ -1,11 +1,11 @@
-FROM rust:1.95-bookworm@sha256:6bb82db0878825e157664188b319c875de4f1fff5d70f5917b3a3f1974b472e4 AS builder
+FROM rust:1.95-trixie@sha256:aeef749bb0cc7b1ee1b9287f989ecb1882cb59250e0b53aa501f060a15864658 AS builder
 WORKDIR /app
 
 COPY Cargo.toml Cargo.lock ./
 COPY src ./src
 RUN cargo build --release
 
-FROM debian:bookworm-slim@sha256:f9c6a2fd2ddbc23e336b6257a5245e31f996953ef06cd13a59fa0a1df2d5c252
+FROM debian:trixie-slim@sha256:cedb1ef40439206b673ee8b33a46a03a0c9fa90bf3732f54704f99cb061d2c5a
 
 LABEL org.opencontainers.image.source="https://github.com/wielorzeczownik/ahe-ics" \
   org.opencontainers.image.url="https://github.com/wielorzeczownik/ahe-ics" \
