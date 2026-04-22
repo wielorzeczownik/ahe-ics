@@ -1,4 +1,4 @@
-FROM rust:1.95-bookworm@sha256:225aa827d55fae9816a0492284592827e794a5247c6c6a961c3b471b344295ec AS builder
+FROM rust:1.95-bookworm@sha256:f245d2fdfc8be24cb6be53023c8ae04399875b828a344a9f9ae484fa425714dd AS builder
 WORKDIR /app
 
 COPY Cargo.toml Cargo.lock ./
