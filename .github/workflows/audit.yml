@@ -2,26 +2,28 @@ name: Security Audit
 
 on:
   schedule:
-    - cron: "0 3 * * *"
+    - cron: '0 3 * * *'
   workflow_dispatch:
 
-permissions:
-  contents: read
+permissions: {}
 
 jobs:
   audit:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     permissions:
       contents: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v6.0.2
+        with:
+          persist-credentials: false
 
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
 
       - name: Cache Cargo
-        uses: Swatinem/rust-cache@v2
+        uses: Swatinem/rust-cache@v2.9.1
 
       - name: Install cargo-audit
         run: cargo install cargo-audit --locked --features=fix
@@ -45,9 +47,9 @@ jobs:
 
       - name: Commit fixed Cargo.lock
         if: steps.audit.outputs.vulnerable == 'true'
-        uses: EndBug/add-and-commit@v10
+        uses: EndBug/add-and-commit@v10.0.0
         with:
-          add: "Cargo.lock"
+          add: 'Cargo.lock'
           default_author: github_actions
-          message: "fix(deps): resolve audit advisories"
+          message: 'fix(deps): resolve audit advisories'
           push: true
