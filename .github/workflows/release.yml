@@ -15,12 +15,12 @@ concurrency:
   group: release-main
   cancel-in-progress: true
 
-permissions:
-  contents: read
+permissions: {}
 
 jobs:
   prepare-release:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     permissions:
       contents: write
     outputs:
@@ -30,7 +30,7 @@ jobs:
       commit_changes: ${{ steps.bump.outputs.commit_changes }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v6.0.2
         with:
           fetch-depth: 0
 
@@ -47,7 +47,7 @@ jobs:
 
       - name: Determine next version (git-cliff)
         id: cliff_bumped
-        uses: orhun/git-cliff-action@v4
+        uses: orhun/git-cliff-action@v4.8.0
         with:
           config: cliff.toml
           args: --bumped-version
@@ -58,68 +58,13 @@ jobs:
       - name: Bump project version
         id: bump
         shell: bash
-        run: |
-          set -euo pipefail
-
-          current_version=$(awk -F'"' '/^version\s*=\s*"/ { print $2; exit }' Cargo.toml)
-          next_tag="${{ steps.cliff_bumped.outputs.content }}"
-          next_tag=$(echo "$next_tag" | tr -d '[:space:]')
-
-          if [[ -z "$next_tag" ]]; then
-            echo "Unable to determine next version from git-cliff"
-            exit 1
-          fi
-
-          if [[ "$next_tag" != v* ]]; then
-            next_tag="v$next_tag"
-          fi
-
-          next_version="${next_tag#v}"
-          current_tag="v$current_version"
-          has_current_tag="false"
-          if git rev-parse -q --verify "refs/tags/${current_tag}" >/dev/null; then
-            has_current_tag="true"
-          fi
-
-          if [[ "$next_version" == "$current_version" ]]; then
-            if [[ "$has_current_tag" == "false" ]]; then
-              echo "No bump from git-cliff, but no current tag exists. Creating initial release for ${current_tag}."
-              echo "released=true" >> "$GITHUB_OUTPUT"
-              echo "version=$current_version" >> "$GITHUB_OUTPUT"
-              echo "tag=$current_tag" >> "$GITHUB_OUTPUT"
-              echo "commit_changes=false" >> "$GITHUB_OUTPUT"
-              exit 0
-            fi
-
-            echo "No user-facing commits since ${current_tag}. Nothing to release."
-            echo "released=false" >> "$GITHUB_OUTPUT"
-            echo "version=$current_version" >> "$GITHUB_OUTPUT"
-            echo "tag=$current_tag" >> "$GITHUB_OUTPUT"
-            echo "commit_changes=false" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
-          if [[ "$(printf '%s\n' "$current_version" "$next_version" | sort -V | tail -1)" != "$next_version" ]]; then
-            echo "git-cliff returned $next_version which is lower than current $current_version. Nothing to release."
-            echo "released=false" >> "$GITHUB_OUTPUT"
-            echo "version=$current_version" >> "$GITHUB_OUTPUT"
-            echo "tag=$current_tag" >> "$GITHUB_OUTPUT"
-            echo "commit_changes=false" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
-          cargo set-version "$next_version"
-
-          cargo check
-
-          echo "released=true" >> "$GITHUB_OUTPUT"
-          echo "version=$next_version" >> "$GITHUB_OUTPUT"
-          echo "tag=$next_tag" >> "$GITHUB_OUTPUT"
-          echo "commit_changes=true" >> "$GITHUB_OUTPUT"
+        env:
+          CLIFF_BUMPED_VERSION: ${{ steps.cliff_bumped.outputs.content }}
+        run: bash scripts/bump-version.sh
 
       - name: Generate release notes (git-cliff)
         if: ${{ steps.bump.outputs.released == 'true' }}
-        uses: orhun/git-cliff-action@v4
+        uses: orhun/git-cliff-action@v4.8.0
         with:
           config: cliff.toml
           args: --unreleased --tag ${{ steps.bump.outputs.tag }}
@@ -145,7 +90,7 @@ jobs:
 
       - name: Upload release notes
         if: ${{ steps.bump.outputs.released == 'true' }}
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.1
         with:
           name: release-notes
           path: release-notes.md
@@ -154,6 +99,7 @@ jobs:
     needs: prepare-release
     if: ${{ needs.prepare-release.outputs.released == 'true' }}
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
     permissions:
       contents: read
     strategy:
@@ -210,9 +156,10 @@ jobs:
             build_cmd: cargo zigbuild
     steps:
       - name: Checkout tag
-        uses: actions/checkout@v6
+        uses: actions/checkout@v6.0.2
         with:
           ref: ${{ needs.prepare-release.outputs.tag }}
+          persist-credentials: false
 
       - name: Install rust toolchain
         uses: dtolnay/rust-toolchain@stable
@@ -220,7 +167,7 @@ jobs:
           targets: ${{ matrix.target }}
 
       - name: Cache Cargo
-        uses: Swatinem/rust-cache@v2
+        uses: Swatinem/rust-cache@v2.9.1
         with:
           key: ${{ matrix.target }}
 
@@ -236,7 +183,7 @@ jobs:
 
       - name: Install cargo-zigbuild
         if: ${{ matrix.build_cmd == 'cargo zigbuild' }}
-        uses: taiki-e/install-action@v2
+        uses: taiki-e/install-action@v2.75.23
         with:
           tool: cargo-zigbuild
 
@@ -263,7 +210,7 @@ jobs:
           Compress-Archive -Path "target/${{ matrix.target }}/release/${{ matrix.binary }}" -DestinationPath "dist/$asset"
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.1
         with:
           name: binaries-${{ matrix.target }}
           path: dist/*
@@ -274,24 +221,25 @@ jobs:
       - build-artifacts
     if: ${{ needs.prepare-release.outputs.released == 'true' }}
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     permissions:
       contents: write
     steps:
       - name: Download binary artifacts
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@v8.0.1
         with:
           path: dist
           pattern: binaries-*
           merge-multiple: true
 
       - name: Download release notes
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@v8.0.1
         with:
           name: release-notes
           path: .
 
       - name: Create GitHub release
-        uses: softprops/action-gh-release@v3
+        uses: softprops/action-gh-release@v3.0.0
         with:
           tag_name: ${{ needs.prepare-release.outputs.tag }}
           name: ${{ needs.prepare-release.outputs.tag }}
@@ -302,6 +250,7 @@ jobs:
     needs: prepare-release
     if: ${{ needs.prepare-release.outputs.released == 'true' }}
     runs-on: ubuntu-latest
+    timeout-minutes: 240
     permissions:
       contents: read
       packages: write
@@ -321,32 +270,33 @@ jobs:
             platforms: linux/amd64,linux/arm64,linux/ppc64le
     steps:
       - name: Checkout tag
-        uses: actions/checkout@v6
+        uses: actions/checkout@v6.0.2
         with:
           ref: ${{ needs.prepare-release.outputs.tag }}
+          persist-credentials: false
 
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v4
+        uses: docker/setup-qemu-action@v4.0.0
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v4
+        uses: docker/setup-buildx-action@v4.0.0
 
       - name: Login to GitHub Container Registry
-        uses: docker/login-action@v4
+        uses: docker/login-action@v4.1.0
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GH_RELEASE_TOKEN }}
 
       - name: Login to Docker Hub
-        uses: docker/login-action@v4
+        uses: docker/login-action@v4.1.0
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME || github.repository_owner }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Extract Docker metadata
         id: meta
-        uses: docker/metadata-action@v6
+        uses: docker/metadata-action@v6.0.0
         with:
           images: |
             ghcr.io/${{ github.repository }}
@@ -356,7 +306,7 @@ jobs:
             type=raw,value=${{ matrix.latest_tag }}
 
       - name: Build and push Docker image
-        uses: docker/build-push-action@v7
+        uses: docker/build-push-action@v7.1.0
         with:
           context: .
           file: ${{ matrix.dockerfile }}
@@ -366,3 +316,5 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          provenance: true
+          sbom: true
