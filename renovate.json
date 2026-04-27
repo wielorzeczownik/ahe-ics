@@ -3,6 +3,7 @@
   "platformAutomerge": true,
   "automergeType": "pr",
   "semanticCommits": "enabled",
+  "minimumReleaseAge": "3 days",
   "customManagers": [
     {
       "customType": "regex",
@@ -34,6 +35,7 @@
       "matchManagers": [
         "github-actions"
       ],
+      "minimumReleaseAge": "7 days",
       "semanticCommitType": "ci"
     },
     {
@@ -58,6 +60,29 @@
         "regex"
       ],
       "semanticCommitType": "docs"
+    },
+    {
+      "matchManagers": [
+        "github-actions"
+      ],
+      "matchPackageNames": [
+        "docker/build-push-action",
+        "docker/login-action",
+        "docker/metadata-action",
+        "docker/setup-buildx-action",
+        "docker/setup-qemu-action"
+      ],
+      "groupName": "docker actions"
+    },
+    {
+      "matchManagers": [
+        "github-actions"
+      ],
+      "matchPackageNames": [
+        "actions/upload-artifact",
+        "actions/download-artifact"
+      ],
+      "groupName": "artifact actions"
     }
   ]
 }
