@@ -65,20 +65,24 @@ Invoke-WebRequest -Uri "https://raw.githubusercontent.com/wielorzeczownik/ahe-ic
 Pobierz najnowsze archiwum dla swojej platformy:
 
 **Linux (glibc — wymaga glibc 2.35+):**
+
 - [ahe-ics-x86_64-unknown-linux-gnu.tar.gz](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-x86_64-unknown-linux-gnu.tar.gz) – Linux (Intel/AMD 64-bit)
 - [ahe-ics-aarch64-unknown-linux-gnu.tar.gz](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-aarch64-unknown-linux-gnu.tar.gz) – Linux (ARM64, np. Raspberry Pi 64-bit)
 - [ahe-ics-armv7-unknown-linux-gnueabihf.tar.gz](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-armv7-unknown-linux-gnueabihf.tar.gz) – Linux (ARM 32-bit, np. Raspberry Pi 32-bit)
 - [ahe-ics-i686-unknown-linux-gnu.tar.gz](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-i686-unknown-linux-gnu.tar.gz) – Linux (Intel/AMD 32-bit)
 
 **Linux (musl — w pełni statyczne, bez zależności od glibc):**
+
 - [ahe-ics-x86_64-unknown-linux-musl.tar.gz](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-x86_64-unknown-linux-musl.tar.gz) – Linux (Intel/AMD 64-bit)
 - [ahe-ics-aarch64-unknown-linux-musl.tar.gz](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-aarch64-unknown-linux-musl.tar.gz) – Linux (ARM64)
 
 **macOS:**
+
 - [ahe-ics-x86_64-apple-darwin.tar.gz](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-x86_64-apple-darwin.tar.gz) – macOS na Intel
 - [ahe-ics-aarch64-apple-darwin.tar.gz](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-aarch64-apple-darwin.tar.gz) – macOS na Apple Silicon (M1/M2/M3/M4)
 
 **Windows:**
+
 - [ahe-ics-x86_64-pc-windows-msvc.zip](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-x86_64-pc-windows-msvc.zip) – Windows 64-bit (x86_64)
 - [ahe-ics-aarch64-pc-windows-msvc.zip](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-aarch64-pc-windows-msvc.zip) – Windows ARM64
 - [ahe-ics-i686-pc-windows-msvc.zip](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-i686-pc-windows-msvc.zip) – Windows 32-bit (x86)
