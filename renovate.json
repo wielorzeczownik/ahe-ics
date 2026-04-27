@@ -15,6 +15,15 @@
       ],
       "depNameTemplate": "python",
       "datasourceTemplate": "docker"
+    },
+    {
+      "customType": "regex",
+      "fileMatch": [
+        "^Dockerfile(\\.alpine)?$"
+      ],
+      "matchStrings": [
+        "# renovate: datasource=(?<datasource>[\\w.]+?) depName=(?<depName>[\\w.\\/-]+?)(?: versioning=(?<versioning>[\\w]+?))?\\nARG \\w+=\"(?<currentValue>[^\"]+)\""
+      ]
     }
   ],
   "packageRules": [
@@ -59,7 +68,31 @@
       "matchManagers": [
         "regex"
       ],
+      "matchFileNames": [
+        "README.md",
+        "README.pl.md"
+      ],
       "semanticCommitType": "docs"
+    },
+    {
+      "matchManagers": [
+        "regex"
+      ],
+      "matchFileNames": [
+        "Dockerfile"
+      ],
+      "semanticCommitType": "build",
+      "groupName": "debian packages"
+    },
+    {
+      "matchManagers": [
+        "regex"
+      ],
+      "matchFileNames": [
+        "Dockerfile.alpine"
+      ],
+      "semanticCommitType": "build",
+      "groupName": "alpine packages"
     },
     {
       "matchManagers": [

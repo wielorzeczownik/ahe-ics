@@ -1,7 +1,10 @@
 FROM rust:1.95-alpine@sha256:606fd313a0f49743ee2a7bd49a0914bab7deedb12791f3a846a34a4711db7ed2 AS builder
 WORKDIR /app
 
-RUN apk add --no-cache musl-dev=1.2.5-r23
+# renovate: datasource=repology depName=alpine_3_23/musl-dev versioning=loose
+ARG MUSL_DEV_VERSION="1.2.5-r23"
+
+RUN apk add --no-cache musl-dev=${MUSL_DEV_VERSION}
 
 COPY Cargo.toml Cargo.lock ./
 COPY src ./src
@@ -17,7 +20,12 @@ LABEL org.opencontainers.image.source="https://github.com/wielorzeczownik/ahe-ic
   org.opencontainers.image.authors="wielorzeczownik" \
   org.opencontainers.image.vendor="wielorzeczownik"
 
-RUN apk add --no-cache ca-certificates=20260413-r0 curl=8.17.0-r1
+# renovate: datasource=repology depName=alpine_3_23/ca-certificates versioning=loose
+ARG CA_CERTIFICATES_VERSION="20260413-r0"
+# renovate: datasource=repology depName=alpine_3_23/curl versioning=loose
+ARG CURL_VERSION="8.17.0-r1"
+
+RUN apk add --no-cache ca-certificates=${CA_CERTIFICATES_VERSION} curl=${CURL_VERSION}
 
 WORKDIR /app
 COPY --from=builder /app/target/release/ahe-ics /usr/local/bin/ahe-ics
