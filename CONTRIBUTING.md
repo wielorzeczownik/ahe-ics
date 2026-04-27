@@ -5,7 +5,12 @@ Thank you for considering a contribution. This document describes how to get sta
 ## Prerequisites
 
 - [Rust](https://rustup.rs/) (stable toolchain)
+- [cargo-audit](https://github.com/rustsec/rustsec/tree/main/cargo-audit)
+- [shfmt](https://github.com/mvdan/sh)
+- [markdownlint-cli2](https://github.com/DavidAnson/markdownlint-cli2)
 - [Docker](https://www.docker.com/) (optional, for container testing)
+- [hadolint](https://github.com/hadolint/hadolint) (optional, for Dockerfile linting)
+- [trivy](https://github.com/aquasecurity/trivy) (optional, for vulnerability scanning)
 
 ## Development setup
 
@@ -17,15 +22,40 @@ cp .env.example .env
 cargo run
 ```
 
+## Project structure
+
+- `src/` – Rust source code
+- `Dockerfile` – Debian-based container image
+- `Dockerfile.alpine` – Alpine-based container image
+- `scripts/bump-version.sh` – determines the next release version from git-cliff output and bumps `Cargo.toml`
+
 ## Before submitting a PR
 
-Make sure these pass locally:
+Run all checks locally before opening a pull request.
+
+### With tools installed locally
 
 ```bash
 cargo fmt --check
 cargo clippy --all-targets -- -D warnings
 cargo check --all-targets --locked
+cargo audit
+hadolint Dockerfile Dockerfile.alpine
+shfmt --diff scripts/
+markdownlint-cli2 "**/*.md"
 ```
+
+### With Docker (no local installs required)
+
+```bash
+docker run --rm -v "$(pwd):/src" -w /src hadolint/hadolint hadolint Dockerfile Dockerfile.alpine
+
+docker run --rm -v "$(pwd):/src" -w /src mvdan/shfmt --diff scripts/
+
+docker run --rm -v "$(pwd):/workdir" davidanson/markdownlint-cli2 "**/*.md"
+```
+
+The CI runs all of the above plus a Docker smoke build and a vulnerability scan of the resulting image.
 
 ## Commit style
 
@@ -49,7 +79,7 @@ Breaking changes must include `BREAKING CHANGE:` in the commit footer.
 
 - Keep PRs focused on a single concern.
 - Reference any related issue in the PR description.
-- The CI `cargo-check` workflow must pass.
+- All CI checks must pass: Rust linting, shell linting, Markdown linting, smoke build, and vulnerability scan.
 
 ## Reporting bugs
 
