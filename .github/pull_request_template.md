@@ -21,7 +21,7 @@
 - [ ] Shell scripts formatted (`shfmt --diff scripts/`) — if any `.sh` changed
 - [ ] Docker image builds and Trivy scan is clean — if `Dockerfile` changed
 - [ ] Markdown lints cleanly — if any `.md` changed
-- [ ] Relevant documentation updated (README, comments)
+- [ ] Relevant documentation updated
 
 ## Related issue
 
