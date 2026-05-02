@@ -314,7 +314,7 @@ jobs:
           platforms: ${{ matrix.platforms }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=gha,scope=${{ matrix.variant }}
+          cache-to: type=gha,scope=${{ matrix.variant }},mode=max
           provenance: true
           sbom: true
