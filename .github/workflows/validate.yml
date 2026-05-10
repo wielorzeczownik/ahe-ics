@@ -76,7 +76,7 @@ jobs:
           persist-credentials: false
 
       - name: Install cargo-audit
-        uses: taiki-e/install-action@v2.75.29
+        uses: taiki-e/install-action@v2.75.30
         with:
           tool: cargo-audit
 
