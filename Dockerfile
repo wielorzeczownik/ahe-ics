@@ -5,7 +5,7 @@ COPY Cargo.toml Cargo.lock ./
 COPY src ./src
 RUN cargo build --release
 
-FROM debian:trixie-slim@sha256:109e2c65005bf160609e4ba6acf7783752f8502ad218e298253428690b9eaa4b
+FROM debian:trixie-slim@sha256:b6e2a152f22a40ff69d92cb397223c906017e1391a73c952b588e51af8883bf8
 
 LABEL org.opencontainers.image.source="https://github.com/wielorzeczownik/ahe-ics" \
   org.opencontainers.image.url="https://github.com/wielorzeczownik/ahe-ics" \
