@@ -18,7 +18,7 @@ LABEL org.opencontainers.image.source="https://github.com/wielorzeczownik/ahe-ic
 # renovate: datasource=repology depName=debian_13/ca-certificates versioning=loose
 ARG CA_CERTIFICATES_VERSION="20250419"
 # renovate: datasource=repology depName=debian_13/curl versioning=loose
-ARG CURL_VERSION="8.14.1-2+deb13u2"
+ARG CURL_VERSION="8.14.1-2+deb13u3"
 
 RUN apt-get update \
   && apt-get install -y --no-install-recommends \
