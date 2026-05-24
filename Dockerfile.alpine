@@ -23,7 +23,7 @@ LABEL org.opencontainers.image.source="https://github.com/wielorzeczownik/ahe-ic
 # renovate: datasource=repology depName=alpine_3_23/ca-certificates versioning=loose
 ARG CA_CERTIFICATES_VERSION="20260413-r0"
 # renovate: datasource=repology depName=alpine_3_23/curl versioning=loose
-ARG CURL_VERSION="8.17.0-r1"
+ARG CURL_VERSION="8.19.0-r0"
 
 RUN apk add --no-cache ca-certificates=${CA_CERTIFICATES_VERSION} curl=${CURL_VERSION}
 
