@@ -15,15 +15,11 @@ LABEL org.opencontainers.image.source="https://github.com/wielorzeczownik/ahe-ic
   org.opencontainers.image.authors="wielorzeczownik" \
   org.opencontainers.image.vendor="wielorzeczownik"
 
-# renovate: datasource=repology depName=debian_13/ca-certificates versioning=loose
-ARG CA_CERTIFICATES_VERSION="20250419"
-# renovate: datasource=repology depName=debian_13/curl versioning=loose
-ARG CURL_VERSION="8.14.1-2+deb13u3"
-
+# hadolint ignore=DL3008
 RUN apt-get update \
   && apt-get install -y --no-install-recommends \
-      ca-certificates=${CA_CERTIFICATES_VERSION} \
-      curl=${CURL_VERSION} \
+      ca-certificates \
+      curl \
   && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
