@@ -15,15 +15,6 @@
       ],
       "depNameTemplate": "python",
       "datasourceTemplate": "docker"
-    },
-    {
-      "customType": "regex",
-      "fileMatch": [
-        "^Dockerfile(\\.alpine)?$"
-      ],
-      "matchStrings": [
-        "# renovate: datasource=(?<datasource>[\\w.]+?) depName=(?<depName>[\\w.\\/-]+?)(?: versioning=(?<versioning>[\\w]+?))?\\nARG \\w+=\"(?<currentValue>[^\"]+)\""
-      ]
     }
   ],
   "packageRules": [
