@@ -8,34 +8,26 @@ use axum::response::IntoResponse;
 use axum::routing::get;
 use chrono::NaiveDate;
 use serde::Deserialize;
-use tracing::warn;
 
 use crate::app::AppState;
-use crate::config::Config;
+use crate::config::SharedConfig;
 use crate::constants::{ICS_CONTENT_TYPE, JSON_CONTENT_TYPE};
 use crate::web::AppError;
 use crate::web::calendar::{CalendarQueryParams, fetch_calendar_data, render_calendar_ics};
 use crate::web::dto::CalendarJsonResponse;
 
+/// Query params for the shared binary
 #[derive(Debug, Deserialize)]
 struct CalendarQuery {
+  username: String,
+  password: String,
   from: Option<NaiveDate>,
   to: Option<NaiveDate>,
   token: Option<String>,
 }
 
-impl From<CalendarQuery> for CalendarQueryParams {
-  fn from(value: CalendarQuery) -> Self {
-    Self {
-      from: value.from,
-      to: value.to,
-      token: value.token,
-    }
-  }
-}
-
-/// Builds the HTTP router for the self-hosted binary
-pub fn router(state: AppState<Config>) -> Router {
+/// Builds the HTTP router for the shared binary
+pub fn shared_router(state: AppState<SharedConfig>) -> Router {
   let mut router = Router::new()
     .route("/calendar.ics", get(calendar_ics))
     .route("/calendar/me.ics", get(calendar_ics))
@@ -56,26 +48,36 @@ async fn not_found() -> impl IntoResponse {
 }
 
 async fn calendar_ics(
-  State(state): State<AppState<Config>>,
+  State(state): State<AppState<SharedConfig>>,
   Query(query): Query<CalendarQuery>,
   headers: HeaderMap,
   ConnectInfo(addr): ConnectInfo<SocketAddr>,
 ) -> Result<impl IntoResponse, AppError> {
-  let username = state.config.username.clone();
-  let password = state.config.password.clone();
-  let ics = render_calendar_ics(state, &username, &password, query.into(), headers, addr).await?;
+  let username = query.username.clone();
+  let password = query.password.clone();
+  let params = CalendarQueryParams {
+    from: query.from,
+    to: query.to,
+    token: query.token,
+  };
+  let ics = render_calendar_ics(state, &username, &password, params, headers, addr).await?;
   Ok(([(CONTENT_TYPE, ICS_CONTENT_TYPE)], ics))
 }
 
 async fn calendar_json(
-  State(state): State<AppState<Config>>,
+  State(state): State<AppState<SharedConfig>>,
   Query(query): Query<CalendarQuery>,
   headers: HeaderMap,
   ConnectInfo(addr): ConnectInfo<SocketAddr>,
 ) -> Result<impl IntoResponse, AppError> {
-  let username = state.config.username.clone();
-  let password = state.config.password.clone();
-  let data = fetch_calendar_data(state, &username, &password, query.into(), headers, addr).await?;
+  let username = query.username.clone();
+  let password = query.password.clone();
+  let params = CalendarQueryParams {
+    from: query.from,
+    to: query.to,
+    token: query.token,
+  };
+  let data = fetch_calendar_data(state, &username, &password, params, headers, addr).await?;
   let body = serde_json::to_vec(&CalendarJsonResponse::from_parts(
     data.student_id,
     data.from,
@@ -87,23 +89,7 @@ async fn calendar_json(
   Ok(([(CONTENT_TYPE, JSON_CONTENT_TYPE)], body))
 }
 
-async fn healthz(State(state): State<AppState<Config>>) -> impl IntoResponse {
-  let token = match state
-    .token_cache
-    .get_or_login(&state.config.username, &state.config.password, &state.api)
-    .await
-  {
-    Ok(token) => token,
-    Err(error) => {
-      warn!(error = %error, "health check login failed");
-      return (StatusCode::SERVICE_UNAVAILABLE, "upstream login failed");
-    }
-  };
-
-  if let Err(error) = state.api.get_student_data(&token).await {
-    warn!(error = %error, "health check student data failed");
-    return (StatusCode::SERVICE_UNAVAILABLE, "upstream api unavailable");
-  }
-
-  (StatusCode::NO_CONTENT, "")
+/// Shared instance healthz
+async fn healthz(_state: State<AppState<SharedConfig>>) -> impl IntoResponse {
+  StatusCode::NO_CONTENT
 }

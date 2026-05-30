@@ -84,9 +84,19 @@ jobs:
         run: cargo audit
 
   smoke-build:
-    name: Smoke build
+    name: Smoke build (${{ matrix.variant }})
     runs-on: ubuntu-latest
     timeout-minutes: 240
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - variant: dedicated
+            dockerfile: Dockerfile
+            tag: ahe-ics:test
+          - variant: shared
+            dockerfile: Dockerfile.shared
+            tag: ahe-ics:shared-test
     steps:
       - name: Checkout
         uses: actions/checkout@v6.0.2
@@ -100,16 +110,17 @@ jobs:
         uses: docker/build-push-action@v7.2.0
         with:
           context: .
+          file: ${{ matrix.dockerfile }}
           push: false
           load: true
-          tags: ahe-ics:test
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          tags: ${{ matrix.tag }}
+          cache-from: type=gha,scope=${{ matrix.variant }}
+          cache-to: type=gha,scope=${{ matrix.variant }},mode=max
 
       - name: Scan image for vulnerabilities
         uses: aquasecurity/trivy-action@v0.36.0
         with:
-          image-ref: ahe-ics:test
+          image-ref: ${{ matrix.tag }}
           format: table
           exit-code: '1'
           severity: CRITICAL,HIGH

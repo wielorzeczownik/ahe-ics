@@ -6,6 +6,7 @@ use tracing::{debug, info, warn};
 
 use crate::app::AppState;
 use crate::cache::IcsCacheKey;
+use crate::config::ServerSettings;
 use crate::ics::render_calendar;
 use crate::models::{ExamEvent, PlanItem};
 use crate::web::AppError;
@@ -36,13 +37,16 @@ struct CalendarRequestContext {
   to: NaiveDate,
 }
 
-pub(crate) async fn render_calendar_ics(
-  state: AppState,
+pub(crate) async fn render_calendar_ics<C: ServerSettings>(
+  state: AppState<C>,
+  username: &str,
+  password: &str,
   query: CalendarQueryParams,
   headers: HeaderMap,
   addr: SocketAddr,
 ) -> Result<String, AppError> {
-  let context = prepare_calendar_request_context(&state, query, headers, addr).await?;
+  let context =
+    prepare_calendar_request_context(&state, username, password, query, headers, addr).await?;
 
   let key = IcsCacheKey {
     student_id: context.student_id,
@@ -61,7 +65,7 @@ pub(crate) async fn render_calendar_ics(
     data.student_id,
     &data.plan,
     &data.exams,
-    state.config.calendar_lang,
+    state.config.calendar_lang(),
   )?;
 
   state.ics_cache.insert(key, ics.clone()).await;
@@ -69,37 +73,45 @@ pub(crate) async fn render_calendar_ics(
   Ok(ics)
 }
 
-pub(crate) async fn fetch_calendar_data(
-  state: AppState,
+pub(crate) async fn fetch_calendar_data<C: ServerSettings>(
+  state: AppState<C>,
+  username: &str,
+  password: &str,
   query: CalendarQueryParams,
   headers: HeaderMap,
   addr: SocketAddr,
 ) -> Result<CalendarRenderData, AppError> {
-  let context = prepare_calendar_request_context(&state, query, headers, addr).await?;
+  let context =
+    prepare_calendar_request_context(&state, username, password, query, headers, addr).await?;
   fetch_calendar_render_data(&state, &context).await
 }
 
-async fn prepare_calendar_request_context(
-  state: &AppState,
+async fn prepare_calendar_request_context<C: ServerSettings>(
+  state: &AppState<C>,
+  username: &str,
+  password: &str,
   query: CalendarQueryParams,
   headers: HeaderMap,
   addr: SocketAddr,
 ) -> Result<CalendarRequestContext, AppError> {
   let peer_ip = addr.ip();
-  let resolved_ip = resolve_client_ip(peer_ip, &headers, &state.config);
-  info!(
-    peer_ip = %peer_ip,
-    client_ip = %resolved_ip.ip,
-    client_ip_source = %resolved_ip.source,
-    "calendar request"
-  );
-  if let Some(expected) = state.config.calendar_token.as_ref() {
+  let resolved_ip = resolve_client_ip(peer_ip, &headers, state.config.real_ip_header());
+  if matches!(
+    resolved_ip.source,
+    crate::web::real_ip::ClientIpSource::HeaderInvalid
+  ) {
+    warn!(peer_ip = %peer_ip, ip_source = %resolved_ip.source, "real-ip header invalid, falling back to peer address");
+  }
+  info!(ip = %resolved_ip.ip, "calendar request");
+
+  if let Some(expected) = state.config.calendar_token() {
     let provided = extract_token(&query, &headers);
     let is_valid = provided
       .as_deref()
       .is_some_and(|value| expected.verify(value));
 
     if !is_valid {
+      warn!(ip = %resolved_ip.ip, "unauthorized: invalid calendar token");
       return Err(AppError::unauthorized("invalid calendar token"));
     }
   }
@@ -107,22 +119,29 @@ async fn prepare_calendar_request_context(
   let today = chrono::Local::now().date_naive();
   let from = query
     .from
-    .unwrap_or_else(|| today - Duration::days(state.config.calendar_past_days));
+    .unwrap_or_else(|| today - Duration::days(state.config.calendar_past_days()));
   let to = query
     .to
-    .unwrap_or_else(|| today + Duration::days(state.config.calendar_future_days));
+    .unwrap_or_else(|| today + Duration::days(state.config.calendar_future_days()));
 
   if to < from {
     return Err(AppError::bad_request("to must be >= from"));
   }
 
-  let token = state
+  let token = match state
     .token_cache
-    .get_or_login(&state.config, &state.api)
-    .await?;
+    .get_or_login(username, password, &state.api)
+    .await
+  {
+    Ok(t) => t,
+    Err(e) => {
+      warn!(ip = %resolved_ip.ip, "WPS login failed");
+      return Err(AppError::from(e));
+    }
+  };
   let student_context = state
     .student_context_cache
-    .get_or_fetch(&state.config, &state.api, &token)
+    .get_or_fetch(username, state.config.exams_enabled(), &state.api, &token)
     .await?;
 
   Ok(CalendarRequestContext {
@@ -134,8 +153,8 @@ async fn prepare_calendar_request_context(
   })
 }
 
-async fn fetch_calendar_render_data(
-  state: &AppState,
+async fn fetch_calendar_render_data<C: ServerSettings>(
+  state: &AppState<C>,
   context: &CalendarRequestContext,
 ) -> Result<CalendarRenderData, AppError> {
   let date_from = context.from.format("%Y-%m-%d").to_string();
@@ -144,7 +163,7 @@ async fn fetch_calendar_render_data(
     .api
     .get_plan(&context.token, context.student_id, &date_from, &date_to)
     .await?;
-  let exams = if state.config.exams_enabled {
+  let exams = if state.config.exams_enabled() {
     if let Some(index_id) = context.index_id {
       match state
         .api

@@ -2,11 +2,13 @@ mod calendar;
 mod dto;
 mod real_ip;
 mod routes;
+mod shared_routes;
 
 use axum::http::StatusCode;
 use axum::response::{IntoResponse, Response};
 
 pub use routes::router;
+pub use shared_routes::shared_router;
 
 #[derive(Debug)]
 pub struct AppError {

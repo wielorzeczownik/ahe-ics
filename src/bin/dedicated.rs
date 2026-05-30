@@ -1,20 +1,11 @@
-use anyhow::Result;
-
-mod api;
-mod app;
-mod cache;
-mod config;
-mod constants;
-mod i18n;
-mod ics;
-mod models;
-mod web;
-
-use crate::app::AppState;
-use crate::config::Config;
-use crate::web::router;
 use std::net::SocketAddr;
+
+use anyhow::Result;
 use tracing_subscriber::EnvFilter;
+
+use ahe_ics::app::AppState;
+use ahe_ics::config::Config;
+use ahe_ics::web::router;
 
 #[tokio::main]
 async fn main() -> Result<()> {

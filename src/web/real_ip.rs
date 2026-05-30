@@ -3,8 +3,6 @@ use std::net::IpAddr;
 
 use axum::http::HeaderMap;
 
-use crate::config::Config;
-
 #[derive(Debug, Clone, Copy)]
 pub(crate) enum ClientIpSource {
   PeerAddr,
@@ -29,8 +27,12 @@ pub(crate) struct ClientIp {
   pub(crate) source: ClientIpSource,
 }
 
-pub(crate) fn resolve_client_ip(peer_ip: IpAddr, headers: &HeaderMap, config: &Config) -> ClientIp {
-  let Some(header_name) = config.real_ip_header.as_deref() else {
+pub(crate) fn resolve_client_ip(
+  peer_ip: IpAddr,
+  headers: &HeaderMap,
+  real_ip_header: Option<&str>,
+) -> ClientIp {
+  let Some(header_name) = real_ip_header else {
     return ClientIp {
       ip: peer_ip,
       source: ClientIpSource::PeerAddr,

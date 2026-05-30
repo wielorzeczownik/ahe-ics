@@ -13,6 +13,18 @@ publish = false
 keywords = ["ics", "calendar", "icalendar", "ahe", "schedule"]
 categories = ["web-programming", "command-line-utilities"]
 
+[lib]
+name = "ahe_ics"
+path = "src/lib.rs"
+
+[[bin]]
+name = "ahe-ics"
+path = "src/bin/dedicated.rs"
+
+[[bin]]
+name = "ahe-ics-shared"
+path = "src/bin/shared.rs"
+
 [dependencies]
 # Runtime + error handling
 tokio = { version = "1.49.0", features = ["macros", "rt-multi-thread"] }

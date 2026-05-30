@@ -6,6 +6,7 @@
 .env
 .env.*
 !.env.example
+!.env.shared.example
 
 # Logs / runtime artifacts
 *.log

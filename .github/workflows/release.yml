@@ -10,6 +10,8 @@ on:
       - "Cargo.lock"
       - "Dockerfile"
       - "Dockerfile.alpine"
+      - "Dockerfile.shared"
+      - "Dockerfile.alpine.shared"
 
 concurrency:
   group: release-main
@@ -106,52 +108,124 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          # Dedicated binary
           - os: ubuntu-22.04
             target: x86_64-unknown-linux-gnu
+            bin_name: ahe-ics
             binary: ahe-ics
             archive: tar.gz
           - os: ubuntu-22.04
             target: aarch64-unknown-linux-gnu
+            bin_name: ahe-ics
             binary: ahe-ics
             archive: tar.gz
           - os: macos-15-intel
             target: x86_64-apple-darwin
+            bin_name: ahe-ics
             binary: ahe-ics
             archive: tar.gz
           - os: macos-15
             target: aarch64-apple-darwin
+            bin_name: ahe-ics
             binary: ahe-ics
             archive: tar.gz
           - os: windows-latest
             target: x86_64-pc-windows-msvc
+            bin_name: ahe-ics
             binary: ahe-ics.exe
             archive: zip
           - os: windows-latest
             target: i686-pc-windows-msvc
+            bin_name: ahe-ics
             binary: ahe-ics.exe
             archive: zip
           - os: windows-11-arm
             target: aarch64-pc-windows-msvc
+            bin_name: ahe-ics
             binary: ahe-ics.exe
             archive: zip
           - os: ubuntu-22.04
             target: x86_64-unknown-linux-musl
+            bin_name: ahe-ics
             binary: ahe-ics
             archive: tar.gz
             build_cmd: cargo zigbuild
           - os: ubuntu-22.04
             target: aarch64-unknown-linux-musl
+            bin_name: ahe-ics
             binary: ahe-ics
             archive: tar.gz
             build_cmd: cargo zigbuild
           - os: ubuntu-22.04
             target: armv7-unknown-linux-gnueabihf
+            bin_name: ahe-ics
             binary: ahe-ics
             archive: tar.gz
             build_cmd: cargo zigbuild
           - os: ubuntu-22.04
             target: i686-unknown-linux-gnu
+            bin_name: ahe-ics
             binary: ahe-ics
+            archive: tar.gz
+            build_cmd: cargo zigbuild
+          # Shared binary
+          - os: ubuntu-22.04
+            target: x86_64-unknown-linux-gnu
+            bin_name: ahe-ics-shared
+            binary: ahe-ics-shared
+            archive: tar.gz
+          - os: ubuntu-22.04
+            target: aarch64-unknown-linux-gnu
+            bin_name: ahe-ics-shared
+            binary: ahe-ics-shared
+            archive: tar.gz
+          - os: macos-15-intel
+            target: x86_64-apple-darwin
+            bin_name: ahe-ics-shared
+            binary: ahe-ics-shared
+            archive: tar.gz
+          - os: macos-15
+            target: aarch64-apple-darwin
+            bin_name: ahe-ics-shared
+            binary: ahe-ics-shared
+            archive: tar.gz
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+            bin_name: ahe-ics-shared
+            binary: ahe-ics-shared.exe
+            archive: zip
+          - os: windows-latest
+            target: i686-pc-windows-msvc
+            bin_name: ahe-ics-shared
+            binary: ahe-ics-shared.exe
+            archive: zip
+          - os: windows-11-arm
+            target: aarch64-pc-windows-msvc
+            bin_name: ahe-ics-shared
+            binary: ahe-ics-shared.exe
+            archive: zip
+          - os: ubuntu-22.04
+            target: x86_64-unknown-linux-musl
+            bin_name: ahe-ics-shared
+            binary: ahe-ics-shared
+            archive: tar.gz
+            build_cmd: cargo zigbuild
+          - os: ubuntu-22.04
+            target: aarch64-unknown-linux-musl
+            bin_name: ahe-ics-shared
+            binary: ahe-ics-shared
+            archive: tar.gz
+            build_cmd: cargo zigbuild
+          - os: ubuntu-22.04
+            target: armv7-unknown-linux-gnueabihf
+            bin_name: ahe-ics-shared
+            binary: ahe-ics-shared
+            archive: tar.gz
+            build_cmd: cargo zigbuild
+          - os: ubuntu-22.04
+            target: i686-unknown-linux-gnu
+            bin_name: ahe-ics-shared
+            binary: ahe-ics-shared
             archive: tar.gz
             build_cmd: cargo zigbuild
     steps:
@@ -169,7 +243,7 @@ jobs:
       - name: Cache Cargo
         uses: Swatinem/rust-cache@v2.9.1
         with:
-          key: ${{ matrix.target }}
+          key: ${{ matrix.bin_name }}-${{ matrix.target }}
 
       - name: Install Linux ARM64 linker
         if: ${{ matrix.target == 'aarch64-unknown-linux-gnu' }}
@@ -190,7 +264,7 @@ jobs:
       - name: Build binary
         env:
           CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER: aarch64-linux-gnu-gcc
-        run: ${{ matrix.build_cmd || 'cargo build' }} --release --target ${{ matrix.target }}
+        run: ${{ matrix.build_cmd || 'cargo build' }} --release --target ${{ matrix.target }} --bin ${{ matrix.bin_name }}
 
       - name: Package (tar.gz)
         if: ${{ matrix.archive == 'tar.gz' }}
@@ -198,7 +272,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p dist
-          asset="ahe-ics-${{ matrix.target }}.tar.gz"
+          asset="${{ matrix.bin_name }}-${{ matrix.target }}.tar.gz"
           tar -C "target/${{ matrix.target }}/release" -czf "dist/${asset}" "${{ matrix.binary }}"
 
       - name: Package (zip)
@@ -206,13 +280,13 @@ jobs:
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force dist | Out-Null
-          $asset = "ahe-ics-${{ matrix.target }}.zip"
+          $asset = "${{ matrix.bin_name }}-${{ matrix.target }}.zip"
           Compress-Archive -Path "target/${{ matrix.target }}/release/${{ matrix.binary }}" -DestinationPath "dist/$asset"
 
       - name: Upload artifact
         uses: actions/upload-artifact@v7.0.1
         with:
-          name: binaries-${{ matrix.target }}
+          name: binaries-${{ matrix.bin_name }}-${{ matrix.target }}
           path: dist/*
 
   publish-release:
@@ -260,13 +334,27 @@ jobs:
         include:
           - variant: debian
             dockerfile: Dockerfile
+            image_name: ahe-ics
             tag_suffix: ""
             latest_tag: latest
             platforms: linux/amd64,linux/arm64,linux/arm/v7,linux/386,linux/ppc64le,linux/s390x
           - variant: alpine
             dockerfile: Dockerfile.alpine
+            image_name: ahe-ics
             tag_suffix: "-alpine"
             latest_tag: alpine
+            platforms: linux/amd64,linux/arm64,linux/ppc64le
+          - variant: shared-debian
+            dockerfile: Dockerfile.shared
+            image_name: ahe-ics
+            tag_suffix: "-shared"
+            latest_tag: shared
+            platforms: linux/amd64,linux/arm64,linux/arm/v7,linux/386,linux/ppc64le,linux/s390x
+          - variant: shared-alpine
+            dockerfile: Dockerfile.alpine.shared
+            image_name: ahe-ics
+            tag_suffix: "-shared-alpine"
+            latest_tag: shared-alpine
             platforms: linux/amd64,linux/arm64,linux/ppc64le
     steps:
       - name: Checkout tag
@@ -299,8 +387,8 @@ jobs:
         uses: docker/metadata-action@v6.1.0
         with:
           images: |
-            ghcr.io/${{ github.repository }}
-            docker.io/${{ secrets.DOCKERHUB_USERNAME || github.repository_owner  }}/ahe-ics
+            ghcr.io/${{ github.repository_owner }}/${{ matrix.image_name }}
+            docker.io/${{ secrets.DOCKERHUB_USERNAME || github.repository_owner }}/${{ matrix.image_name }}
           tags: |
             type=raw,value=${{ needs.prepare-release.outputs.version }}${{ matrix.tag_suffix }}
             type=raw,value=${{ matrix.latest_tag }}
