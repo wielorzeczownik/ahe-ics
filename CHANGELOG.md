@@ -5,10 +5,11 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.2.7](https://github.com/wielorzeczownik/ahe-ics/compare/v1.2.6...v1.2.7) - 2026-07-06
 
 ### CI/CD
 
+- Exclude auto-generated CHANGELOG.md ([b392c18](https://github.com/wielorzeczownik/ahe-ics/commit/b392c181fd4acba6069f74ee181b6e5df8f56a39))
 - Update taiki-e/install-action action to v2.82.6 (#122) ([6b4ff22](https://github.com/wielorzeczownik/ahe-ics/commit/6b4ff2238e9748536cd5db34a6ecb7fe095662eb))
 - Update taiki-e/install-action action to v2.82.5 (#121) ([59de044](https://github.com/wielorzeczownik/ahe-ics/commit/59de044bd761d673b1a92e17ed9288752e318543))
 - Update taiki-e/install-action action to v2.82.4 (#120) ([66f6378](https://github.com/wielorzeczownik/ahe-ics/commit/66f6378beee3b80e071a18a69ad80eb2268bdcf0))
