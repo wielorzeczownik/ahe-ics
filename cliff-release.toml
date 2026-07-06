@@ -1,0 +1,66 @@
+# Configuration for per-release notes shown on the GitHub release page.
+# The cumulative CHANGELOG.md file uses cliff.toml.
+
+[changelog]
+header = ""
+body = """
+{% if version %}
+# Release Notes for Version {{ version }}
+
+**Release Date: {{ timestamp | date(format="%Y-%m-%d") }}**
+
+### What's Changed
+{% for group, commits in commits | group_by(attribute="group") %}
+#### {{ group | striptags | trim }}
+{% for commit in commits %}
+- {% if remote.github.owner and remote.github.repo %}[{{ commit.id | truncate(length=7, end="") }}](https://github.com/{{ remote.github.owner }}/{{ remote.github.repo }}/commit/{{ commit.id }}){% else %}{{ commit.id | truncate(length=7, end="") }}{% endif %} {{ commit.message | split(pat="\n") | first | trim }}
+{% endfor %}
+{% endfor %}
+{% if previous.version and remote.github.owner and remote.github.repo %}
+
+---
+**Full Changelog:** [{{ previous.version }}...{{ version }}](https://github.com/{{ remote.github.owner }}/{{ remote.github.repo }}/compare/{{ previous.version }}...{{ version }})
+{% elif previous.version %}
+
+---
+**Full Changelog:** {{ previous.version }}...{{ version }}
+{% endif %}
+{% endif %}
+"""
+footer = ""
+trim = true
+
+[git]
+conventional_commits = true
+filter_unconventional = true
+split_commits = false
+# Release notes list only user-facing changes; the rest is skipped
+# (CHANGELOG.md keeps everything via cliff.toml).
+commit_parsers = [
+  { message = "^chore\\(release\\)", skip = true },
+  { message = "^Merge ", skip = true },
+  { breaking = true, group = "<!-- 01 -->Breaking Changes" },
+  { message = "^feat", group = "<!-- 02 -->Features" },
+  { message = "^fix", group = "<!-- 03 -->Bug Fixes" },
+  { message = "^perf", group = "<!-- 04 -->Performance" },
+  { message = "^refactor", group = "<!-- 05 -->Refactoring" },
+  { message = "^chore\\(deps\\)", group = "<!-- 06 -->Dependencies" },
+  { message = "^docs", skip = true },
+  { message = "^test", skip = true },
+  { message = "^style", skip = true },
+  { message = "^build", skip = true },
+  { message = "^ci", skip = true },
+  { message = "^chore", skip = true },
+]
+protect_breaking_commits = true
+filter_commits = true
+tag_pattern = "v[0-9]*"
+skip_tags = "v0.0.0"
+ignore_tags = ""
+topo_order = false
+sort_commits = "newest"
+
+[bump]
+features_always_bump_minor = true
+breaking_always_bump_major = true
+initial_tag = "v0.1.0"
