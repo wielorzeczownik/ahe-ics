@@ -31,6 +31,10 @@ impl Default for TokenCache {
 
 impl TokenCache {
   /// Returns a valid WPS access token for the given credentials, logging in only when needed
+  ///
+  /// # Errors
+  ///
+  /// Returns an error if logging into the WPS API fails.
   pub async fn get_or_login(
     &self,
     username: &str,
@@ -52,7 +56,8 @@ impl TokenCache {
     let refresh_grace = token_resp
       .expires_in
       .saturating_sub(TOKEN_REFRESH_GRACE_SECONDS);
-    let expires_at = Utc::now() + chrono::Duration::seconds(refresh_grace as i64);
+    let expires_at =
+      Utc::now() + chrono::Duration::seconds(i64::try_from(refresh_grace).unwrap_or(i64::MAX));
 
     let entry = TokenCacheEntry {
       token: token_resp.access_token.clone(),

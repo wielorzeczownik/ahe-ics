@@ -16,6 +16,11 @@ pub struct AppState<C: ServerSettings> {
 }
 
 impl<C: ServerSettings> AppState<C> {
+  /// Builds the shared application state from the given configuration.
+  ///
+  /// # Errors
+  ///
+  /// Returns an error if the API client cannot be constructed.
   pub fn new(config: C) -> Result<Self> {
     let api = ApiClient::new()?;
     Ok(Self {

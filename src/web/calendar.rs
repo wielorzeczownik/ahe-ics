@@ -133,10 +133,10 @@ async fn prepare_calendar_request_context<C: ServerSettings>(
     .get_or_login(username, password, &state.api)
     .await
   {
-    Ok(t) => t,
-    Err(e) => {
+    Ok(value) => value,
+    Err(error) => {
       warn!(ip = %resolved_ip.ip, "WPS login failed");
-      return Err(AppError::from(e));
+      return Err(AppError::from(error));
     }
   };
   let student_context = state

@@ -66,6 +66,7 @@ impl CalendarToken {
     Ok(Self::Argon2id(hash.to_string()))
   }
 
+  #[must_use]
   pub fn verify(&self, provided: &str) -> bool {
     match self {
       Self::Plain(expected) => provided == expected,

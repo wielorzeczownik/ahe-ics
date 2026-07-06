@@ -67,3 +67,7 @@ lto = "thin"
 codegen-units = 1
 strip = "symbols"
 panic = "abort"
+
+[lints.clippy]
+pedantic = { level = "warn", priority = -1 }
+min_ident_chars = "warn"

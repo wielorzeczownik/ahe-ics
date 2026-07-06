@@ -31,6 +31,10 @@ impl Default for StudentContextCache {
 
 impl StudentContextCache {
   /// Returns cached student metadata for the given user, fetching from API when needed
+  ///
+  /// # Errors
+  ///
+  /// Returns an error if fetching the student context from the API fails.
   pub async fn get_or_fetch(
     &self,
     username: &str,

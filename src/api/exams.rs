@@ -90,10 +90,11 @@ pub async fn get_exams(
     }
   }
 
-  events.sort_by(|a, b| {
-    a.starts
-      .cmp(&b.starts)
-      .then_with(|| a.subject.cmp(&b.subject))
+  events.sort_by(|left, right| {
+    left
+      .starts
+      .cmp(&right.starts)
+      .then_with(|| left.subject.cmp(&right.subject))
   });
   Ok(events)
 }
@@ -335,8 +336,9 @@ fn map_exam_event(item: ExamScheduleItem, from: NaiveDate, to: NaiveDate) -> Opt
     .end_time
     .as_deref()
     .and_then(parse_time)
-    .map(|time| exam_date.and_time(time))
-    .unwrap_or(starts + Duration::minutes(90));
+    .map_or(starts + Duration::minutes(90), |time| {
+      exam_date.and_time(time)
+    });
 
   if ends <= starts {
     ends = starts + Duration::minutes(90);

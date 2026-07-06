@@ -7,16 +7,20 @@ use crate::i18n::{IcsTexts, ics_texts};
 use crate::models::{ExamEvent, PlanItem};
 
 /// Renders a list of plan items into a single ICS calendar string.
+///
+/// # Errors
+///
+/// Returns an error if the calendar cannot be serialized into ICS form.
 pub fn render_calendar(
   student_id: i64,
   items: &[PlanItem],
   exams: &[ExamEvent],
   lang: CalendarLanguage,
 ) -> Result<String> {
-  let t = ics_texts(lang);
+  let texts = ics_texts(lang);
 
   let mut calendar = Calendar::new();
-  calendar.name(t.calendar_name);
+  calendar.name(texts.calendar_name);
   calendar.timezone(CALENDAR_TZ);
 
   for item in items {
@@ -25,8 +29,8 @@ pub fn render_calendar(
       item.schedule_item_id
     );
     let summary = build_summary(item);
-    let location = build_location(item, t);
-    let description = build_description(item, t);
+    let location = build_location(item, texts);
+    let description = build_description(item, texts);
 
     let event = Event::new()
       .uid(&uid)
@@ -46,9 +50,9 @@ pub fn render_calendar(
       exam.published_data_id,
       exam.starts.and_utc().timestamp()
     );
-    let summary = build_exam_summary(exam, t);
-    let location = build_exam_location(exam, t);
-    let description = build_exam_description(exam, t);
+    let summary = build_exam_summary(exam, texts);
+    let location = build_exam_location(exam, texts);
+    let description = build_exam_description(exam, texts);
 
     let event = Event::new()
       .uid(&uid)
@@ -73,70 +77,78 @@ fn build_summary(item: &PlanItem) -> String {
   format!("{} [{typ}]", item.subject_name)
 }
 
-fn build_location(item: &PlanItem, t: &IcsTexts) -> String {
+fn build_location(item: &PlanItem, texts: &IcsTexts) -> String {
   if item.webinar {
-    return t.location_webinar.to_string();
+    return texts.location_webinar.to_string();
   }
 
   let mut parts = Vec::new();
-  if let Some(value) = item.room_number.as_ref().filter(|v| !v.trim().is_empty()) {
+  if let Some(value) = item
+    .room_number
+    .as_ref()
+    .filter(|value| !value.trim().is_empty())
+  {
     parts.push(value.trim());
   }
-  if let Some(value) = item.room_address.as_ref().filter(|v| !v.trim().is_empty()) {
+  if let Some(value) = item
+    .room_address
+    .as_ref()
+    .filter(|value| !value.trim().is_empty())
+  {
     parts.push(value.trim());
   }
 
   if parts.is_empty() {
-    t.location_default.to_string()
+    texts.location_default.to_string()
   } else {
     parts.join(" — ")
   }
 }
 
-fn build_description(item: &PlanItem, t: &IcsTexts) -> String {
+fn build_description(item: &PlanItem, texts: &IcsTexts) -> String {
   let instructors = if item.instructors.is_empty() {
-    t.missing_data.to_string()
+    texts.missing_data.to_string()
   } else {
     item
       .instructors
       .iter()
-      .map(|d| d.full_name.as_str())
+      .map(|instructor| instructor.full_name.as_str())
       .collect::<Vec<_>>()
       .join(", ")
   };
 
   format!(
     "{}: {instructors}\n{}: {}",
-    t.label_instructors, t.label_type, item.class_type
+    texts.label_instructors, texts.label_type, item.class_type
   )
 }
 
-fn build_exam_summary(item: &ExamEvent, t: &IcsTexts) -> String {
+fn build_exam_summary(item: &ExamEvent, texts: &IcsTexts) -> String {
   let subject = if item.subject.trim().is_empty() {
-    t.missing_data.to_string()
+    texts.missing_data.to_string()
   } else {
     item.subject.trim().to_string()
   };
-  format!("{}: {subject}", t.label_exam)
+  format!("{}: {subject}", texts.label_exam)
 }
 
-fn build_exam_location(item: &ExamEvent, t: &IcsTexts) -> String {
+fn build_exam_location(item: &ExamEvent, texts: &IcsTexts) -> String {
   item
     .location
     .as_ref()
     .map(|value| value.trim())
     .filter(|value| !value.is_empty())
-    .unwrap_or(t.location_default)
+    .unwrap_or(texts.location_default)
     .to_string()
 }
 
-fn build_exam_description(item: &ExamEvent, t: &IcsTexts) -> String {
-  let notes = item.notes.as_deref().unwrap_or(t.missing_data);
-  let lecturer = item.lecturer.as_deref().unwrap_or(t.missing_data);
-  let details = item.details.as_deref().unwrap_or(t.missing_data);
+fn build_exam_description(item: &ExamEvent, texts: &IcsTexts) -> String {
+  let notes = item.notes.as_deref().unwrap_or(texts.missing_data);
+  let lecturer = item.lecturer.as_deref().unwrap_or(texts.missing_data);
+  let details = item.details.as_deref().unwrap_or(texts.missing_data);
 
   format!(
     "{}: {notes}\n{}: {lecturer}\n{}: {details}",
-    t.label_exam_type, t.label_instructors, t.label_details
+    texts.label_exam_type, texts.label_instructors, texts.label_details
   )
 }

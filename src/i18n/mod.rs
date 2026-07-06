@@ -15,6 +15,7 @@ pub struct IcsTexts {
   pub missing_data: &'static str,
 }
 
+#[must_use]
 pub fn ics_texts(lang: CalendarLanguage) -> &'static IcsTexts {
   match lang {
     CalendarLanguage::Pl => &pl::PL,

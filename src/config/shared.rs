@@ -18,6 +18,11 @@ pub struct SharedConfig {
 }
 
 impl SharedConfig {
+  /// Loads the shared-mode configuration from environment variables.
+  ///
+  /// # Errors
+  ///
+  /// Returns an error if a required variable is missing or fails to parse.
   pub fn from_env() -> Result<Self> {
     Ok(Self {
       bind_addr: parse::bind_addr(),

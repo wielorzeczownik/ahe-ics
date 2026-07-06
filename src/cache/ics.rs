@@ -24,6 +24,7 @@ impl Default for IcsCache {
 }
 
 impl IcsCache {
+  #[must_use]
   pub fn new() -> Self {
     Self {
       inner: Cache::builder()

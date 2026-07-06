@@ -20,6 +20,11 @@ pub struct Config {
 }
 
 impl Config {
+  /// Loads the dedicated-mode configuration from environment variables.
+  ///
+  /// # Errors
+  ///
+  /// Returns an error if a required variable is missing or fails to parse.
   pub fn from_env() -> Result<Self> {
     let username = std::env::var("AHE_USERNAME").context("AHE_USERNAME is required")?;
     let password = std::env::var("AHE_PASSWORD").context("AHE_PASSWORD is required")?;
