@@ -2,8 +2,12 @@ use anyhow::{Context, Result};
 use reqwest::Client;
 use tracing::{debug, warn};
 
-use crate::constants::{API_BASE_URL, API_LOGIN_PATH, LOGIN_GRANT_TYPE, LOGIN_ROLE_ID};
+use super::API_BASE_URL;
 use crate::models::TokenResponse;
+
+const API_LOGIN_PATH: &str = "/api/Profil/zaloguj";
+const LOGIN_ROLE_ID: &str = "2";
+const LOGIN_GRANT_TYPE: &str = "password";
 
 /// Performs the WPS login and returns the access token response.
 pub async fn login(client: &Client, username: &str, password: &str) -> Result<TokenResponse> {

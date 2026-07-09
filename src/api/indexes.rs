@@ -2,8 +2,10 @@ use anyhow::{Context, Result};
 use reqwest::Client;
 use tracing::{debug, warn};
 
-use crate::constants::{API_BASE_URL, API_STUDENT_INDEXES_PATH};
+use super::API_BASE_URL;
 use crate::models::StudentIndex;
+
+const API_STUDENT_INDEXES_PATH: &str = "/api/Indeks/GETPobierzListeIndeksowDlaStudenta";
 
 /// Fetches all indeks entries for the currently authenticated student.
 pub async fn get_student_indexes(client: &Client, access_token: &str) -> Result<Vec<StudentIndex>> {

@@ -3,17 +3,25 @@ use chrono::Duration;
 use icalendar::{Alarm, Calendar, Component, Event, EventLike, EventStatus, Property, Trigger};
 
 use crate::config::CalendarLanguage;
-use crate::constants::{
-  CALENDAR_TZ, CLASS_REMINDER_MINUTES, EXAM_REMINDER_EARLY_MINUTES, EXAM_REMINDER_MINUTES,
-  WPS_EXAM_URL, WPS_PLAN_URL,
-};
 use crate::i18n::{IcsTexts, ics_texts};
 use crate::models::{ExamEvent, PlanItem};
+
+/// IANA timezone all calendar events are expressed in.
+const CALENDAR_TZ: &str = "Europe/Warsaw";
 
 /// Fallback event colours (RFC 7986 `COLOR`). Classes reuse the WPS `FormaKolor`;
 /// exams carry no colour in the feed, so these fixed values are used instead.
 const EXAM_COLOR: &str = "#E06666";
 const EXAM_RETAKE_COLOR: &str = "#F6B26B";
+
+/// Reminder lead times (minutes before start) emitted as VALARM components.
+const CLASS_REMINDER_MINUTES: i64 = 15;
+const EXAM_REMINDER_MINUTES: i64 = 60;
+const EXAM_REMINDER_EARLY_MINUTES: i64 = 24 * 60;
+
+/// WPS site pages linked from calendar events via the `URL` property.
+const WPS_PLAN_URL: &str = "https://wps.ahe.lodz.pl/plan-kalendarzowy";
+const WPS_EXAM_URL: &str = "https://wps.ahe.lodz.pl/egzaminy";
 
 /// Renders a list of plan items into a single ICS calendar string.
 ///

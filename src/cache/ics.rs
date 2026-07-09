@@ -3,7 +3,7 @@ use std::time::Duration;
 use chrono::NaiveDate;
 use moka::future::Cache;
 
-use crate::constants::ICS_CACHE_TTL_SECONDS;
+const ICS_CACHE_TTL_SECONDS: u64 = 600;
 
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub struct IcsCacheKey {

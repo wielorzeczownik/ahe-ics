@@ -11,7 +11,6 @@ use serde::Deserialize;
 
 use crate::app::AppState;
 use crate::config::SharedConfig;
-use crate::constants::{ICS_CONTENT_TYPE, JSON_CONTENT_TYPE};
 use crate::web::AppError;
 use crate::web::calendar::{CalendarQueryParams, fetch_calendar_data, render_calendar_ics};
 use crate::web::dto::CalendarJsonResponse;
@@ -61,7 +60,7 @@ async fn calendar_ics(
     token: query.token,
   };
   let ics = render_calendar_ics(state, &username, &password, params, headers, addr).await?;
-  Ok(([(CONTENT_TYPE, ICS_CONTENT_TYPE)], ics))
+  Ok(([(CONTENT_TYPE, "text/calendar; charset=utf-8")], ics))
 }
 
 async fn calendar_json(
@@ -86,7 +85,7 @@ async fn calendar_json(
     data.exams,
   ))
   .map_err(anyhow::Error::from)?;
-  Ok(([(CONTENT_TYPE, JSON_CONTENT_TYPE)], body))
+  Ok(([(CONTENT_TYPE, "application/json; charset=utf-8")], body))
 }
 
 /// Shared instance healthz

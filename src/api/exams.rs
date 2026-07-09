@@ -5,14 +5,20 @@ use chrono::{Duration, NaiveDate, NaiveTime};
 use reqwest::Client;
 use tracing::{debug, warn};
 
-use crate::constants::{
-  API_BASE_URL, API_CURRENT_ACADEMIC_YEAR_PATH, API_EXAM_FILTER_PATH,
-  API_EXAM_PROTOCOL_INTERMEDIATE_PATH, API_EXAM_PROTOCOL_PATH, EXAM_SETTLEMENT_NAME,
-};
+use super::API_BASE_URL;
 use crate::models::{
   CurrentAcademicYearResponse, ExamEvent, ExamProtocolIntermediateItem, ExamProtocolItem,
   ExamRecipient, ExamScheduleItem, TermQuery,
 };
+
+const API_EXAM_PROTOCOL_PATH: &str =
+  "/api/ProtokolyEgzaminacyjne/GetProtokolEgzaminacyjnySzczegolowy";
+const API_EXAM_PROTOCOL_INTERMEDIATE_PATH: &str =
+  "/api/ProtokolyEgzaminacyjne/GetProtokolEgzaminacyjnyPosredni";
+const API_EXAM_FILTER_PATH: &str = "/api/Egzaminy/GETEgazminFiltr";
+const API_CURRENT_ACADEMIC_YEAR_PATH: &str = "/api/Slowniki/GETPobierzAktualnyRokAkademicki";
+/// Settlement label that marks a subject as an exam (vs a plain pass).
+const EXAM_SETTLEMENT_NAME: &str = "egzamin";
 
 pub async fn get_exams(
   client: &Client,

@@ -6,7 +6,8 @@ use moka::future::Cache;
 use tracing::debug;
 
 use crate::api::ApiClient;
-use crate::constants::TOKEN_REFRESH_GRACE_SECONDS;
+
+const TOKEN_REFRESH_GRACE_SECONDS: u64 = 30;
 
 #[derive(Clone, Debug)]
 pub struct TokenCacheEntry {

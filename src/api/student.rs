@@ -2,8 +2,10 @@ use anyhow::{Context, Result};
 use reqwest::Client;
 use tracing::{debug, warn};
 
-use crate::constants::{API_BASE_URL, API_STUDENT_PATH};
+use super::API_BASE_URL;
 use crate::models::StudentData;
+
+const API_STUDENT_PATH: &str = "/api/Student/GetDaneStudenta";
 
 /// Fetches data for the currently authenticated student.
 pub async fn get_student_data(client: &Client, access_token: &str) -> Result<StudentData> {

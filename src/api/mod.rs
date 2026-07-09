@@ -8,8 +8,11 @@ use anyhow::Result;
 use chrono::NaiveDate;
 use reqwest::Client;
 
-use crate::constants::USER_AGENT;
 use crate::models::{ExamEvent, PlanItem, StudentData, StudentIndex, TokenResponse};
+
+/// WPS API host, shared by every endpoint call in the submodules below.
+const API_BASE_URL: &str = "https://wpsapi.ahe.lodz.pl";
+const USER_AGENT: &str = concat!("ahe-ics/", env!("CARGO_PKG_VERSION"));
 
 #[derive(Clone)]
 pub struct ApiClient {

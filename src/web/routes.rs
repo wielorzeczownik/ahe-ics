@@ -12,7 +12,6 @@ use tracing::warn;
 
 use crate::app::AppState;
 use crate::config::Config;
-use crate::constants::{ICS_CONTENT_TYPE, JSON_CONTENT_TYPE};
 use crate::web::AppError;
 use crate::web::calendar::{CalendarQueryParams, fetch_calendar_data, render_calendar_ics};
 use crate::web::dto::CalendarJsonResponse;
@@ -64,7 +63,7 @@ async fn calendar_ics(
   let username = state.config.username.clone();
   let password = state.config.password.clone();
   let ics = render_calendar_ics(state, &username, &password, query.into(), headers, addr).await?;
-  Ok(([(CONTENT_TYPE, ICS_CONTENT_TYPE)], ics))
+  Ok(([(CONTENT_TYPE, "text/calendar; charset=utf-8")], ics))
 }
 
 async fn calendar_json(
@@ -84,7 +83,7 @@ async fn calendar_json(
     data.exams,
   ))
   .map_err(anyhow::Error::from)?;
-  Ok(([(CONTENT_TYPE, JSON_CONTENT_TYPE)], body))
+  Ok(([(CONTENT_TYPE, "application/json; charset=utf-8")], body))
 }
 
 async fn healthz(State(state): State<AppState<Config>>) -> impl IntoResponse {

@@ -2,8 +2,12 @@ use anyhow::{Context, Result};
 use reqwest::Client;
 use tracing::{debug, warn};
 
-use crate::constants::{API_BASE_URL, API_PLAN_PATH, PLAN_INACTIVE_PARAM, PLAN_LOADER_PARAM};
+use super::API_BASE_URL;
 use crate::models::PlanItem;
+
+const API_PLAN_PATH: &str = "/api/PlanyZajec/GETPlanSzczegolowy";
+const PLAN_INACTIVE_PARAM: &str = "CzyNieaktywnePlany=0";
+const PLAN_LOADER_PARAM: &str = "loader=none";
 
 /// Fetches the detailed schedule plan for the given student and date range.
 pub async fn get_plan(

@@ -1,11 +1,13 @@
 use anyhow::{Context, Result, bail};
 
-use crate::constants::{
-  DEFAULT_BIND_ADDR, DEFAULT_CAL_FUTURE_DAYS, DEFAULT_CAL_LANG, DEFAULT_CAL_PAST_DAYS,
-  DEFAULT_EXAMS_ENABLED, DEFAULT_JSON_ENABLED,
-};
-
 use super::types::{CalendarLanguage, CalendarToken};
+
+const DEFAULT_BIND_ADDR: &str = "0.0.0.0:8080";
+const DEFAULT_CAL_PAST_DAYS: i64 = 60;
+const DEFAULT_CAL_FUTURE_DAYS: i64 = 60;
+const DEFAULT_CAL_LANG: &str = "pl";
+const DEFAULT_EXAMS_ENABLED: bool = true;
+const DEFAULT_JSON_ENABLED: bool = true;
 
 pub(super) fn bind_addr() -> String {
   std::env::var("BIND_ADDR").unwrap_or_else(|_| DEFAULT_BIND_ADDR.to_string())

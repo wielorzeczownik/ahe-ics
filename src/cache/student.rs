@@ -5,8 +5,9 @@ use moka::future::Cache;
 use tracing::{debug, warn};
 
 use crate::api::ApiClient;
-use crate::constants::STUDENT_CONTEXT_CACHE_TTL_SECONDS;
 use crate::models::StudentIndex;
+
+const STUDENT_CONTEXT_CACHE_TTL_SECONDS: u64 = 21_600;
 
 #[derive(Clone, Debug)]
 pub struct StudentContext {

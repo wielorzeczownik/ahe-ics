@@ -2,7 +2,6 @@ pub mod api;
 pub mod app;
 pub mod cache;
 pub mod config;
-pub mod constants;
 pub mod i18n;
 pub mod ics;
 pub mod models;
