@@ -5,6 +5,26 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0](https://github.com/wielorzeczownik/ahe-ics/compare/v1.2.7...v1.3.0) - 2026-07-09
+
+### Features
+
+- Add event colours, reminders, status and categories ([88786f1](https://github.com/wielorzeczownik/ahe-ics/commit/88786f1153f2f459b8609f4720817e5b3982a707))
+- Label resits and filter exams by student section ([ca22bcc](https://github.com/wielorzeczownik/ahe-ics/commit/ca22bcc0ff215f4b6acc655a6968514109ad7f5e))
+
+### Bug Fixes
+
+- Resolve audit advisories ([5eda8f4](https://github.com/wielorzeczownik/ahe-ics/commit/5eda8f4ac2ed5f1db2c3c5772243582038c82894))
+
+### Refactoring
+
+- Inline single-use constants and drop constants.rs ([1ec6879](https://github.com/wielorzeczownik/ahe-ics/commit/1ec6879f33be444a3e2d3497d4cf8ff4574ce4ff))
+
+### CI/CD
+
+- Update docker actions (#124) ([50ec83f](https://github.com/wielorzeczownik/ahe-ics/commit/50ec83f83db357c67dae30398ad6ec291c481a6f))
+- Update taiki-e/install-action action to v2.82.7 (#123) ([74e7829](https://github.com/wielorzeczownik/ahe-ics/commit/74e782937c7bf534cca9e7e9e180190894e9d2d0))
+
 ## [1.2.7](https://github.com/wielorzeczownik/ahe-ics/compare/v1.2.6...v1.2.7) - 2026-07-06
 
 ### CI/CD
