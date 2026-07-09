@@ -33,6 +33,7 @@ struct CalendarRequestContext {
   token: String,
   student_id: i64,
   index_id: Option<i64>,
+  section_name: Option<String>,
   from: NaiveDate,
   to: NaiveDate,
 }
@@ -148,6 +149,7 @@ async fn prepare_calendar_request_context<C: ServerSettings>(
     token,
     student_id: student_context.student_id,
     index_id: student_context.index_id,
+    section_name: student_context.section_name,
     from,
     to,
   })
@@ -167,7 +169,13 @@ async fn fetch_calendar_render_data<C: ServerSettings>(
     if let Some(index_id) = context.index_id {
       match state
         .api
-        .get_exams(&context.token, index_id, context.from, context.to)
+        .get_exams(
+          &context.token,
+          index_id,
+          context.section_name.as_deref(),
+          context.from,
+          context.to,
+        )
         .await
       {
         Ok(items) => items,

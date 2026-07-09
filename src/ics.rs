@@ -129,7 +129,12 @@ fn build_exam_summary(item: &ExamEvent, texts: &IcsTexts) -> String {
   } else {
     item.subject.trim().to_string()
   };
-  format!("{}: {subject}", texts.label_exam)
+  let label = if item.is_retake {
+    texts.label_exam_retake
+  } else {
+    texts.label_exam
+  };
+  format!("{label}: {subject}")
 }
 
 fn build_exam_location(item: &ExamEvent, texts: &IcsTexts) -> String {

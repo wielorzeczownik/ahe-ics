@@ -51,6 +51,14 @@ pub struct ExamScheduleItem {
   pub lecturer: Option<String>,
   #[serde(rename = "OpisSzczegolowy", default)]
   pub details: Option<String>,
+  #[serde(rename = "PdOdbbiorcy", default)]
+  pub recipients: Vec<ExamRecipient>,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct ExamRecipient {
+  #[serde(rename = "Sekcja", default)]
+  pub section: Option<String>,
 }
 
 #[derive(Debug, Clone)]
@@ -63,4 +71,5 @@ pub struct ExamEvent {
   pub details: Option<String>,
   pub starts: NaiveDateTime,
   pub ends: NaiveDateTime,
+  pub is_retake: bool,
 }

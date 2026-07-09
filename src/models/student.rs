@@ -29,4 +29,6 @@ pub struct StudentIndex {
   pub year: Option<i32>,
   #[serde(rename = "Semestr", default)]
   pub semester: Option<i32>,
+  #[serde(rename = "SekcjaNazwa", default)]
+  pub section_name: Option<String>,
 }

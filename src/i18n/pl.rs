@@ -5,6 +5,7 @@ pub static PL: IcsTexts = IcsTexts {
   location_webinar: "Webinar",
   location_default: "Sala",
   label_exam: "Egzamin",
+  label_exam_retake: "Egzamin poprawkowy",
   label_exam_type: "Rodzaj",
   label_details: "Szczegoly",
   label_instructors: "Prowadzacy",

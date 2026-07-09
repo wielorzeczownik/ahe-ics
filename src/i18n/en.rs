@@ -5,6 +5,7 @@ pub static EN: IcsTexts = IcsTexts {
   location_webinar: "Webinar",
   location_default: "Room",
   label_exam: "Exam",
+  label_exam_retake: "Resit exam",
   label_exam_type: "Type",
   label_details: "Details",
   label_instructors: "Instructors",

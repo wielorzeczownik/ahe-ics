@@ -5,7 +5,7 @@ mod token;
 
 pub use exam::{
   CurrentAcademicYearResponse, ExamEvent, ExamProtocolIntermediateItem, ExamProtocolItem,
-  ExamScheduleItem, TermQuery,
+  ExamRecipient, ExamScheduleItem, TermQuery,
 };
 pub use plan::PlanItem;
 pub use student::{StudentData, StudentIndex};

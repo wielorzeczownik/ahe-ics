@@ -12,6 +12,7 @@ use crate::models::StudentIndex;
 pub struct StudentContext {
   pub student_id: i64,
   pub index_id: Option<i64>,
+  pub section_name: Option<String>,
 }
 
 /// Per-user student metadata cache, keyed by username
@@ -56,15 +57,17 @@ impl StudentContextCache {
     } else {
       None
     };
+    let mut section_name = None;
 
     if exams_enabled && index_id.is_none() {
       match api.get_student_indexes(access_token).await {
         Ok(indexes) => {
-          index_id = pick_index_id(&indexes);
-          if let Some(found) = index_id {
+          if let Some(index) = pick_index(&indexes) {
+            index_id = Some(index.index_id);
+            section_name.clone_from(&index.section_name);
             debug!(
               student_id,
-              index_id = found,
+              index_id = index.index_id,
               "IndeksID resolved from indeks list"
             );
           } else {
@@ -80,6 +83,7 @@ impl StudentContextCache {
     let ctx = StudentContext {
       student_id,
       index_id,
+      section_name,
     };
     self.inner.insert(username.to_string(), ctx.clone()).await;
 
@@ -87,16 +91,13 @@ impl StudentContextCache {
   }
 }
 
-fn pick_index_id(indexes: &[StudentIndex]) -> Option<i64> {
-  indexes
-    .iter()
-    .max_by_key(|item| {
-      (
-        item.status_symbol.as_deref() == Some("S"),
-        item.year.unwrap_or_default(),
-        item.semester.unwrap_or_default(),
-        item.index_id,
-      )
-    })
-    .map(|item| item.index_id)
+fn pick_index(indexes: &[StudentIndex]) -> Option<&StudentIndex> {
+  indexes.iter().max_by_key(|item| {
+    (
+      item.status_symbol.as_deref() == Some("S"),
+      item.year.unwrap_or_default(),
+      item.semester.unwrap_or_default(),
+      item.index_id,
+    )
+  })
 }

@@ -78,9 +78,10 @@ impl ApiClient {
     &self,
     access_token: &str,
     index_id: i64,
+    section_name: Option<&str>,
     from: NaiveDate,
     to: NaiveDate,
   ) -> Result<Vec<ExamEvent>> {
-    exams::get_exams(&self.http, access_token, index_id, from, to).await
+    exams::get_exams(&self.http, access_token, index_id, section_name, from, to).await
   }
 }

@@ -8,6 +8,7 @@ pub struct IcsTexts {
   pub location_webinar: &'static str,
   pub location_default: &'static str,
   pub label_exam: &'static str,
+  pub label_exam_retake: &'static str,
   pub label_exam_type: &'static str,
   pub label_details: &'static str,
   pub label_instructors: &'static str,

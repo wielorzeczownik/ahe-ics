@@ -11,13 +11,14 @@ use crate::constants::{
 };
 use crate::models::{
   CurrentAcademicYearResponse, ExamEvent, ExamProtocolIntermediateItem, ExamProtocolItem,
-  ExamScheduleItem, TermQuery,
+  ExamRecipient, ExamScheduleItem, TermQuery,
 };
 
 pub async fn get_exams(
   client: &Client,
   access_token: &str,
   index_id: i64,
+  section_name: Option<&str>,
   from: NaiveDate,
   to: NaiveDate,
 ) -> Result<Vec<ExamEvent>> {
@@ -63,6 +64,9 @@ pub async fn get_exams(
             continue;
           };
           if !subjects.contains(&normalized_subject) {
+            continue;
+          }
+          if !recipient_section_matches(&item.recipients, section_name) {
             continue;
           }
 
@@ -344,6 +348,8 @@ fn map_exam_event(item: ExamScheduleItem, from: NaiveDate, to: NaiveDate) -> Opt
     ends = starts + Duration::minutes(90);
   }
 
+  let is_retake = is_retake_notes(item.notes.as_deref());
+
   Some(ExamEvent {
     published_data_id: item.published_data_id,
     subject: item.exam_subject.trim().to_string(),
@@ -353,7 +359,32 @@ fn map_exam_event(item: ExamScheduleItem, from: NaiveDate, to: NaiveDate) -> Opt
     details: clean_text(item.details),
     starts,
     ends,
+    is_retake,
   })
+}
+
+/// Detects resit exams (`egzamin poprawkowy`) from the free-text notes field.
+fn is_retake_notes(notes: Option<&str>) -> bool {
+  notes.is_some_and(|value| value.to_lowercase().contains("poprawkow"))
+}
+
+/// Soft section guard used to disambiguate exams that share a subject name across sections.
+fn recipient_section_matches(recipients: &[ExamRecipient], section_name: Option<&str>) -> bool {
+  let Some(section) = section_name.and_then(normalize_subject) else {
+    return true;
+  };
+
+  let mut saw_section = false;
+  for recipient in recipients {
+    if let Some(value) = recipient.section.as_deref().and_then(normalize_subject) {
+      saw_section = true;
+      if value == section {
+        return true;
+      }
+    }
+  }
+
+  !saw_section
 }
 
 /// Parses `HH:MM` strings returned by WPS API.

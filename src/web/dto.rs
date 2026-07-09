@@ -36,6 +36,7 @@ struct CalendarExamJsonItem {
   details: Option<String>,
   starts: NaiveDateTime,
   ends: NaiveDateTime,
+  is_retake: bool,
 }
 
 impl CalendarJsonResponse {
@@ -84,6 +85,7 @@ impl From<ExamEvent> for CalendarExamJsonItem {
       details: value.details,
       starts: value.starts,
       ends: value.ends,
+      is_retake: value.is_retake,
     }
   }
 }
