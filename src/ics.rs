@@ -1,10 +1,19 @@
 use anyhow::Result;
-use icalendar::{Calendar, Component, Event, EventLike};
+use chrono::Duration;
+use icalendar::{Alarm, Calendar, Component, Event, EventLike, EventStatus, Property, Trigger};
 
 use crate::config::CalendarLanguage;
-use crate::constants::CALENDAR_TZ;
+use crate::constants::{
+  CALENDAR_TZ, CLASS_REMINDER_MINUTES, EXAM_REMINDER_EARLY_MINUTES, EXAM_REMINDER_MINUTES,
+  WPS_EXAM_URL, WPS_PLAN_URL,
+};
 use crate::i18n::{IcsTexts, ics_texts};
 use crate::models::{ExamEvent, PlanItem};
+
+/// Fallback event colours (RFC 7986 `COLOR`). Classes reuse the WPS `FormaKolor`;
+/// exams carry no colour in the feed, so these fixed values are used instead.
+const EXAM_COLOR: &str = "#E06666";
+const EXAM_RETAKE_COLOR: &str = "#F6B26B";
 
 /// Renders a list of plan items into a single ICS calendar string.
 ///
@@ -32,16 +41,36 @@ pub fn render_calendar(
     let location = build_location(item, texts);
     let description = build_description(item, texts);
 
-    let event = Event::new()
+    let mut event = Event::new();
+    event
       .uid(&uid)
       .summary(&summary)
       .location(&location)
       .description(&description)
       .starts(item.starts_at)
       .ends(item.ends_at)
-      .done();
+      .status(EventStatus::Confirmed)
+      .append_property(Property::new("TRANSP", "OPAQUE"))
+      .append_property(Property::new("URL", WPS_PLAN_URL))
+      .alarm(Alarm::display(
+        &summary,
+        Trigger::before_start(Duration::minutes(CLASS_REMINDER_MINUTES)),
+      ));
 
-    calendar.push(event);
+    let category = item.class_type.trim();
+    if !category.is_empty() {
+      event.append_property(Property::new("CATEGORIES", category));
+    }
+    if let Some(color) = item
+      .form_color
+      .as_deref()
+      .map(str::trim)
+      .filter(|value| !value.is_empty())
+    {
+      event.append_property(Property::new("COLOR", color));
+    }
+
+    calendar.push(event.done());
   }
 
   for exam in exams {
@@ -53,17 +82,40 @@ pub fn render_calendar(
     let summary = build_exam_summary(exam, texts);
     let location = build_exam_location(exam, texts);
     let description = build_exam_description(exam, texts);
+    let category = if exam.is_retake {
+      texts.label_exam_retake
+    } else {
+      texts.label_exam
+    };
+    let color = if exam.is_retake {
+      EXAM_RETAKE_COLOR
+    } else {
+      EXAM_COLOR
+    };
 
-    let event = Event::new()
+    let mut event = Event::new();
+    event
       .uid(&uid)
       .summary(&summary)
       .location(&location)
       .description(&description)
       .starts(exam.starts)
       .ends(exam.ends)
-      .done();
+      .status(EventStatus::Confirmed)
+      .append_property(Property::new("TRANSP", "OPAQUE"))
+      .append_property(Property::new("URL", WPS_EXAM_URL))
+      .append_property(Property::new("CATEGORIES", category))
+      .append_property(Property::new("COLOR", color))
+      .alarm(Alarm::display(
+        &summary,
+        Trigger::before_start(Duration::minutes(EXAM_REMINDER_EARLY_MINUTES)),
+      ))
+      .alarm(Alarm::display(
+        &summary,
+        Trigger::before_start(Duration::minutes(EXAM_REMINDER_MINUTES)),
+      ));
 
-    calendar.push(event);
+    calendar.push(event.done());
   }
 
   Ok(calendar.to_string())

@@ -24,6 +24,7 @@ struct CalendarPlanJsonItem {
   room_address: Option<String>,
   webinar: bool,
   instructors: Vec<String>,
+  form_color: Option<String>,
 }
 
 #[derive(Debug, Serialize)]
@@ -70,6 +71,7 @@ impl From<PlanItem> for CalendarPlanJsonItem {
       room_address: value.room_address,
       webinar: value.webinar,
       instructors: value.instructors.into_iter().map(|i| i.full_name).collect(),
+      form_color: value.form_color,
     }
   }
 }

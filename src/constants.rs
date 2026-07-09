@@ -30,6 +30,15 @@ pub const ICS_CACHE_TTL_SECONDS: u64 = 600;
 pub const STUDENT_CONTEXT_CACHE_TTL_SECONDS: u64 = 21_600;
 pub const EXAM_SETTLEMENT_NAME: &str = "egzamin";
 
+/// Reminder lead times (minutes before start) emitted as VALARM components.
+pub const CLASS_REMINDER_MINUTES: i64 = 15;
+pub const EXAM_REMINDER_MINUTES: i64 = 60;
+pub const EXAM_REMINDER_EARLY_MINUTES: i64 = 24 * 60;
+
+/// WPS site pages linked from calendar events via the `URL` property.
+pub const WPS_PLAN_URL: &str = "https://wps.ahe.lodz.pl/plan-kalendarzowy";
+pub const WPS_EXAM_URL: &str = "https://wps.ahe.lodz.pl/egzaminy";
+
 pub const CALENDAR_TZ: &str = "Europe/Warsaw";
 pub const ICS_CONTENT_TYPE: &str = "text/calendar; charset=utf-8";
 pub const JSON_CONTENT_TYPE: &str = "application/json; charset=utf-8";

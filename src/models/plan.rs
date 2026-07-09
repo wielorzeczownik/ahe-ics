@@ -29,4 +29,6 @@ pub struct PlanItem {
   pub instructors: Vec<Instructor>,
   #[serde(rename = "IDPlanZajecPoz")]
   pub schedule_item_id: i64,
+  #[serde(rename = "FormaKolor", default)]
+  pub form_color: Option<String>,
 }
