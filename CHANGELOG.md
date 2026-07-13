@@ -5,6 +5,25 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.1](https://github.com/wielorzeczownik/ahe-ics/compare/v1.3.0...v1.3.1) - 2026-07-13
+
+### Performance
+
+- Compress logo from 88 KB to 8.6 KB ([0038164](https://github.com/wielorzeczownik/ahe-ics/commit/0038164f9c689f73613d86fc7737b8186b01629a))
+
+### Build System
+
+- Update rust docker tag to v1.97 (#130) ([7e881c9](https://github.com/wielorzeczownik/ahe-ics/commit/7e881c967325491b1a78e12c4d3c0084854eaba4))
+
+### CI/CD
+
+- Update taiki-e/install-action action to v2.82.9 (#129) ([655424f](https://github.com/wielorzeczownik/ahe-ics/commit/655424fcae6a8083283fcc81ab3eaea28704ba84))
+- Update davidanson/markdownlint-cli2-action action to v24 ([de1010b](https://github.com/wielorzeczownik/ahe-ics/commit/de1010b0af95c13b7224c2ff61aff241f1fb0afe))
+- Update taiki-e/install-action action to v2.82.8 (#127) ([61ef50b](https://github.com/wielorzeczownik/ahe-ics/commit/61ef50b526cd825557f598d39457b9f951f1183b))
+- Update docker/login-action action to v4.4.0 (#126) ([2b7e92a](https://github.com/wielorzeczownik/ahe-ics/commit/2b7e92a34d8355fe831ccf88a4aba5283b824568))
+- Set OCI image description on multi-arch manifests ([045509f](https://github.com/wielorzeczownik/ahe-ics/commit/045509fd10ecd48a3f9c2fc3556b3df3dfd1dfbf))
+- Update docker actions ([beed3be](https://github.com/wielorzeczownik/ahe-ics/commit/beed3be22f4ddbc1ced789ff9f5573f8d593ae9d))
+
 ## [1.3.0](https://github.com/wielorzeczownik/ahe-ics/compare/v1.2.7...v1.3.0) - 2026-07-09
 
 ### Features
