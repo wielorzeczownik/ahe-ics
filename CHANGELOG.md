@@ -5,6 +5,17 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.3](https://github.com/wielorzeczownik/ahe-ics/compare/v1.3.2...v1.3.3) - 2026-07-20
+
+### Build System
+
+- Update rust:1.97-trixie docker digest to 9a2cd30 ([6177be6](https://github.com/wielorzeczownik/ahe-ics/commit/6177be6e7c5d073066f164a92dddf041d044fa22))
+- Update rust:1.97-alpine docker digest to 3c38f3f ([363fa60](https://github.com/wielorzeczownik/ahe-ics/commit/363fa602bc562f810ddbc65a88381db6db86658c))
+
+### Dependencies
+
+- Update debian:trixie-slim docker digest to 020c0d2 ([c71bf25](https://github.com/wielorzeczownik/ahe-ics/commit/c71bf251035bf6d33ef4b936e5bb71d9a170d928))
+
 ## [1.3.2](https://github.com/wielorzeczownik/ahe-ics/compare/v1.3.1...v1.3.2) - 2026-07-19
 
 ### CI/CD
