@@ -5,6 +5,12 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.4](https://github.com/wielorzeczownik/ahe-ics/compare/v1.3.3...v1.3.4) - 2026-07-20
+
+### Dependencies
+
+- Update rust crate tokio to v1.53.0 ([da7b79c](https://github.com/wielorzeczownik/ahe-ics/commit/da7b79c1377de8a2f7e9e13ba06bca941fd8bfe5))
+
 ## [1.3.3](https://github.com/wielorzeczownik/ahe-ics/compare/v1.3.2...v1.3.3) - 2026-07-20
 
 ### Build System
