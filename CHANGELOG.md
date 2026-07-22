@@ -5,6 +5,16 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.5](https://github.com/wielorzeczownik/ahe-ics/compare/v1.3.4...v1.3.5) - 2026-07-22
+
+### CI/CD
+
+- Update softprops/action-gh-release action to v3.0.2 ([bf0c560](https://github.com/wielorzeczownik/ahe-ics/commit/bf0c5601f246dcdd25e627a571abc3a4f65ef436))
+
+### Dependencies
+
+- Update rust crate anyhow to v1.0.104 (#143) ([8a395da](https://github.com/wielorzeczownik/ahe-ics/commit/8a395da650bd335e9624a5572d5b20d162b885e6))
+
 ## [1.3.4](https://github.com/wielorzeczownik/ahe-ics/compare/v1.3.3...v1.3.4) - 2026-07-20
 
 ### Dependencies
