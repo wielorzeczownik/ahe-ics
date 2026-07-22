@@ -5,6 +5,12 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.6](https://github.com/wielorzeczownik/ahe-ics/compare/v1.3.5...v1.3.6) - 2026-07-22
+
+### Dependencies
+
+- Update rust crate serde to v1.0.229 ([fe79ce6](https://github.com/wielorzeczownik/ahe-ics/commit/fe79ce6a7cd1007fb7d9753a1bf6411a58b652f7))
+
 ## [1.3.5](https://github.com/wielorzeczownik/ahe-ics/compare/v1.3.4...v1.3.5) - 2026-07-22
 
 ### CI/CD
