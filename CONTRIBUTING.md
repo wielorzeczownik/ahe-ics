@@ -12,10 +12,19 @@ A lightweight self-hosted service written in Rust that exports the AHE Łódź c
 .
 ├── src/                       Rust source code
 ├── scripts/
-│   └── bump-version.sh        determines next release version from git-cliff and bumps Cargo.toml
-├── Dockerfile                 Debian-based container image
-└── Dockerfile.alpine          Alpine-based container image
+│   ├── bump-version.sh        determines next release version from git-cliff and bumps Cargo.toml
+│   ├── stage-docker-binaries.sh  lays release binaries out per platform for the release images
+│   ├── smoke-test-image.sh    starts a built image and waits for it to serve HTTP
+│   └── security-audit.sh      runs cargo audit and attempts cargo audit fix
+├── Dockerfile                 Debian-based image, builds from source (local development)
+├── Dockerfile.alpine          Alpine-based image, builds from source (local development)
+└── Dockerfile.release         published image, copies in a binary from build-artifacts
 ```
+
+Published images are assembled from the binaries that the release workflow already
+cross-compiles natively, so they never compile anything under QEMU emulation. The
+`Dockerfile` / `Dockerfile.alpine` variants stay around as the from-source build path
+for local development and are what pull requests smoke-build.
 
 ## Development setup
 
@@ -39,7 +48,7 @@ cargo check --all-targets --locked
 cargo audit
 
 # Dockerfile
-hadolint Dockerfile Dockerfile.alpine
+hadolint Dockerfile Dockerfile.alpine Dockerfile.release Dockerfile.alpine.release
 
 # Shell
 shfmt --diff scripts/
@@ -51,7 +60,7 @@ markdownlint-cli2 "**/*.md"
 ### With Docker (no local installs required)
 
 ```bash
-docker run --rm -v "$(pwd):/src" -w /src hadolint/hadolint hadolint Dockerfile Dockerfile.alpine
+docker run --rm -v "$(pwd):/src" -w /src hadolint/hadolint hadolint Dockerfile Dockerfile.alpine Dockerfile.release Dockerfile.alpine.release
 
 docker run --rm -v "$(pwd):/src" -w /src mvdan/shfmt --diff scripts/
 
