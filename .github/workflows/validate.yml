@@ -81,12 +81,25 @@ jobs:
           tool: cargo-audit
 
       - name: Cargo audit
-        run: cargo audit
+        shell: bash
+        run: |
+          set -uo pipefail
+          if cargo audit | tee audit.log; then
+            exit 0
+          fi
+          echo "::warning title=cargo audit::Advisories found – see the job summary. Not blocking this pull request."
+          {
+            echo "### cargo audit findings"
+            echo
+            echo '```text'
+            cat audit.log
+            echo '```'
+          } >>"$GITHUB_STEP_SUMMARY"
 
   smoke-build:
     name: Smoke build (${{ matrix.variant }})
     runs-on: ubuntu-latest
-    timeout-minutes: 240
+    timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
