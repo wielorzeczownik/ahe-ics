@@ -5,6 +5,18 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.10](https://github.com/wielorzeczownik/ahe-ics/compare/v1.3.9...v1.3.10) - 2026-07-24
+
+### Build System
+
+- Update rust:1.97-trixie docker digest to 1bcff4b ([c1e25d1](https://github.com/wielorzeczownik/ahe-ics/commit/c1e25d19e44e31733dc20e96414d40e4dee66ab7))
+
+### CI/CD
+
+- Update micalevisk/last-issue-action action to v2.3.0 ([0607456](https://github.com/wielorzeczownik/ahe-ics/commit/06074564fe4d0ccf4031204b1af9817a7251d2e4))
+- Fall back to a note when release notes are empty ([c9c775d](https://github.com/wielorzeczownik/ahe-ics/commit/c9c775d246fe4fe66a750cfa65f81fc75bc0e44a))
+- Close the advisory issue once advisories are resolved ([9eac845](https://github.com/wielorzeczownik/ahe-ics/commit/9eac84512d7d96cc9398b7ceb1c125b126925381))
+
 ## [1.3.9](https://github.com/wielorzeczownik/ahe-ics/compare/v1.3.8...v1.3.9) - 2026-07-24
 
 ### Documentation
