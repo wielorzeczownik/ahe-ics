@@ -1,0 +1,26 @@
+FROM alpine:latest@sha256:28bd5fe8b56d1bd048e5babf5b10710ebe0bae67db86916198a6eec434943f8b
+
+ARG BIN=ahe-ics
+ARG TARGETPLATFORM
+ARG IMAGE_TITLE="ahe-ics"
+ARG IMAGE_DESCRIPTION="Self-hosted AHE Łódź class schedule exporter to iCalendar (ICS)"
+
+LABEL org.opencontainers.image.source="https://github.com/wielorzeczownik/ahe-ics" \
+  org.opencontainers.image.url="https://github.com/wielorzeczownik/ahe-ics" \
+  org.opencontainers.image.documentation="https://github.com/wielorzeczownik/ahe-ics#readme" \
+  org.opencontainers.image.title="${IMAGE_TITLE}" \
+  org.opencontainers.image.description="${IMAGE_DESCRIPTION}" \
+  org.opencontainers.image.authors="wielorzeczownik" \
+  org.opencontainers.image.vendor="wielorzeczownik"
+
+RUN apk add --no-cache ca-certificates curl
+
+WORKDIR /app
+COPY docker-context/${TARGETPLATFORM}/${BIN} /usr/local/bin/${BIN}
+RUN ln -s "/usr/local/bin/${BIN}" /usr/local/bin/app
+
+ENV BIND_ADDR=0.0.0.0:8080
+EXPOSE 8080
+HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
+  CMD curl -fsS "http://127.0.0.1:${BIND_ADDR##*:}/healthz" || exit 1
+CMD ["app"]

@@ -12,6 +12,9 @@ on:
       - "Dockerfile.alpine"
       - "Dockerfile.shared"
       - "Dockerfile.alpine.shared"
+      - "Dockerfile.release"
+      - "Dockerfile.alpine.release"
+      - "scripts/**"
 
 concurrency:
   group: release-main
@@ -351,10 +354,12 @@ jobs:
           files: dist/*
 
   publish-docker:
-    needs: prepare-release
+    needs:
+      - prepare-release
+      - build-artifacts
     if: ${{ needs.prepare-release.outputs.released == 'true' }}
     runs-on: ubuntu-latest
-    timeout-minutes: 240
+    timeout-minutes: 30
     permissions:
       contents: read
       packages: write
@@ -363,32 +368,44 @@ jobs:
       matrix:
         include:
           - variant: debian
-            dockerfile: Dockerfile
+            dockerfile: Dockerfile.release
+            bin_name: ahe-ics
+            libc: gnu
             image_name: ahe-ics
             tag_suffix: ""
             latest_tag: latest
-            platforms: linux/amd64,linux/arm64,linux/arm/v7,linux/386,linux/ppc64le,linux/s390x
+            platforms: linux/amd64,linux/arm64,linux/arm/v7,linux/386
+            title: "ahe-ics"
             description: "Self-hosted AHE Łódź class schedule exporter to iCalendar (ICS)"
           - variant: alpine
-            dockerfile: Dockerfile.alpine
+            dockerfile: Dockerfile.alpine.release
+            bin_name: ahe-ics
+            libc: musl
             image_name: ahe-ics
             tag_suffix: "-alpine"
             latest_tag: alpine
-            platforms: linux/amd64,linux/arm64,linux/ppc64le
+            platforms: linux/amd64,linux/arm64
+            title: "ahe-ics"
             description: "Self-hosted AHE Łódź class schedule exporter to iCalendar (ICS)"
           - variant: shared-debian
-            dockerfile: Dockerfile.shared
+            dockerfile: Dockerfile.release
+            bin_name: ahe-ics-shared
+            libc: gnu
             image_name: ahe-ics
             tag_suffix: "-shared"
             latest_tag: shared
-            platforms: linux/amd64,linux/arm64,linux/arm/v7,linux/386,linux/ppc64le,linux/s390x
+            platforms: linux/amd64,linux/arm64,linux/arm/v7,linux/386
+            title: "ahe-ics-shared"
             description: "AHE Łódź class schedule exporter — stateless SaaS variant (credentials per request)"
           - variant: shared-alpine
-            dockerfile: Dockerfile.alpine.shared
+            dockerfile: Dockerfile.alpine.release
+            bin_name: ahe-ics-shared
+            libc: musl
             image_name: ahe-ics
             tag_suffix: "-shared-alpine"
             latest_tag: shared-alpine
-            platforms: linux/amd64,linux/arm64,linux/ppc64le
+            platforms: linux/amd64,linux/arm64
+            title: "ahe-ics-shared"
             description: "AHE Łódź class schedule exporter — stateless SaaS variant (credentials per request)"
     steps:
       - name: Checkout tag
@@ -397,11 +414,46 @@ jobs:
           ref: ${{ needs.prepare-release.outputs.tag }}
           persist-credentials: false
 
+      - name: Download release binaries
+        uses: actions/download-artifact@v8.0.1
+        with:
+          path: dist
+          pattern: binaries-${{ matrix.bin_name }}-*
+          merge-multiple: true
+
+      - name: Stage binaries into build context
+        shell: bash
+        env:
+          BIN_NAME: ${{ matrix.bin_name }}
+          LIBC: ${{ matrix.libc }}
+          PLATFORMS: ${{ matrix.platforms }}
+        run: bash scripts/stage-docker-binaries.sh
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v4.2.0
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4.2.0
+
+      - name: Build amd64 image for smoke test
+        uses: docker/build-push-action@v7.3.0
+        with:
+          context: .
+          file: ${{ matrix.dockerfile }}
+          push: false
+          load: true
+          platforms: linux/amd64
+          build-args: |
+            BIN=${{ matrix.bin_name }}
+            IMAGE_TITLE=${{ matrix.title }}
+            IMAGE_DESCRIPTION=${{ matrix.description }}
+          tags: ahe-ics-smoke:${{ matrix.variant }}
+
+      - name: Smoke test image
+        shell: bash
+        env:
+          IMAGE: ahe-ics-smoke:${{ matrix.variant }}
+        run: bash scripts/smoke-test-image.sh
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v4.4.0
@@ -438,10 +490,12 @@ jobs:
           file: ${{ matrix.dockerfile }}
           push: true
           platforms: ${{ matrix.platforms }}
+          build-args: |
+            BIN=${{ matrix.bin_name }}
+            IMAGE_TITLE=${{ matrix.title }}
+            IMAGE_DESCRIPTION=${{ matrix.description }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           annotations: ${{ steps.meta.outputs.annotations }}
-          cache-from: type=gha,scope=${{ matrix.variant }}
-          cache-to: type=gha,scope=${{ matrix.variant }},mode=max
           provenance: true
           sbom: true

@@ -1,0 +1,31 @@
+FROM debian:trixie-slim@sha256:020c0d20b9880058cbe785a9db107156c3c75c2ac944a6aa7ab59f2add76a7bd
+
+ARG BIN=ahe-ics
+ARG TARGETPLATFORM
+ARG IMAGE_TITLE="ahe-ics"
+ARG IMAGE_DESCRIPTION="Self-hosted AHE Łódź class schedule exporter to iCalendar (ICS)"
+
+LABEL org.opencontainers.image.source="https://github.com/wielorzeczownik/ahe-ics" \
+  org.opencontainers.image.url="https://github.com/wielorzeczownik/ahe-ics" \
+  org.opencontainers.image.documentation="https://github.com/wielorzeczownik/ahe-ics#readme" \
+  org.opencontainers.image.title="${IMAGE_TITLE}" \
+  org.opencontainers.image.description="${IMAGE_DESCRIPTION}" \
+  org.opencontainers.image.authors="wielorzeczownik" \
+  org.opencontainers.image.vendor="wielorzeczownik"
+
+# hadolint ignore=DL3008
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends \
+      ca-certificates \
+      curl \
+  && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+COPY docker-context/${TARGETPLATFORM}/${BIN} /usr/local/bin/${BIN}
+RUN ln -s "/usr/local/bin/${BIN}" /usr/local/bin/app
+
+ENV BIND_ADDR=0.0.0.0:8080
+EXPOSE 8080
+HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
+  CMD curl -fsS "http://127.0.0.1:${BIND_ADDR##*:}/healthz" || exit 1
+CMD ["app"]
