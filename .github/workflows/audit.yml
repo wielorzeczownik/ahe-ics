@@ -51,3 +51,19 @@ jobs:
         with:
           filename: .github/security-advisory-issue.md
           search_existing: open
+          update_existing: true
+
+      - name: Find advisory issue
+        id: advisory_issue
+        if: ${{ steps.audit.outputs.unresolved == 'false' }}
+        uses: micalevisk/last-issue-action@v2.0.0
+        with:
+          labels: security-advisory
+          state: open
+
+      - name: Close advisory issue
+        if: ${{ steps.audit.outputs.unresolved == 'false' && steps.advisory_issue.outputs.has-found == 'true' }}
+        uses: peter-evans/close-issue@v3.0.2
+        with:
+          issue-number: ${{ steps.advisory_issue.outputs.issue-number }}
+          comment: '`cargo audit` no longer reports advisories.'

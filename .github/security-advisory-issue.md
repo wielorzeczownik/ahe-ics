@@ -1,6 +1,6 @@
 ---
 title: Unresolved security advisories
-labels: security
+labels: security-advisory
 assignees: {{ env.REPO_OWNER }}
 ---
 
