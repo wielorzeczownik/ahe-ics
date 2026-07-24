@@ -5,6 +5,22 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.9](https://github.com/wielorzeczownik/ahe-ics/compare/v1.3.8...v1.3.9) - 2026-07-24
+
+### Documentation
+
+- Document the release image pipeline ([2dedab1](https://github.com/wielorzeczownik/ahe-ics/commit/2dedab1eef07926fa86a0e74ea13572e5af0f130))
+
+### CI/CD
+
+- Open a tracking issue instead of failing ([008b8d1](https://github.com/wielorzeczownik/ahe-ics/commit/008b8d1d583c09fbcbf8f09e0eebfa568f52f071))
+- Report audit advisories as warnings ([d6fcc41](https://github.com/wielorzeczownik/ahe-ics/commit/d6fcc41992558b2e38ed289bbef2a9ee7f19e2d5))
+- Assemble images from prebuilt binaries ([7d028cf](https://github.com/wielorzeczownik/ahe-ics/commit/7d028cf4c8d1eb3223cb38bf6d11aa46cddb6627))
+
+### Miscellaneous
+
+- Ignore generated build context and audit report ([13b7dcc](https://github.com/wielorzeczownik/ahe-ics/commit/13b7dccae98a7297afaebdb0a948ae7df802ffcd))
+
 ## [1.3.8](https://github.com/wielorzeczownik/ahe-ics/compare/v1.3.7...v1.3.8) - 2026-07-24
 
 ### CI/CD
