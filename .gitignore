@@ -13,6 +13,9 @@
 *.pid
 *.seed
 
+# Security audit report
+/audit-report.txt
+
 # Coverage / profiling
 coverage/
 *.profraw
@@ -23,6 +26,10 @@ coverage/
 
 # Docker local overrides
 docker-compose.yml
+
+# Docker release build context (staged from build-artifacts)
+/docker-context/
+/dist/
 
 # OS files
 .DS_Store
