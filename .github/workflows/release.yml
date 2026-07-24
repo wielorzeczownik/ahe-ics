@@ -42,7 +42,7 @@ jobs:
         uses: Swatinem/rust-cache@v2.9.1
 
       - name: Install cargo-edit
-        uses: taiki-e/install-action@v2.83.3
+        uses: taiki-e/install-action@v2.83.4
         with:
           tool: cargo-edit
 
@@ -270,7 +270,7 @@ jobs:
 
       - name: Install cargo-zigbuild
         if: ${{ matrix.build_cmd == 'cargo zigbuild' }}
-        uses: taiki-e/install-action@v2.83.3
+        uses: taiki-e/install-action@v2.83.4
         with:
           tool: cargo-zigbuild
 
