@@ -13,6 +13,7 @@ jobs:
     timeout-minutes: 20
     permissions:
       contents: write
+      issues: write
     steps:
       - name: Checkout
         uses: actions/checkout@v7.0.0
@@ -28,26 +29,25 @@ jobs:
 
       - name: Run audit
         id: audit
-        run: |
-          if cargo audit; then
-            echo "vulnerable=false" >> "$GITHUB_OUTPUT"
-          else
-            echo "vulnerable=true" >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Try cargo audit fix
-        if: steps.audit.outputs.vulnerable == 'true'
-        run: cargo audit fix
-
-      - name: Re-run audit after fix
-        if: steps.audit.outputs.vulnerable == 'true'
-        run: cargo audit
+        shell: bash
+        run: bash scripts/security-audit.sh
 
       - name: Commit fixed Cargo.lock
-        if: steps.audit.outputs.vulnerable == 'true'
+        if: ${{ steps.audit.outputs.changed == 'true' }}
         uses: EndBug/add-and-commit@v10.0.0
         with:
           add: 'Cargo.lock'
           default_author: github_actions
           message: 'fix(deps): resolve audit advisories'
           push: true
+
+      - name: Create issue
+        if: ${{ steps.audit.outputs.unresolved == 'true' }}
+        uses: JasonEtco/create-an-issue@v2.9.2
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          AUDIT_REPORT: ${{ steps.audit.outputs.report }}
+          REPO_OWNER: ${{ github.repository_owner }}
+        with:
+          filename: .github/security-advisory-issue.md
+          search_existing: open
