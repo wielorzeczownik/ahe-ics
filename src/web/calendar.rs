@@ -5,9 +5,9 @@ use chrono::{Duration, NaiveDate};
 use tracing::{debug, info, warn};
 
 use crate::app::AppState;
-use crate::cache::IcsCacheKey;
+use crate::cache::{IcsCacheKey, credential_key};
 use crate::config::ServerSettings;
-use crate::ics::render_calendar;
+use crate::ics::{calendar_id, render_calendar};
 use crate::models::{ExamEvent, PlanItem};
 use crate::web::AppError;
 use crate::web::real_ip::resolve_client_ip;
@@ -22,6 +22,7 @@ pub(crate) struct CalendarQueryParams {
 #[derive(Debug)]
 pub(crate) struct CalendarRenderData {
   pub(crate) student_id: i64,
+  pub(crate) calendar_id: String,
   pub(crate) from: NaiveDate,
   pub(crate) to: NaiveDate,
   pub(crate) plan: Vec<PlanItem>,
@@ -32,6 +33,8 @@ pub(crate) struct CalendarRenderData {
 struct CalendarRequestContext {
   token: String,
   student_id: i64,
+  /// Opaque per-calendar id used in event UIDs, never the raw student id.
+  calendar_id: String,
   index_id: Option<i64>,
   section_name: Option<String>,
   from: NaiveDate,
@@ -63,7 +66,7 @@ pub(crate) async fn render_calendar_ics<C: ServerSettings>(
   debug!("ics cache miss");
   let data = fetch_calendar_render_data(&state, &context).await?;
   let ics = render_calendar(
-    data.student_id,
+    &data.calendar_id,
     &data.plan,
     &data.exams,
     state.config.calendar_lang(),
@@ -153,6 +156,10 @@ async fn prepare_calendar_request_context<C: ServerSettings>(
 
   Ok(CalendarRequestContext {
     token,
+    calendar_id: calendar_id(
+      &credential_key(username, password),
+      student_context.student_id,
+    ),
     student_id: student_context.student_id,
     index_id: student_context.index_id,
     section_name: student_context.section_name,
@@ -208,6 +215,7 @@ async fn fetch_calendar_render_data<C: ServerSettings>(
 
   Ok(CalendarRenderData {
     student_id: context.student_id,
+    calendar_id: context.calendar_id.clone(),
     from: context.from,
     to: context.to,
     plan,

@@ -1,6 +1,9 @@
+use std::fmt::Write;
+
 use anyhow::Result;
 use chrono::Duration;
 use icalendar::{Alarm, Calendar, Component, Event, EventLike, EventStatus, Property, Trigger};
+use sha2::{Digest, Sha256};
 
 use crate::config::CalendarLanguage;
 use crate::i18n::{IcsTexts, ics_texts};
@@ -23,13 +26,29 @@ const EXAM_REMINDER_EARLY_MINUTES: i64 = 24 * 60;
 const WPS_PLAN_URL: &str = "https://wps.ahe.lodz.pl/plan-kalendarzowy";
 const WPS_EXAM_URL: &str = "https://wps.ahe.lodz.pl/egzaminy";
 
+/// Stable, opaque identifier placed in event UIDs.
+#[must_use]
+pub fn calendar_id(credential_digest: &[u8], student_id: i64) -> String {
+  let mut hasher = Sha256::new();
+  hasher.update(credential_digest);
+  hasher.update(b"ics-uid");
+  hasher.update(student_id.to_be_bytes());
+
+  hasher.finalize()[..8]
+    .iter()
+    .fold(String::new(), |mut acc, byte| {
+      let _ = write!(acc, "{byte:02x}");
+      acc
+    })
+}
+
 /// Renders a list of plan items into a single ICS calendar string.
 ///
 /// # Errors
 ///
 /// Returns an error if the calendar cannot be serialized into ICS form.
 pub fn render_calendar(
-  student_id: i64,
+  calendar_id: &str,
   items: &[PlanItem],
   exams: &[ExamEvent],
   lang: CalendarLanguage,
@@ -42,7 +61,7 @@ pub fn render_calendar(
 
   for item in items {
     let uid = format!(
-      "ahe-{student_id}-{}@wpsapi.ahe.lodz.pl",
+      "ahe-{calendar_id}-{}@wpsapi.ahe.lodz.pl",
       item.schedule_item_id
     );
     let summary = build_summary(item);
@@ -83,7 +102,7 @@ pub fn render_calendar(
 
   for exam in exams {
     let uid = format!(
-      "ahe-{student_id}-exam-{}-{}@wpsapi.ahe.lodz.pl",
+      "ahe-{calendar_id}-exam-{}-{}@wpsapi.ahe.lodz.pl",
       exam.published_data_id,
       exam.starts.and_utc().timestamp()
     );
@@ -265,8 +284,11 @@ mod tests {
     }
   }
 
+  /// Stand-in for the opaque id the web layer derives from the credentials.
+  const TEST_CALENDAR_ID: &str = "a1b2c3d4e5f60718";
+
   fn render(items: &[PlanItem], exams: &[ExamEvent]) -> String {
-    render_calendar(42, items, exams, CalendarLanguage::Pl).expect("render succeeds")
+    render_calendar(TEST_CALENDAR_ID, items, exams, CalendarLanguage::Pl).expect("render succeeds")
   }
 
   fn count(haystack: &str, needle: &str) -> usize {
@@ -286,7 +308,9 @@ mod tests {
   fn plan_item_uid_is_stable_and_scoped_to_student() {
     let ics = render(&[plan_item()], &[]);
 
-    assert!(ics.contains("UID:ahe-42-555@wpsapi.ahe.lodz.pl"));
+    assert!(ics.contains(&format!(
+      "UID:ahe-{TEST_CALENDAR_ID}-555@wpsapi.ahe.lodz.pl"
+    )));
   }
 
   #[test]
@@ -296,7 +320,7 @@ mod tests {
     let ics = render(&[], &[exam]);
 
     assert!(ics.contains(&format!(
-      "UID:ahe-42-exam-777-{timestamp}@wpsapi.ahe.lodz.pl"
+      "UID:ahe-{TEST_CALENDAR_ID}-exam-777-{timestamp}@wpsapi.ahe.lodz.pl"
     )));
   }
 
@@ -455,10 +479,34 @@ mod tests {
 
   #[test]
   fn calendar_name_follows_the_configured_language() {
-    let polish = render_calendar(42, &[], &[], CalendarLanguage::Pl).expect("render succeeds");
-    let english = render_calendar(42, &[], &[], CalendarLanguage::En).expect("render succeeds");
+    let polish =
+      render_calendar(TEST_CALENDAR_ID, &[], &[], CalendarLanguage::Pl).expect("render succeeds");
+    let english =
+      render_calendar(TEST_CALENDAR_ID, &[], &[], CalendarLanguage::En).expect("render succeeds");
 
     assert!(polish.contains("Plan AHE"));
     assert!(english.contains("AHE Schedule"));
+  }
+
+  #[test]
+  fn calendar_id_is_stable_for_the_same_inputs() {
+    assert_eq!(calendar_id(b"digest", 4242), calendar_id(b"digest", 4242));
+  }
+
+  #[test]
+  fn calendar_id_does_not_expose_the_student_id() {
+    // Enumerating student ids must not be enough to recognise a calendar, which
+    // is why the credential digest is part of the input.
+    let identifier = calendar_id(b"digest", 4242);
+
+    assert_eq!(identifier.len(), 16);
+    assert!(identifier.chars().all(|ch| ch.is_ascii_hexdigit()));
+    assert!(!identifier.contains("4242"));
+    assert_ne!(identifier, calendar_id(b"other-digest", 4242));
+  }
+
+  #[test]
+  fn calendar_id_separates_students_on_one_instance() {
+    assert_ne!(calendar_id(b"digest", 1), calendar_id(b"digest", 2));
   }
 }
