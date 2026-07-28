@@ -52,16 +52,18 @@ icalendar = "0.17.6"
 
 # Caching
 moka = { version = "0.12.13", features = ["future"] }
-sha2 = "0.11.0"
 
 # Environment config
 dotenvy = "0.15.7"
+
+# Calendar token verification and credential-derived cache keys
 argon2 = "0.5.3"
+sha2 = "0.11.0"
+subtle = "2.6.1"
 
 # Logging
 tracing = "0.1.44"
 tracing-subscriber = { version = "0.3.22", features = ["env-filter"] }
-subtle = "2.6.1"
 
 [profile.release]
 opt-level = "s"
