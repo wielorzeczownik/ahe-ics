@@ -9,6 +9,7 @@ container=$(docker run -d -p "$port:8080" \
   -e AHE_PASSWORD=smoke-test \
   "$IMAGE")
 
+# shellcheck disable=SC2329
 cleanup() {
   docker logs "$container" 2>&1 | tail -20 || true
   docker rm -f "$container" >/dev/null 2>&1 || true

@@ -25,6 +25,7 @@ jobs:
       shell: ${{ steps.filter.outputs.shell }}
       markdown: ${{ steps.filter.outputs.markdown }}
       format: ${{ steps.filter.outputs.format }}
+      workflows: ${{ steps.filter.outputs.workflows }}
     steps:
       - name: Filter changed paths
         id: filter
@@ -53,6 +54,8 @@ jobs:
             markdown:
               - '.github/workflows/validate.yml'
               - '**/*.md'
+            workflows:
+              - '.github/workflows/**'
             format:
               - '.github/workflows/validate.yml'
               - '.prettierrc'
@@ -187,8 +190,8 @@ jobs:
           severity: CRITICAL,HIGH
           ignore-unfixed: true
 
-  shfmt:
-    name: Shell format (shfmt)
+  shell-lint:
+    name: Shell (shfmt + shellcheck)
     needs: changes
     if: ${{ needs.changes.outputs.shell == 'true' }}
     runs-on: ubuntu-latest
@@ -199,11 +202,37 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Set up shfmt
-        uses: mfinelli/setup-shfmt@a25fda4c1fe115aec0f85e04126610841bc3141d # v4.0.1
+      - name: Install shfmt and shellcheck
+        uses: taiki-e/install-action@a6b2e2dcd845ddd7f509ce4f3ed3d922b80cc5d9 # v2.84.0
+        with:
+          tool: shfmt,shellcheck
 
       - name: Format check shell scripts
         run: shfmt --diff scripts/
+
+      - name: Lint shell scripts
+        run: shellcheck scripts/*.sh
+
+  actionlint:
+    name: Lint workflows (actionlint)
+    needs: changes
+    if: ${{ needs.changes.outputs.workflows == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # actionlint shells out to shellcheck for the `run:` blocks it finds.
+      - name: Install actionlint and shellcheck
+        uses: taiki-e/install-action@a6b2e2dcd845ddd7f509ce4f3ed3d922b80cc5d9 # v2.84.0
+        with:
+          tool: actionlint,shellcheck
+
+      - name: Lint workflows
+        run: actionlint
 
   prettier:
     name: Formatting (Prettier)

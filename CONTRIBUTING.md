@@ -52,6 +52,10 @@ hadolint Dockerfile Dockerfile.alpine Dockerfile.release Dockerfile.alpine.relea
 
 # Shell
 shfmt --diff scripts/
+shellcheck scripts/*.sh
+
+# GitHub Actions workflows
+actionlint
 
 # Markdown
 markdownlint-cli2 "**/*.md"
