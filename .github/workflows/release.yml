@@ -5,12 +5,12 @@ on:
     branches:
       - main
     paths:
-      - "src/**"
-      - "Cargo.toml"
-      - "Cargo.lock"
-      - "Dockerfile.release"
-      - "Dockerfile.alpine.release"
-      - "scripts/**"
+      - 'src/**'
+      - 'Cargo.toml'
+      - 'Cargo.lock'
+      - 'Dockerfile.release'
+      - 'Dockerfile.alpine.release'
+      - 'scripts/**'
 
 concurrency:
   group: release-main
@@ -84,20 +84,20 @@ jobs:
         if: ${{ steps.bump.outputs.released == 'true' && steps.bump.outputs.commit_changes == 'true' }}
         uses: EndBug/add-and-commit@v10.0.0
         with:
-          add: "Cargo.toml Cargo.lock CHANGELOG.md"
+          add: 'Cargo.toml Cargo.lock CHANGELOG.md'
           default_author: github_actions
-          message: "chore(release): ${{ steps.bump.outputs.tag }} [skip ci]"
-          tag: "${{ steps.bump.outputs.tag }}"
+          message: 'chore(release): ${{ steps.bump.outputs.tag }} [skip ci]'
+          tag: '${{ steps.bump.outputs.tag }}'
           push: true
 
       - name: Commit changelog and tag
         if: ${{ steps.bump.outputs.released == 'true' && steps.bump.outputs.commit_changes == 'false' }}
         uses: EndBug/add-and-commit@v10.0.0
         with:
-          add: "CHANGELOG.md"
+          add: 'CHANGELOG.md'
           default_author: github_actions
-          message: "chore(release): ${{ steps.bump.outputs.tag }} [skip ci]"
-          tag: "${{ steps.bump.outputs.tag }}"
+          message: 'chore(release): ${{ steps.bump.outputs.tag }} [skip ci]'
+          tag: '${{ steps.bump.outputs.tag }}'
           push: true
 
       - name: Upload release notes
@@ -294,41 +294,41 @@ jobs:
             bin_name: ahe-ics
             libc: gnu
             image_name: ahe-ics
-            tag_suffix: ""
+            tag_suffix: ''
             latest_tag: latest
             platforms: linux/amd64,linux/arm64,linux/arm/v7,linux/386
-            title: "ahe-ics"
-            description: "Self-hosted AHE Łódź class schedule exporter to iCalendar (ICS)"
+            title: 'ahe-ics'
+            description: 'Self-hosted AHE Łódź class schedule exporter to iCalendar (ICS)'
           - variant: alpine
             dockerfile: Dockerfile.alpine.release
             bin_name: ahe-ics
             libc: musl
             image_name: ahe-ics
-            tag_suffix: "-alpine"
+            tag_suffix: '-alpine'
             latest_tag: alpine
             platforms: linux/amd64,linux/arm64
-            title: "ahe-ics"
-            description: "Self-hosted AHE Łódź class schedule exporter to iCalendar (ICS)"
+            title: 'ahe-ics'
+            description: 'Self-hosted AHE Łódź class schedule exporter to iCalendar (ICS)'
           - variant: shared-debian
             dockerfile: Dockerfile.release
             bin_name: ahe-ics-shared
             libc: gnu
             image_name: ahe-ics
-            tag_suffix: "-shared"
+            tag_suffix: '-shared'
             latest_tag: shared
             platforms: linux/amd64,linux/arm64,linux/arm/v7,linux/386
-            title: "ahe-ics-shared"
-            description: "AHE Łódź class schedule exporter — stateless SaaS variant (credentials per request)"
+            title: 'ahe-ics-shared'
+            description: 'AHE Łódź class schedule exporter — stateless SaaS variant (credentials per request)'
           - variant: shared-alpine
             dockerfile: Dockerfile.alpine.release
             bin_name: ahe-ics-shared
             libc: musl
             image_name: ahe-ics
-            tag_suffix: "-shared-alpine"
+            tag_suffix: '-shared-alpine'
             latest_tag: shared-alpine
             platforms: linux/amd64,linux/arm64
-            title: "ahe-ics-shared"
-            description: "AHE Łódź class schedule exporter — stateless SaaS variant (credentials per request)"
+            title: 'ahe-ics-shared'
+            description: 'AHE Łódź class schedule exporter — stateless SaaS variant (credentials per request)'
     steps:
       - name: Checkout tag
         uses: actions/checkout@v7.0.1

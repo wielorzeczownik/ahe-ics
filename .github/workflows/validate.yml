@@ -24,6 +24,7 @@ jobs:
       deps: ${{ steps.filter.outputs.deps }}
       shell: ${{ steps.filter.outputs.shell }}
       markdown: ${{ steps.filter.outputs.markdown }}
+      format: ${{ steps.filter.outputs.format }}
     steps:
       - name: Filter changed paths
         id: filter
@@ -52,6 +53,14 @@ jobs:
             markdown:
               - '.github/workflows/validate.yml'
               - '**/*.md'
+            format:
+              - '.github/workflows/validate.yml'
+              - '.prettierrc'
+              - '.prettierignore'
+              - '**/*.json'
+              - '**/*.md'
+              - '**/*.yml'
+              - '**/*.yaml'
 
   cargo-test:
     name: Cargo test
@@ -195,6 +204,21 @@ jobs:
 
       - name: Format check shell scripts
         run: shfmt --diff scripts/
+
+  prettier:
+    name: Prettier
+    needs: changes
+    if: ${{ needs.changes.outputs.format == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Format check
+        run: npx --yes prettier@3.9.6 --check .
 
   markdownlint:
     name: markdownlint

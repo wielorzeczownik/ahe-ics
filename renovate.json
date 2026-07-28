@@ -7,90 +7,63 @@
   "customManagers": [
     {
       "customType": "regex",
-      "fileMatch": [
-        "^README(\\.pl)?\\.md$"
-      ],
-      "matchStrings": [
-        "python:(?<currentValue>[^\\s\"']+)"
-      ],
+      "fileMatch": ["^README(\\.pl)?\\.md$"],
+      "matchStrings": ["python:(?<currentValue>[^\\s\"']+)"],
       "depNameTemplate": "python",
       "datasourceTemplate": "docker"
+    },
+    {
+      "customType": "regex",
+      "fileMatch": ["^\\.github/workflows/[^/]+\\.yml$"],
+      "matchStrings": ["prettier@(?<currentValue>\\d+\\.\\d+\\.\\d+)"],
+      "depNameTemplate": "prettier",
+      "datasourceTemplate": "npm"
     }
   ],
   "packageRules": [
     {
-      "matchUpdateTypes": [
-        "minor",
-        "patch",
-        "pin",
-        "digest"
-      ],
+      "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
       "automerge": true
     },
     {
-      "matchDepTypes": [
-        "buildDependencies"
-      ],
+      "matchDepTypes": ["buildDependencies"],
       "semanticCommitType": "build"
     },
     {
-      "matchManagers": [
-        "github-actions"
-      ],
+      "matchManagers": ["github-actions"],
       "minimumReleaseAge": "7 days",
       "semanticCommitType": "ci"
     },
     {
-      "matchManagers": [
-        "dockerfile"
-      ],
+      "matchManagers": ["dockerfile"],
       "pinDigests": true,
       "semanticCommitType": "build"
     },
     {
-      "matchManagers": [
-        "dockerfile"
-      ],
+      "matchManagers": ["dockerfile"],
       "pinDigests": true,
-      "matchPackageNames": [
-        "debian"
-      ],
+      "matchPackageNames": ["debian"],
       "semanticCommitType": "chore"
     },
     {
-      "matchManagers": [
-        "regex"
-      ],
-      "matchFileNames": [
-        "README.md",
-        "README.pl.md"
-      ],
+      "matchManagers": ["regex"],
+      "matchFileNames": ["README.md", "README.pl.md"],
       "semanticCommitType": "docs"
     },
     {
-      "matchManagers": [
-        "regex"
-      ],
-      "matchFileNames": [
-        "Dockerfile"
-      ],
+      "matchManagers": ["regex"],
+      "matchFileNames": ["Dockerfile"],
       "semanticCommitType": "build",
       "groupName": "debian packages"
     },
     {
-      "matchManagers": [
-        "regex"
-      ],
-      "matchFileNames": [
-        "Dockerfile.alpine"
-      ],
+      "matchManagers": ["regex"],
+      "matchFileNames": ["Dockerfile.alpine"],
       "semanticCommitType": "build",
       "groupName": "alpine packages"
     },
     {
-      "matchManagers": [
-        "github-actions"
-      ],
+      "matchManagers": ["github-actions"],
       "matchPackageNames": [
         "docker/build-push-action",
         "docker/login-action",
@@ -101,9 +74,7 @@
       "groupName": "docker actions"
     },
     {
-      "matchManagers": [
-        "github-actions"
-      ],
+      "matchManagers": ["github-actions"],
       "matchPackageNames": [
         "actions/upload-artifact",
         "actions/download-artifact"

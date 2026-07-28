@@ -43,8 +43,7 @@ cargo run
 ```bash
 # Rust
 cargo fmt --check
-cargo clippy --all-targets -- -D warnings
-cargo check --all-targets --locked
+cargo clippy --all-targets --locked -- -D warnings
 cargo test --locked
 cargo audit
 
@@ -56,6 +55,9 @@ shfmt --diff scripts/
 
 # Markdown
 markdownlint-cli2 "**/*.md"
+
+# YAML, JSON and Markdown formatting
+npx prettier --check .
 ```
 
 ### With Docker (no local installs required)

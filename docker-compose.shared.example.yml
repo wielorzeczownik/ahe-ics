@@ -3,8 +3,8 @@ services:
     image: wielorzeczownik/ahe-ics:shared
     container_name: ahe-ics-shared
     ports:
-      - "8080:8080"
+      - '8080:8080'
     environment:
-      AHE_CAL_TOKEN: "supersecret-token"
-      AHE_CAL_EXAMS_ENABLED: "true"
+      AHE_CAL_TOKEN: 'supersecret-token'
+      AHE_CAL_EXAMS_ENABLED: 'true'
     restart: unless-stopped

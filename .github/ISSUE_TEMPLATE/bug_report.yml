@@ -38,7 +38,7 @@ body:
     id: version
     attributes:
       label: Version
-      placeholder: "e.g. v0.5.6"
+      placeholder: 'e.g. v0.5.6'
     validations:
       required: true
 

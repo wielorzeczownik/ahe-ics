@@ -2,3 +2,6 @@
 .vscode/
 .DS_Store
 src/
+
+CHANGELOG.md
+.github/security-advisory-issue.md
