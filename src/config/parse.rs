@@ -50,6 +50,19 @@ pub(super) fn real_ip_header() -> Result<Option<String>> {
     .ok()
     .or_else(|| std::env::var("AHE_REAL_IP_HEADER").ok());
 
+  normalize_real_ip_header(raw.as_deref())
+}
+
+fn parse_days(key: &str, default_value: i64) -> Result<i64> {
+  parse_days_value(key, std::env::var(key).ok().as_deref(), default_value)
+}
+
+fn parse_bool(key: &str, default_value: bool) -> Result<bool> {
+  parse_bool_value(key, std::env::var(key).ok().as_deref(), default_value)
+}
+
+/// Normalizes the configured real-ip header name
+fn normalize_real_ip_header(raw: Option<&str>) -> Result<Option<String>> {
   let Some(raw) = raw else {
     return Ok(None);
   };
@@ -62,8 +75,8 @@ pub(super) fn real_ip_header() -> Result<Option<String>> {
   Ok(Some(value.to_ascii_lowercase()))
 }
 
-fn parse_days(key: &str, default_value: i64) -> Result<i64> {
-  let Some(raw) = std::env::var(key).ok() else {
+fn parse_days_value(key: &str, raw: Option<&str>, default_value: i64) -> Result<i64> {
+  let Some(raw) = raw else {
     return Ok(default_value);
   };
 
@@ -78,8 +91,8 @@ fn parse_days(key: &str, default_value: i64) -> Result<i64> {
   Ok(value)
 }
 
-fn parse_bool(key: &str, default_value: bool) -> Result<bool> {
-  let Some(raw) = std::env::var(key).ok() else {
+fn parse_bool_value(key: &str, raw: Option<&str>, default_value: bool) -> Result<bool> {
+  let Some(raw) = raw else {
     return Ok(default_value);
   };
 
@@ -87,5 +100,90 @@ fn parse_bool(key: &str, default_value: bool) -> Result<bool> {
     "1" | "true" | "yes" | "on" => Ok(true),
     "0" | "false" | "no" | "off" => Ok(false),
     _ => bail!("{key} must be a boolean value (true/false, 1/0, yes/no, on/off)"),
+  }
+}
+
+#[cfg(test)]
+mod tests {
+  use super::*;
+
+  const KEY: &str = "AHE_TEST_KEY";
+
+  #[test]
+  fn days_fall_back_to_default_when_unset() {
+    assert_eq!(parse_days_value(KEY, None, 60).expect("default"), 60);
+  }
+
+  #[test]
+  fn days_accept_non_negative_integers() {
+    assert_eq!(parse_days_value(KEY, Some("0"), 60).expect("zero"), 0);
+    assert_eq!(parse_days_value(KEY, Some("365"), 60).expect("value"), 365);
+  }
+
+  #[test]
+  fn days_reject_negative_and_malformed_values() {
+    assert!(parse_days_value(KEY, Some("-1"), 60).is_err());
+    assert!(parse_days_value(KEY, Some("abc"), 60).is_err());
+    assert!(parse_days_value(KEY, Some(""), 60).is_err());
+    assert!(parse_days_value(KEY, Some("1.5"), 60).is_err());
+    // Unlike the boolean parser
+    assert!(parse_days_value(KEY, Some(" 30 "), 60).is_err());
+  }
+
+  #[test]
+  fn days_error_message_names_the_key() {
+    let error = parse_days_value(KEY, Some("-1"), 60).expect_err("negative is rejected");
+    assert!(error.to_string().contains(KEY));
+  }
+
+  #[test]
+  fn bool_falls_back_to_default_when_unset() {
+    assert!(parse_bool_value(KEY, None, true).expect("default"));
+    assert!(!parse_bool_value(KEY, None, false).expect("default"));
+  }
+
+  #[test]
+  fn bool_accepts_documented_truthy_values() {
+    for raw in ["1", "true", "TRUE", " yes ", "on"] {
+      assert!(
+        parse_bool_value(KEY, Some(raw), false).expect("parsed"),
+        "expected {raw:?} to parse as true"
+      );
+    }
+  }
+
+  #[test]
+  fn bool_accepts_documented_falsy_values() {
+    for raw in ["0", "false", "FALSE", " no ", "off"] {
+      assert!(
+        !parse_bool_value(KEY, Some(raw), true).expect("parsed"),
+        "expected {raw:?} to parse as false"
+      );
+    }
+  }
+
+  #[test]
+  fn bool_rejects_anything_else() {
+    for raw in ["", "maybe", "2", "tak"] {
+      assert!(
+        parse_bool_value(KEY, Some(raw), true).is_err(),
+        "expected {raw:?} to be rejected"
+      );
+    }
+  }
+
+  #[test]
+  fn real_ip_header_is_lowercased() {
+    assert_eq!(
+      normalize_real_ip_header(Some("  X-Forwarded-For  ")).expect("valid header"),
+      Some("x-forwarded-for".to_string())
+    );
+  }
+
+  #[test]
+  fn real_ip_header_is_optional_but_never_blank() {
+    assert_eq!(normalize_real_ip_header(None).expect("unset"), None);
+    assert!(normalize_real_ip_header(Some("   ")).is_err());
+    assert!(normalize_real_ip_header(Some("")).is_err());
   }
 }

@@ -442,3 +442,229 @@ fn build_terms_for_year(academic_year: i32) -> Vec<TermQuery> {
     },
   ]
 }
+
+#[cfg(test)]
+mod tests {
+  use super::*;
+
+  fn date(year: i32, month: u32, day: u32) -> NaiveDate {
+    NaiveDate::from_ymd_opt(year, month, day).expect("valid date")
+  }
+
+  fn recipient(section: Option<&str>) -> ExamRecipient {
+    ExamRecipient {
+      section: section.map(str::to_string),
+    }
+  }
+
+  /// Minimal schedule item
+  fn schedule_item(exam_day: NaiveDate) -> ExamScheduleItem {
+    ExamScheduleItem {
+      published_data_id: 100,
+      exam_subject: "Analiza matematyczna".to_string(),
+      notes: None,
+      exam_date: exam_day.and_hms_opt(0, 0, 0).expect("valid midnight"),
+      start_time: Some("10:00".to_string()),
+      end_time: Some("11:30".to_string()),
+      room: None,
+      lecturer: None,
+      details: None,
+      recipients: Vec::new(),
+    }
+  }
+
+  #[test]
+  fn normalize_subject_collapses_whitespace_and_case() {
+    assert_eq!(
+      normalize_subject("  Analiza   MATEMATYCZNA \n II "),
+      Some("analiza matematyczna ii".to_string())
+    );
+  }
+
+  #[test]
+  fn normalize_subject_rejects_blank_values() {
+    assert_eq!(normalize_subject(""), None);
+    assert_eq!(normalize_subject("   \t\n "), None);
+  }
+
+  #[test]
+  fn is_exam_settlement_matches_only_exact_exam_label() {
+    assert!(is_exam_settlement(Some("egzamin")));
+    assert!(is_exam_settlement(Some("  EGZAMIN  ")));
+    assert!(!is_exam_settlement(Some("zaliczenie")));
+    assert!(!is_exam_settlement(Some("egzamin poprawkowy")));
+    assert!(!is_exam_settlement(None));
+  }
+
+  #[test]
+  fn is_retake_notes_detects_polish_declensions() {
+    assert!(is_retake_notes(Some("Egzamin poprawkowy")));
+    assert!(is_retake_notes(Some("termin POPRAWKOWY")));
+    assert!(is_retake_notes(Some("egzamin poprawkowa sesja")));
+    assert!(!is_retake_notes(Some("egzamin podstawowy")));
+    assert!(!is_retake_notes(None));
+  }
+
+  #[test]
+  fn parse_time_accepts_hour_minute_pairs() {
+    assert_eq!(parse_time("09:45"), NaiveTime::from_hms_opt(9, 45, 0));
+    assert_eq!(parse_time(" 9:45 "), NaiveTime::from_hms_opt(9, 45, 0));
+    assert_eq!(parse_time("23:59"), NaiveTime::from_hms_opt(23, 59, 0));
+  }
+
+  #[test]
+  fn parse_time_rejects_malformed_values() {
+    assert_eq!(parse_time(""), None);
+    assert_eq!(parse_time("10"), None);
+    assert_eq!(parse_time("10:aa"), None);
+    assert_eq!(parse_time("24:00"), None);
+    assert_eq!(parse_time("10:60"), None);
+    assert_eq!(parse_time("10:00:00"), None);
+  }
+
+  #[test]
+  fn recipient_section_matches_without_configured_section() {
+    let recipients = vec![recipient(Some("IN1"))];
+    assert!(recipient_section_matches(&recipients, None));
+    // A blank configured section normalizes away and disables the guard
+    assert!(recipient_section_matches(&recipients, Some("   ")));
+  }
+
+  #[test]
+  fn recipient_section_matches_on_case_insensitive_section() {
+    let recipients = vec![recipient(Some("ZAOCZNE")), recipient(Some("in1"))];
+    assert!(recipient_section_matches(&recipients, Some("IN1")));
+  }
+
+  #[test]
+  fn recipient_section_rejects_foreign_sections() {
+    let recipients = vec![recipient(Some("IN2")), recipient(Some("IN3"))];
+    assert!(!recipient_section_matches(&recipients, Some("IN1")));
+  }
+
+  #[test]
+  fn recipient_section_passes_when_feed_carries_no_section() {
+    // Soft guard
+    let recipients = vec![recipient(None), recipient(Some("  "))];
+    assert!(recipient_section_matches(&recipients, Some("IN1")));
+    assert!(recipient_section_matches(&[], Some("IN1")));
+  }
+
+  #[test]
+  fn map_exam_event_keeps_events_inside_window_inclusively() {
+    let from = date(2026, 1, 10);
+    let to = date(2026, 1, 20);
+
+    for day in [date(2026, 1, 10), date(2026, 1, 15), date(2026, 1, 20)] {
+      assert!(
+        map_exam_event(schedule_item(day), from, to).is_some(),
+        "expected {day} to fall inside the window"
+      );
+    }
+  }
+
+  #[test]
+  fn map_exam_event_drops_events_outside_window() {
+    let from = date(2026, 1, 10);
+    let to = date(2026, 1, 20);
+
+    assert!(map_exam_event(schedule_item(date(2026, 1, 9)), from, to).is_none());
+    assert!(map_exam_event(schedule_item(date(2026, 1, 21)), from, to).is_none());
+  }
+
+  #[test]
+  fn map_exam_event_uses_declared_times() {
+    let day = date(2026, 1, 15);
+    let event = map_exam_event(schedule_item(day), day, day).expect("event in window");
+
+    assert_eq!(event.starts, day.and_hms_opt(10, 0, 0).expect("start"));
+    assert_eq!(event.ends, day.and_hms_opt(11, 30, 0).expect("end"));
+  }
+
+  #[test]
+  fn map_exam_event_defaults_missing_start_to_nine() {
+    let day = date(2026, 1, 15);
+    let mut item = schedule_item(day);
+    item.start_time = None;
+    item.end_time = None;
+
+    let event = map_exam_event(item, day, day).expect("event in window");
+
+    assert_eq!(event.starts, day.and_hms_opt(9, 0, 0).expect("start"));
+    // No end time in the feed means a 90 minute slot.
+    assert_eq!(event.ends, day.and_hms_opt(10, 30, 0).expect("end"));
+  }
+
+  #[test]
+  fn map_exam_event_repairs_non_positive_duration() {
+    let day = date(2026, 1, 15);
+    let mut item = schedule_item(day);
+    item.start_time = Some("14:00".to_string());
+    // End before start (or equal to it) must fall back to the default length
+    item.end_time = Some("13:00".to_string());
+
+    let event = map_exam_event(item, day, day).expect("event in window");
+
+    assert_eq!(event.starts, day.and_hms_opt(14, 0, 0).expect("start"));
+    assert_eq!(event.ends, day.and_hms_opt(15, 30, 0).expect("end"));
+  }
+
+  #[test]
+  fn map_exam_event_falls_back_when_start_time_is_unparsable() {
+    let day = date(2026, 1, 15);
+    let mut item = schedule_item(day);
+    item.start_time = Some("nope".to_string());
+    item.end_time = Some("11:30".to_string());
+
+    let event = map_exam_event(item, day, day).expect("event in window");
+
+    assert_eq!(event.starts, day.and_hms_opt(9, 0, 0).expect("start"));
+    assert_eq!(event.ends, day.and_hms_opt(11, 30, 0).expect("end"));
+  }
+
+  #[test]
+  fn map_exam_event_cleans_optional_text_fields() {
+    let day = date(2026, 1, 15);
+    let mut item = schedule_item(day);
+    item.exam_subject = "  Analiza matematyczna  ".to_string();
+    item.room = Some("   ".to_string());
+    item.lecturer = Some("- dr Jan Kowalski".to_string());
+    item.details = Some("  sala A  ".to_string());
+    item.notes = Some("Egzamin poprawkowy".to_string());
+
+    let event = map_exam_event(item, day, day).expect("event in window");
+
+    assert_eq!(event.subject, "Analiza matematyczna");
+    assert_eq!(event.location, None);
+    assert_eq!(event.lecturer.as_deref(), Some("dr Jan Kowalski"));
+    assert_eq!(event.details.as_deref(), Some("sala A"));
+    assert!(event.is_retake);
+  }
+
+  #[test]
+  fn clean_lecturer_strips_leading_dashes() {
+    assert_eq!(
+      clean_lecturer(Some("--  dr Jan Kowalski ".to_string())).as_deref(),
+      Some("dr Jan Kowalski")
+    );
+    assert_eq!(clean_lecturer(Some("  -  ".to_string())), None);
+    assert_eq!(clean_lecturer(None), None);
+  }
+
+  #[test]
+  fn clean_text_drops_blank_values() {
+    assert_eq!(clean_text(Some("  x  ".to_string())).as_deref(), Some("x"));
+    assert_eq!(clean_text(Some("   ".to_string())), None);
+    assert_eq!(clean_text(None), None);
+  }
+
+  #[test]
+  fn build_terms_for_year_covers_both_semesters() {
+    let terms = build_terms_for_year(2025);
+
+    assert_eq!(terms.len(), 2);
+    assert!(terms.iter().all(|term| term.academic_year == 2025));
+    assert_eq!(terms[0].semester_id, 1);
+    assert_eq!(terms[1].semester_id, 2);
+  }
+}

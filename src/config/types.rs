@@ -81,3 +81,116 @@ impl CalendarToken {
     }
   }
 }
+
+#[cfg(test)]
+mod tests {
+  use argon2::password_hash::{PasswordHasher, SaltString};
+  use argon2::{Algorithm, Params, Version};
+
+  use super::*;
+
+  /// Deterministic salt keeps the generated PHC strings stable across runs
+  const TEST_SALT: &str = "dGVzdHNhbHR0ZXN0c2FsdA";
+
+  fn hash_with(algorithm: Algorithm, password: &str) -> String {
+    let salt = SaltString::from_b64(TEST_SALT).expect("valid salt");
+    Argon2::new(algorithm, Version::V0x13, Params::default())
+      .hash_password(password.as_bytes(), &salt)
+      .expect("hashing succeeds")
+      .to_string()
+  }
+
+  #[test]
+  fn language_accepts_supported_values() {
+    assert!(matches!(
+      CalendarLanguage::from_env_value("  PL  "),
+      Ok(CalendarLanguage::Pl)
+    ));
+    assert!(matches!(
+      CalendarLanguage::from_env_value("en"),
+      Ok(CalendarLanguage::En)
+    ));
+  }
+
+  #[test]
+  fn language_rejects_unknown_values() {
+    assert!(CalendarLanguage::from_env_value("de").is_err());
+    assert!(CalendarLanguage::from_env_value("").is_err());
+  }
+
+  #[test]
+  fn token_defaults_to_plain() {
+    let token = CalendarToken::from_env_value("  s3cret  ").expect("valid token");
+
+    assert!(matches!(token, CalendarToken::Plain(ref value) if value == "s3cret"));
+    assert!(token.verify("s3cret"));
+    assert!(!token.verify("other"));
+    // Surrounding whitespace was stripped, so the padded form must not verify
+    assert!(!token.verify("  s3cret  "));
+  }
+
+  #[test]
+  fn token_honours_explicit_plain_prefix() {
+    // Without the prefix this would be sniffed as a hash
+    let token = CalendarToken::from_env_value("plain: $argon2id$looking").expect("valid token");
+
+    assert!(matches!(token, CalendarToken::Plain(_)));
+    assert!(token.verify("$argon2id$looking"));
+  }
+
+  #[test]
+  fn token_rejects_empty_forms() {
+    assert!(CalendarToken::from_env_value("").is_err());
+    assert!(CalendarToken::from_env_value("   ").is_err());
+    assert!(CalendarToken::from_env_value("plain:   ").is_err());
+    assert!(CalendarToken::from_env_value("argon2:").is_err());
+  }
+
+  #[test]
+  fn token_detects_bare_argon2id_hash() {
+    let hash = hash_with(Algorithm::Argon2id, "s3cret");
+    let token = CalendarToken::from_env_value(&hash).expect("valid token");
+
+    assert!(matches!(token, CalendarToken::Argon2id(_)));
+    assert!(token.verify("s3cret"));
+    assert!(!token.verify("wrong"));
+    // The hash itself is not a valid password
+    assert!(!token.verify(&hash));
+  }
+
+  #[test]
+  fn token_accepts_prefixed_argon2id_hash() {
+    let hash = hash_with(Algorithm::Argon2id, "s3cret");
+    let token = CalendarToken::from_env_value(&format!("argon2: {hash}")).expect("valid token");
+
+    assert!(matches!(token, CalendarToken::Argon2id(_)));
+    assert!(token.verify("s3cret"));
+  }
+
+  #[test]
+  fn token_rejects_weaker_argon2_variants() {
+    for algorithm in [Algorithm::Argon2i, Algorithm::Argon2d] {
+      let hash = hash_with(algorithm, "s3cret");
+      assert!(
+        CalendarToken::from_env_value(&format!("argon2:{hash}")).is_err(),
+        "expected {algorithm:?} to be rejected"
+      );
+    }
+  }
+
+  #[test]
+  fn token_rejects_malformed_argon2_hash() {
+    assert!(CalendarToken::from_env_value("argon2:not-a-phc-string").is_err());
+    assert!(CalendarToken::from_env_value("argon2:$argon2i$broken").is_err());
+  }
+
+  #[test]
+  fn token_with_digestless_hash_is_accepted_but_never_verifies() {
+    let token = CalendarToken::from_env_value("argon2:$argon2id$broken").expect("parses");
+
+    assert!(matches!(token, CalendarToken::Argon2id(_)));
+    assert!(!token.verify("broken"));
+    assert!(!token.verify(""));
+    assert!(!token.verify("s3cret"));
+  }
+}

@@ -45,6 +45,7 @@ cargo run
 cargo fmt --check
 cargo clippy --all-targets -- -D warnings
 cargo check --all-targets --locked
+cargo test --locked
 cargo audit
 
 # Dockerfile
@@ -90,7 +91,8 @@ Breaking changes must include `BREAKING CHANGE:` in the commit footer.
 
 - Keep PRs focused on a single concern.
 - Reference any related issue in the PR description.
-- All CI checks must pass: Rust linting, shell linting, Markdown linting, smoke build, and vulnerability scan.
+- Cover behavior changes with tests; bug fixes should come with a test that fails without the fix.
+- All CI checks must pass: Rust linting, tests, shell linting, Markdown linting, smoke build, and vulnerability scan.
 
 ## Reporting bugs
 
