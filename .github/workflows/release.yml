@@ -196,7 +196,7 @@ jobs:
       - name: Build binaries
         env:
           CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER: aarch64-linux-gnu-gcc
-        run: ${{ matrix.build_cmd || 'cargo build' }} --release --target ${{ matrix.target }} --bin ahe-ics --bin ahe-ics-shared
+        run: ${{ matrix.build_cmd || 'cargo build' }} --release --locked --target ${{ matrix.target }} --bin ahe-ics --bin ahe-ics-shared
 
       - name: Package (tar.gz)
         if: ${{ matrix.archive == 'tar.gz' }}
