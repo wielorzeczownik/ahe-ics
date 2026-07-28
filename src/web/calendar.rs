@@ -142,7 +142,13 @@ async fn prepare_calendar_request_context<C: ServerSettings>(
   };
   let student_context = state
     .student_context_cache
-    .get_or_fetch(username, state.config.exams_enabled(), &state.api, &token)
+    .get_or_fetch(
+      username,
+      password,
+      state.config.exams_enabled(),
+      &state.api,
+      &token,
+    )
     .await?;
 
   Ok(CalendarRequestContext {

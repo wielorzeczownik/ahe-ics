@@ -5,6 +5,7 @@ use moka::future::Cache;
 use tracing::{debug, warn};
 
 use crate::api::ApiClient;
+use crate::cache::{CredentialKey, credential_key};
 use crate::models::StudentIndex;
 
 const STUDENT_CONTEXT_CACHE_TTL_SECONDS: u64 = 21_600;
@@ -16,9 +17,9 @@ pub struct StudentContext {
   pub section_name: Option<String>,
 }
 
-/// Per-user student metadata cache, keyed by username
+/// Per-user student metadata cache, keyed by the full credential pair
 pub struct StudentContextCache {
-  inner: Cache<String, StudentContext>,
+  inner: Cache<CredentialKey, StudentContext>,
 }
 
 impl Default for StudentContextCache {
@@ -40,11 +41,15 @@ impl StudentContextCache {
   pub async fn get_or_fetch(
     &self,
     username: &str,
+    password: &str,
     exams_enabled: bool,
     api: &ApiClient,
     access_token: &str,
   ) -> Result<StudentContext> {
-    if let Some(ctx) = self.inner.get(username).await {
+    // Bound to the credential pair for the same reason as the token cache
+    let key = credential_key(username, password);
+
+    if let Some(ctx) = self.inner.get(&key).await {
       debug!("student context cache hit");
       return Ok(ctx);
     }
@@ -86,7 +91,7 @@ impl StudentContextCache {
       index_id,
       section_name,
     };
-    self.inner.insert(username.to_string(), ctx.clone()).await;
+    self.inner.insert(key, ctx.clone()).await;
 
     Ok(ctx)
   }

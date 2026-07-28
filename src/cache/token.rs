@@ -6,6 +6,7 @@ use moka::future::Cache;
 use tracing::debug;
 
 use crate::api::ApiClient;
+use crate::cache::{CredentialKey, credential_key};
 
 const TOKEN_REFRESH_GRACE_SECONDS: u64 = 30;
 
@@ -15,9 +16,9 @@ pub struct TokenCacheEntry {
   pub expires_at: DateTime<Utc>,
 }
 
-/// Per-user WPS access token cache, keyed by username
+/// Per-user WPS access token cache, keyed by the full credential pair
 pub struct TokenCache {
-  inner: Cache<String, TokenCacheEntry>,
+  inner: Cache<CredentialKey, TokenCacheEntry>,
 }
 
 impl Default for TokenCache {
@@ -42,7 +43,7 @@ impl TokenCache {
     password: &str,
     api: &ApiClient,
   ) -> Result<String> {
-    let key = username.to_string();
+    let key = credential_key(username, password);
 
     if let Some(entry) = self.inner.get(&key).await {
       if entry.expires_at > Utc::now() {
