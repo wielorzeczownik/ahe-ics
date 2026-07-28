@@ -1,5 +1,6 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["group:monorepos", "group:recommended"],
   "platformAutomerge": true,
   "automergeType": "pr",
   "semanticCommits": "enabled",
@@ -36,9 +37,19 @@
       "semanticCommitType": "ci"
     },
     {
+      "matchManagers": ["github-actions"],
+      "matchUpdateTypes": ["minor", "patch", "digest"],
+      "groupName": "github actions"
+    },
+    {
       "matchManagers": ["dockerfile"],
       "pinDigests": true,
       "semanticCommitType": "build"
+    },
+    {
+      "matchManagers": ["dockerfile"],
+      "matchPackageNames": ["rust"],
+      "groupName": "rust base image"
     },
     {
       "matchManagers": ["dockerfile"],
@@ -81,6 +92,11 @@
         "actions/download-artifact"
       ],
       "groupName": "artifact actions"
+    },
+    {
+      "matchManagers": ["cargo"],
+      "matchPackageNames": ["serde", "serde_json"],
+      "groupName": "serde"
     }
   ]
 }
