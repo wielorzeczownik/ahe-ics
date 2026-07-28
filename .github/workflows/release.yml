@@ -135,10 +135,10 @@ jobs:
           - os: macos-15
             target: aarch64-apple-darwin
             archive: tar.gz
-          - os: windows-latest
+          - os: windows-2025
             target: x86_64-pc-windows-msvc
             archive: zip
-          - os: windows-latest
+          - os: windows-2025
             target: i686-pc-windows-msvc
             archive: zip
           - os: windows-11-arm
