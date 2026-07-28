@@ -19,6 +19,11 @@ WORKDIR /app
 COPY docker-context/${TARGETPLATFORM}/${BIN} /usr/local/bin/${BIN}
 RUN ln -s "/usr/local/bin/${BIN}" /usr/local/bin/app
 
+# The service only needs to bind 8080 and read its own binary.
+RUN addgroup -S -g 10001 app \
+  && adduser -S -u 10001 -G app -s /sbin/nologin app
+USER app
+
 ENV BIND_ADDR=0.0.0.0:8080
 EXPOSE 8080
 HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \

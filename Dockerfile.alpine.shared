@@ -24,6 +24,11 @@ RUN apk add --no-cache ca-certificates curl
 WORKDIR /app
 COPY --from=builder /app/target/release/ahe-ics-shared /usr/local/bin/ahe-ics-shared
 
+# The service only needs to bind 8080 and read its own binary.
+RUN addgroup -S -g 10001 app \
+  && adduser -S -u 10001 -G app -s /sbin/nologin app
+USER app
+
 ENV BIND_ADDR=0.0.0.0:8080
 EXPOSE 8080
 HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \

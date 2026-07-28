@@ -1,6 +1,8 @@
 use anyhow::{Result, anyhow, bail};
 use argon2::password_hash::PasswordHash;
 use argon2::{Argon2, PasswordVerifier};
+use sha2::{Digest, Sha256};
+use subtle::ConstantTimeEq;
 
 #[derive(Clone, Copy, Debug)]
 pub enum CalendarLanguage {
@@ -75,7 +77,11 @@ impl CalendarToken {
   #[must_use]
   pub fn verify(&self, provided: &str) -> bool {
     match self {
-      Self::Plain(expected) => provided == expected,
+      Self::Plain(expected) => {
+        let provided = Sha256::digest(provided.as_bytes());
+        let expected = Sha256::digest(expected.as_bytes());
+        provided[..].ct_eq(&expected[..]).into()
+      }
       Self::Argon2id(hash) => {
         let Ok(parsed) = PasswordHash::new(hash) else {
           return false;

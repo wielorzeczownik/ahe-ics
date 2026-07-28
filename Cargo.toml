@@ -61,6 +61,7 @@ argon2 = "0.5.3"
 # Logging
 tracing = "0.1.44"
 tracing-subscriber = { version = "0.3.22", features = ["env-filter"] }
+subtle = "2.6.1"
 
 [profile.release]
 opt-level = "s"
