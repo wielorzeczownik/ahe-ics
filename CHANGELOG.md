@@ -5,6 +5,13 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.15](https://github.com/wielorzeczownik/ahe-ics/compare/v1.3.14...v1.3.15) - 2026-07-28
+
+### Bug Fixes
+
+- Stop exporting the raw student id in event UIDs ([44b7f4f](https://github.com/wielorzeczownik/ahe-ics/commit/44b7f4f4346ed11324f717a37c96318d19d6b9c2))
+- Stop relaying upstream error bodies to callers ([4229220](https://github.com/wielorzeczownik/ahe-ics/commit/4229220e625b7790834a8863dc82a9d800508996))
+
 ## [1.3.14](https://github.com/wielorzeczownik/ahe-ics/compare/v1.3.13...v1.3.14) - 2026-07-28
 
 ### Bug Fixes
