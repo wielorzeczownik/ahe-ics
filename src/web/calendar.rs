@@ -1,3 +1,4 @@
+use std::fmt;
 use std::net::SocketAddr;
 
 use axum::http::HeaderMap;
@@ -29,7 +30,6 @@ pub(crate) struct CalendarRenderData {
   pub(crate) exams: Vec<ExamEvent>,
 }
 
-#[derive(Debug)]
 struct CalendarRequestContext {
   token: String,
   student_id: i64,
@@ -39,6 +39,21 @@ struct CalendarRequestContext {
   section_name: Option<String>,
   from: NaiveDate,
   to: NaiveDate,
+}
+
+impl fmt::Debug for CalendarRequestContext {
+  fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+    formatter
+      .debug_struct("CalendarRequestContext")
+      .field("token", &"<redacted>")
+      .field("student_id", &self.student_id)
+      .field("calendar_id", &self.calendar_id)
+      .field("index_id", &self.index_id)
+      .field("section_name", &self.section_name)
+      .field("from", &self.from)
+      .field("to", &self.to)
+      .finish()
+  }
 }
 
 pub(crate) async fn render_calendar_ics<C: ServerSettings>(

@@ -1,3 +1,4 @@
+use std::fmt;
 use std::time::Duration;
 
 use anyhow::Result;
@@ -10,10 +11,20 @@ use crate::cache::{CredentialKey, credential_key};
 
 const TOKEN_REFRESH_GRACE_SECONDS: u64 = 30;
 
-#[derive(Clone, Debug)]
+#[derive(Clone)]
 pub struct TokenCacheEntry {
   pub token: String,
   pub expires_at: DateTime<Utc>,
+}
+
+impl fmt::Debug for TokenCacheEntry {
+  fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+    formatter
+      .debug_struct("TokenCacheEntry")
+      .field("token", &"<redacted>")
+      .field("expires_at", &self.expires_at)
+      .finish()
+  }
 }
 
 /// Per-user WPS access token cache, keyed by the full credential pair
@@ -68,5 +79,22 @@ impl TokenCache {
     self.inner.insert(key, entry).await;
 
     Ok(token_resp.access_token)
+  }
+}
+
+#[cfg(test)]
+mod tests {
+  use super::*;
+
+  #[test]
+  fn debug_never_prints_the_access_token() {
+    let entry = TokenCacheEntry {
+      token: "wps-access-token".to_string(),
+      expires_at: Utc::now(),
+    };
+    let rendered = format!("{entry:?}");
+
+    assert!(!rendered.contains("wps-access-token"), "leaked: {rendered}");
+    assert!(rendered.contains("expires_at"));
   }
 }
