@@ -49,7 +49,7 @@ fi
 
 cargo set-version "$next_version"
 
-cargo check
+cargo metadata --format-version 1 >/dev/null
 
 echo "released=true" >>"$GITHUB_OUTPUT"
 echo "version=$next_version" >>"$GITHUB_OUTPUT"

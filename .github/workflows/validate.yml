@@ -25,11 +25,6 @@ jobs:
       shell: ${{ steps.filter.outputs.shell }}
       markdown: ${{ steps.filter.outputs.markdown }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v7.0.1
-        with:
-          persist-credentials: false
-
       - name: Filter changed paths
         id: filter
         uses: dorny/paths-filter@v4.0.2
@@ -79,8 +74,8 @@ jobs:
       - name: Cargo test
         run: cargo test --locked
 
-  clippy:
-    name: Clippy
+  lint:
+    name: Lint (clippy + rustfmt)
     needs: changes
     if: ${{ needs.changes.outputs.rust == 'true' }}
     runs-on: ubuntu-latest
@@ -94,33 +89,16 @@ jobs:
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
         with:
-          components: clippy
+          components: clippy, rustfmt
 
       - name: Cache Cargo
         uses: Swatinem/rust-cache@v2.9.1
 
-      - name: Clippy
-        run: cargo clippy --all-targets --locked -- -D warnings
-
-  rustfmt:
-    name: rustfmt
-    needs: changes
-    if: ${{ needs.changes.outputs.rust == 'true' }}
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v7.0.1
-        with:
-          persist-credentials: false
-
-      - name: Install Rust toolchain
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          components: rustfmt
-
       - name: Format check
         run: cargo fmt --check
+
+      - name: Clippy
+        run: cargo clippy --all-targets --locked -- -D warnings
 
   cargo-audit:
     name: Cargo audit
