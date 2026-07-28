@@ -5,6 +5,18 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.17](https://github.com/wielorzeczownik/ahe-ics/compare/v1.3.16...v1.3.17) - 2026-07-28
+
+### Bug Fixes
+
+- Redact secrets from Debug output ([be0b0db](https://github.com/wielorzeczownik/ahe-ics/commit/be0b0db577c19f8e2dcddf2af9d1cc889c1a619a))
+- Make the liveness probe independent of the AHE API ([ad1d390](https://github.com/wielorzeczownik/ahe-ics/commit/ad1d3902c0b395f161e59e49c102dd0cab4e56c4))
+
+### CI/CD
+
+- Pin the Windows runners to windows-2025 ([fb43cb1](https://github.com/wielorzeczownik/ahe-ics/commit/fb43cb1356029bb82699dd637cbd2bbd9def1ee9))
+- Publish one SHA256SUMS manifest ([f5bbe42](https://github.com/wielorzeczownik/ahe-ics/commit/f5bbe4242cc9776887a64c1856feb4e9ffab9592))
+
 ## [1.3.16](https://github.com/wielorzeczownik/ahe-ics/compare/v1.3.15...v1.3.16) - 2026-07-28
 
 ### Build System
