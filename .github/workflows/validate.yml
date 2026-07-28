@@ -6,28 +6,62 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: validate-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  cargo-check:
-    name: Cargo check
+  changes:
+    name: Detect changes
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      rust: ${{ steps.filter.outputs.rust }}
+      docker: ${{ steps.filter.outputs.docker }}
+      deps: ${{ steps.filter.outputs.deps }}
+      shell: ${{ steps.filter.outputs.shell }}
+      markdown: ${{ steps.filter.outputs.markdown }}
     steps:
       - name: Checkout
         uses: actions/checkout@v7.0.1
         with:
           persist-credentials: false
 
-      - name: Install Rust toolchain
-        uses: dtolnay/rust-toolchain@stable
-
-      - name: Cache Cargo
-        uses: Swatinem/rust-cache@v2.9.1
-
-      - name: Cargo check
-        run: cargo check --all-targets --locked
+      - name: Filter changed paths
+        id: filter
+        uses: dorny/paths-filter@v4.0.2
+        with:
+          filters: |
+            rust: &rust
+              - '.github/workflows/validate.yml'
+              - 'src/**'
+              - 'Cargo.toml'
+              - 'Cargo.lock'
+              - 'rustfmt.toml'
+              - '.clippy.toml'
+            docker:
+              - *rust
+              - 'Dockerfile'
+              - 'Dockerfile.shared'
+              - '.dockerignore'
+            deps:
+              - '.github/workflows/validate.yml'
+              - 'Cargo.toml'
+              - 'Cargo.lock'
+            shell:
+              - '.github/workflows/validate.yml'
+              - 'scripts/**'
+            markdown:
+              - '.github/workflows/validate.yml'
+              - '**/*.md'
 
   cargo-test:
     name: Cargo test
+    needs: changes
+    if: ${{ needs.changes.outputs.rust == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -47,6 +81,8 @@ jobs:
 
   clippy:
     name: Clippy
+    needs: changes
+    if: ${{ needs.changes.outputs.rust == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -64,10 +100,12 @@ jobs:
         uses: Swatinem/rust-cache@v2.9.1
 
       - name: Clippy
-        run: cargo clippy --all-targets -- -D warnings
+        run: cargo clippy --all-targets --locked -- -D warnings
 
   rustfmt:
     name: rustfmt
+    needs: changes
+    if: ${{ needs.changes.outputs.rust == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -86,6 +124,8 @@ jobs:
 
   cargo-audit:
     name: Cargo audit
+    needs: changes
+    if: ${{ needs.changes.outputs.deps == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -117,6 +157,8 @@ jobs:
 
   smoke-build:
     name: Smoke build (${{ matrix.variant }})
+    needs: changes
+    if: ${{ needs.changes.outputs.docker == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     strategy:
@@ -160,6 +202,8 @@ jobs:
 
   shfmt:
     name: shfmt
+    needs: changes
+    if: ${{ needs.changes.outputs.shell == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -176,6 +220,8 @@ jobs:
 
   markdownlint:
     name: markdownlint
+    needs: changes
+    if: ${{ needs.changes.outputs.markdown == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
