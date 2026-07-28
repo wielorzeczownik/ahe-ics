@@ -5,6 +5,21 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.14](https://github.com/wielorzeczownik/ahe-ics/compare/v1.3.13...v1.3.14) - 2026-07-28
+
+### Bug Fixes
+
+- Compare tokens in constant time and drop container privileges ([1709d09](https://github.com/wielorzeczownik/ahe-ics/commit/1709d09f4b27372dc4cb819024a5c201cc423836))
+- Bind cached sessions to the password, not just the username ([afbb68a](https://github.com/wielorzeczownik/ahe-ics/commit/afbb68afe4b752a4cf84fb09250d37ca1a3683fc))
+
+### CI/CD
+
+- Build release binaries with --locked ([e564107](https://github.com/wielorzeczownik/ahe-ics/commit/e56410724b3a42fb556fc92eee556bc6e6ab6c71))
+
+### Dependencies
+
+- Group the crypto dependencies together ([1f358e7](https://github.com/wielorzeczownik/ahe-ics/commit/1f358e7d16310294c21bdfd01fa946482a04c343))
+
 ## [1.3.13](https://github.com/wielorzeczownik/ahe-ics/compare/v1.3.12...v1.3.13) - 2026-07-28
 
 ### Build System
