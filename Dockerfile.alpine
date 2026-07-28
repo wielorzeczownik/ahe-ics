@@ -4,7 +4,7 @@ WORKDIR /app
 # hadolint ignore=DL3008
 RUN apk add --no-cache musl-dev
 
-COPY Cargo.toml Cargo.lock ./
+COPY Cargo.toml Cargo.lock build.rs ./
 COPY src ./src
 RUN cargo build --release --locked --bin ahe-ics
 
