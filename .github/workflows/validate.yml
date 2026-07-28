@@ -225,14 +225,12 @@ jobs:
         with:
           persist-credentials: false
 
-      # actionlint shells out to shellcheck for the `run:` blocks it finds.
-      - name: Install actionlint and shellcheck
-        uses: taiki-e/install-action@a6b2e2dcd845ddd7f509ce4f3ed3d922b80cc5d9 # v2.84.0
-        with:
-          tool: actionlint,shellcheck
-
       - name: Lint workflows
-        run: actionlint
+        uses: raven-actions/actionlint@3d39aea434753780c3b3d4a1a31c854b4dbf49d7 # v2.2.0
+        with:
+          # renovate: datasource=github-releases depName=rhysd/actionlint
+          version: 1.7.12
+          shellcheck: true
 
   prettier:
     name: Formatting (Prettier)
