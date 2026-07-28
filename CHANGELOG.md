@@ -5,6 +5,12 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.16](https://github.com/wielorzeczownik/ahe-ics/compare/v1.3.15...v1.3.16) - 2026-07-28
+
+### Build System
+
+- Embed the application icon in the Windows executables ([83c9a4e](https://github.com/wielorzeczownik/ahe-ics/commit/83c9a4edb821767b0be406aa71a83fa2e9a1f527))
+
 ## [1.3.15](https://github.com/wielorzeczownik/ahe-ics/compare/v1.3.14...v1.3.15) - 2026-07-28
 
 ### Bug Fixes
