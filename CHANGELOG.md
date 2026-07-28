@@ -5,6 +5,17 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.13](https://github.com/wielorzeczownik/ahe-ics/compare/v1.3.12...v1.3.13) - 2026-07-28
+
+### Build System
+
+- Group related updates into single pull requests ([91b50a8](https://github.com/wielorzeczownik/ahe-ics/commit/91b50a8f2a3ae8dfd2c9544623f4a10047d566fb))
+
+### CI/CD
+
+- Lint shell scripts and workflows ([f5a67d3](https://github.com/wielorzeczownik/ahe-ics/commit/f5a67d3d1c04e1e6a42666fdd8f4bda0251d9ca6))
+- Pin actions to commit SHAs and name every job ([5de0d62](https://github.com/wielorzeczownik/ahe-ics/commit/5de0d6202b6147ca1c50dc6c7ad68255e47dc22e))
+
 ## [1.3.12](https://github.com/wielorzeczownik/ahe-ics/compare/v1.3.11...v1.3.12) - 2026-07-28
 
 ### Styling
