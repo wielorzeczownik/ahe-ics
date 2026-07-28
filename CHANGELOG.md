@@ -5,6 +5,18 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.12](https://github.com/wielorzeczownik/ahe-ics/compare/v1.3.11...v1.3.12) - 2026-07-28
+
+### Styling
+
+- Bring YAML, JSON and Markdown under Prettier ([ff63fed](https://github.com/wielorzeczownik/ahe-ics/commit/ff63fedbed31c9b84ce68788d94fffa3389a69cb))
+
+### CI/CD
+
+- Drop redundant setup from validate and release jobs ([9380a73](https://github.com/wielorzeczownik/ahe-ics/commit/9380a730878f23a1bc3e6db76c329f5456bb44d1))
+- Gate validate jobs on changed paths and drop redundant check ([70c7fc7](https://github.com/wielorzeczownik/ahe-ics/commit/70c7fc77765084d44b57a92d033ec3366f079f90))
+- Build both binaries in one job per target ([891d8be](https://github.com/wielorzeczownik/ahe-ics/commit/891d8be95c327904bae1d9554fb973b8393c1056))
+
 ## [1.3.11](https://github.com/wielorzeczownik/ahe-ics/compare/v1.3.10...v1.3.11) - 2026-07-28
 
 ### Bug Fixes
