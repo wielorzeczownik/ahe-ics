@@ -121,124 +121,41 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # Dedicated binary
           - os: ubuntu-22.04
             target: x86_64-unknown-linux-gnu
-            bin_name: ahe-ics
-            binary: ahe-ics
             archive: tar.gz
           - os: ubuntu-22.04
             target: aarch64-unknown-linux-gnu
-            bin_name: ahe-ics
-            binary: ahe-ics
             archive: tar.gz
           - os: macos-15-intel
             target: x86_64-apple-darwin
-            bin_name: ahe-ics
-            binary: ahe-ics
             archive: tar.gz
           - os: macos-15
             target: aarch64-apple-darwin
-            bin_name: ahe-ics
-            binary: ahe-ics
             archive: tar.gz
           - os: windows-latest
             target: x86_64-pc-windows-msvc
-            bin_name: ahe-ics
-            binary: ahe-ics.exe
             archive: zip
           - os: windows-latest
             target: i686-pc-windows-msvc
-            bin_name: ahe-ics
-            binary: ahe-ics.exe
             archive: zip
           - os: windows-11-arm
             target: aarch64-pc-windows-msvc
-            bin_name: ahe-ics
-            binary: ahe-ics.exe
             archive: zip
           - os: ubuntu-22.04
             target: x86_64-unknown-linux-musl
-            bin_name: ahe-ics
-            binary: ahe-ics
             archive: tar.gz
             build_cmd: cargo zigbuild
           - os: ubuntu-22.04
             target: aarch64-unknown-linux-musl
-            bin_name: ahe-ics
-            binary: ahe-ics
             archive: tar.gz
             build_cmd: cargo zigbuild
           - os: ubuntu-22.04
             target: armv7-unknown-linux-gnueabihf
-            bin_name: ahe-ics
-            binary: ahe-ics
             archive: tar.gz
             build_cmd: cargo zigbuild
           - os: ubuntu-22.04
             target: i686-unknown-linux-gnu
-            bin_name: ahe-ics
-            binary: ahe-ics
-            archive: tar.gz
-            build_cmd: cargo zigbuild
-          # Shared binary
-          - os: ubuntu-22.04
-            target: x86_64-unknown-linux-gnu
-            bin_name: ahe-ics-shared
-            binary: ahe-ics-shared
-            archive: tar.gz
-          - os: ubuntu-22.04
-            target: aarch64-unknown-linux-gnu
-            bin_name: ahe-ics-shared
-            binary: ahe-ics-shared
-            archive: tar.gz
-          - os: macos-15-intel
-            target: x86_64-apple-darwin
-            bin_name: ahe-ics-shared
-            binary: ahe-ics-shared
-            archive: tar.gz
-          - os: macos-15
-            target: aarch64-apple-darwin
-            bin_name: ahe-ics-shared
-            binary: ahe-ics-shared
-            archive: tar.gz
-          - os: windows-latest
-            target: x86_64-pc-windows-msvc
-            bin_name: ahe-ics-shared
-            binary: ahe-ics-shared.exe
-            archive: zip
-          - os: windows-latest
-            target: i686-pc-windows-msvc
-            bin_name: ahe-ics-shared
-            binary: ahe-ics-shared.exe
-            archive: zip
-          - os: windows-11-arm
-            target: aarch64-pc-windows-msvc
-            bin_name: ahe-ics-shared
-            binary: ahe-ics-shared.exe
-            archive: zip
-          - os: ubuntu-22.04
-            target: x86_64-unknown-linux-musl
-            bin_name: ahe-ics-shared
-            binary: ahe-ics-shared
-            archive: tar.gz
-            build_cmd: cargo zigbuild
-          - os: ubuntu-22.04
-            target: aarch64-unknown-linux-musl
-            bin_name: ahe-ics-shared
-            binary: ahe-ics-shared
-            archive: tar.gz
-            build_cmd: cargo zigbuild
-          - os: ubuntu-22.04
-            target: armv7-unknown-linux-gnueabihf
-            bin_name: ahe-ics-shared
-            binary: ahe-ics-shared
-            archive: tar.gz
-            build_cmd: cargo zigbuild
-          - os: ubuntu-22.04
-            target: i686-unknown-linux-gnu
-            bin_name: ahe-ics-shared
-            binary: ahe-ics-shared
             archive: tar.gz
             build_cmd: cargo zigbuild
     steps:
@@ -256,7 +173,7 @@ jobs:
       - name: Cache Cargo
         uses: Swatinem/rust-cache@v2.9.1
         with:
-          key: ${{ matrix.bin_name }}-${{ matrix.target }}
+          key: ${{ matrix.target }}
 
       - name: Install Linux ARM64 linker
         if: ${{ matrix.target == 'aarch64-unknown-linux-gnu' }}
@@ -274,33 +191,45 @@ jobs:
         with:
           tool: cargo-zigbuild
 
-      - name: Build binary
+      - name: Build binaries
         env:
           CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER: aarch64-linux-gnu-gcc
-        run: ${{ matrix.build_cmd || 'cargo build' }} --release --target ${{ matrix.target }} --bin ${{ matrix.bin_name }}
+        run: ${{ matrix.build_cmd || 'cargo build' }} --release --target ${{ matrix.target }} --bin ahe-ics --bin ahe-ics-shared
 
       - name: Package (tar.gz)
         if: ${{ matrix.archive == 'tar.gz' }}
         shell: bash
+        env:
+          TARGET: ${{ matrix.target }}
         run: |
           set -euo pipefail
-          mkdir -p dist
-          asset="${{ matrix.bin_name }}-${{ matrix.target }}.tar.gz"
-          tar -C "target/${{ matrix.target }}/release" -czf "dist/${asset}" "${{ matrix.binary }}"
+          for bin in ahe-ics ahe-ics-shared; do
+            mkdir -p "dist/${bin}"
+            tar -C "target/${TARGET}/release" -czf "dist/${bin}/${bin}-${TARGET}.tar.gz" "${bin}"
+          done
 
       - name: Package (zip)
         if: ${{ matrix.archive == 'zip' }}
         shell: pwsh
+        env:
+          TARGET: ${{ matrix.target }}
         run: |
-          New-Item -ItemType Directory -Force dist | Out-Null
-          $asset = "${{ matrix.bin_name }}-${{ matrix.target }}.zip"
-          Compress-Archive -Path "target/${{ matrix.target }}/release/${{ matrix.binary }}" -DestinationPath "dist/$asset"
+          foreach ($bin in @("ahe-ics", "ahe-ics-shared")) {
+            New-Item -ItemType Directory -Force "dist/$bin" | Out-Null
+            Compress-Archive -Path "target/$env:TARGET/release/$bin.exe" -DestinationPath "dist/$bin/$bin-$env:TARGET.zip"
+          }
 
-      - name: Upload artifact
+      - name: Upload dedicated artifact
         uses: actions/upload-artifact@v7.0.1
         with:
-          name: binaries-${{ matrix.bin_name }}-${{ matrix.target }}
-          path: dist/*
+          name: binaries-ahe-ics-${{ matrix.target }}
+          path: dist/ahe-ics/*
+
+      - name: Upload shared artifact
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: binaries-ahe-ics-shared-${{ matrix.target }}
+          path: dist/ahe-ics-shared/*
 
   publish-release:
     needs:
