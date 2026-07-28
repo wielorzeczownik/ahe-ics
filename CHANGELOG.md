@@ -5,6 +5,25 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.11](https://github.com/wielorzeczownik/ahe-ics/compare/v1.3.10...v1.3.11) - 2026-07-28
+
+### Bug Fixes
+
+- Reject Argon2id token hashes without a digest ([44ebf01](https://github.com/wielorzeczownik/ahe-ics/commit/44ebf0136a8d4ed1e5a75ce0dc132e397919237c))
+
+### Testing
+
+- Cover exam matching, config parsing and ICS rendering ([86d1a70](https://github.com/wielorzeczownik/ahe-ics/commit/86d1a7054baf8e8a88b7f7f71376d2fb4d819432))
+
+### CI/CD
+
+- Update taiki-e/install-action action to v2.84.0 (#152) ([909e596](https://github.com/wielorzeczownik/ahe-ics/commit/909e596ac683a8300359c65ec7f38a1bc7913b88))
+- Update actions/checkout action to v7.0.1 (#151) ([70f9979](https://github.com/wielorzeczownik/ahe-ics/commit/70f997902a3199eb52303048b1fe85418b1608ad))
+- Update davidanson/markdownlint-cli2-action action to v24.1.0 (#150) ([7e9f982](https://github.com/wielorzeczownik/ahe-ics/commit/7e9f98280eb96622fe056f078a58ca137fb23e35))
+- Update taiki-e/install-action action to v2.83.4 (#149) ([ce493b8](https://github.com/wielorzeczownik/ahe-ics/commit/ce493b8e889498c981916b573c21029c967792dc))
+- Push to ghcr with the built-in GITHUB_TOKEN ([769d193](https://github.com/wielorzeczownik/ahe-ics/commit/769d193eec7ae48574740ecab14d67738b71c13c))
+- Stop releasing on development-only Dockerfile changes ([a468227](https://github.com/wielorzeczownik/ahe-ics/commit/a4682278c383191883fbf32880d5018f0fe2c265))
+
 ## [1.3.10](https://github.com/wielorzeczownik/ahe-ics/compare/v1.3.9...v1.3.10) - 2026-07-24
 
 ### Build System
