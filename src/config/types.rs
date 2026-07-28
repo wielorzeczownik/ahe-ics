@@ -63,6 +63,12 @@ impl CalendarToken {
       bail!("AHE_CAL_TOKEN must use Argon2id (expected prefix '$argon2id$')");
     }
 
+    // PHC makes the digest optional, so a hash truncated at the salt still parses.
+    // Reject it here, otherwise every request would fail verification at runtime
+    if parsed.hash.is_none() {
+      bail!("AHE_CAL_TOKEN Argon2id hash is missing its digest; copy the full PHC string");
+    }
+
     Ok(Self::Argon2id(hash.to_string()))
   }
 
@@ -185,12 +191,22 @@ mod tests {
   }
 
   #[test]
-  fn token_with_digestless_hash_is_accepted_but_never_verifies() {
-    let token = CalendarToken::from_env_value("argon2:$argon2id$broken").expect("parses");
+  fn token_rejects_hash_without_digest() {
+    // A PHC string carrying only the salt parses fine but can never verify,
+    // so it has to be caught at startup rather than on every request
+    let salt_only = "$argon2id$v=19$m=19456,t=2,p=1$dGVzdHNhbHR0ZXN0c2FsdA";
 
-    assert!(matches!(token, CalendarToken::Argon2id(_)));
-    assert!(!token.verify("broken"));
-    assert!(!token.verify(""));
+    assert!(CalendarToken::from_env_value(salt_only).is_err());
+    assert!(CalendarToken::from_env_value(&format!("argon2:{salt_only}")).is_err());
+    assert!(CalendarToken::from_env_value("argon2:$argon2id$broken").is_err());
+  }
+
+  #[test]
+  fn token_accepts_digest_of_unexpected_length() {
+    let hash = hash_with(Algorithm::Argon2id, "s3cret");
+    let truncated = &hash[..hash.len() - 8];
+
+    let token = CalendarToken::from_env_value(truncated).expect("parses");
     assert!(!token.verify("s3cret"));
   }
 }
