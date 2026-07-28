@@ -118,7 +118,8 @@ Download the latest release asset for your platform:
 - `GET /calendar/me.ics` – alias of `/calendar.ics` (same output).
 - `GET /calendar.json` – JSON with source data used to render the ICS feed (when `AHE_CAL_JSON_ENABLED=true`).
 - `GET /calendar/me.json` – alias of `/calendar.json` (when `AHE_CAL_JSON_ENABLED=true`).
-- `GET /healthz` – health check that verifies connectivity to the AHE API (returns `204 No Content`, otherwise `503`).
+- `GET /healthz` – liveness probe; always returns `204 No Content` without contacting the AHE API.
+- `GET /readyz` – readiness probe that verifies the configured credentials still work against the AHE API (returns `204 No Content`, otherwise `503`).
 
 Calendar query params (`/calendar.ics`, `/calendar/me.ics`, and JSON endpoints when enabled):
 

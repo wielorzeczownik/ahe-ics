@@ -39,6 +39,7 @@ pub fn router(state: AppState<Config>) -> Router {
     .route("/calendar.ics", get(calendar_ics))
     .route("/calendar/me.ics", get(calendar_ics))
     .route("/healthz", get(healthz))
+    .route("/readyz", get(readyz))
     .fallback(not_found);
 
   if state.config.json_enabled {
@@ -86,7 +87,11 @@ async fn calendar_json(
   Ok(([(CONTENT_TYPE, "application/json; charset=utf-8")], body))
 }
 
-async fn healthz(State(state): State<AppState<Config>>) -> impl IntoResponse {
+async fn healthz() -> impl IntoResponse {
+  StatusCode::NO_CONTENT
+}
+
+async fn readyz(State(state): State<AppState<Config>>) -> impl IntoResponse {
   let token = match state
     .token_cache
     .get_or_login(&state.config.username, &state.config.password, &state.api)
@@ -94,13 +99,13 @@ async fn healthz(State(state): State<AppState<Config>>) -> impl IntoResponse {
   {
     Ok(token) => token,
     Err(error) => {
-      warn!(error = %error, "health check login failed");
+      warn!(error = %error, "readiness check login failed");
       return (StatusCode::SERVICE_UNAVAILABLE, "upstream login failed");
     }
   };
 
   if let Err(error) = state.api.get_student_data(&token).await {
-    warn!(error = %error, "health check student data failed");
+    warn!(error = %error, "readiness check student data failed");
     return (StatusCode::SERVICE_UNAVAILABLE, "upstream api unavailable");
   }
 

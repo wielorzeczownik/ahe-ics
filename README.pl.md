@@ -118,7 +118,8 @@ Pobierz najnowsze archiwum dla swojej platformy:
 - `GET /calendar/me.ics` – alias `/calendar.ics` (identyczny wynik).
 - `GET /calendar.json` – JSON z danymi źródłowymi kalendarza (gdy `AHE_CAL_JSON_ENABLED=true`).
 - `GET /calendar/me.json` – alias `/calendar.json` (gdy `AHE_CAL_JSON_ENABLED=true`).
-- `GET /healthz` – health check weryfikujący połączenie z API AHE (zwraca `204 No Content`, w przeciwnym razie `503`).
+- `GET /healthz` – sonda liveness; zawsze zwraca `204 No Content`, bez odpytywania API AHE.
+- `GET /readyz` – sonda readiness weryfikująca, czy skonfigurowane dane logowania nadal działają wobec API AHE (zwraca `204 No Content`, w przeciwnym razie `503`).
 
 Parametry zapytania (`/calendar.ics`, `/calendar/me.ics` i endpointy JSON):
 
