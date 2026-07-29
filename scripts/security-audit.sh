@@ -12,12 +12,16 @@ emit() {
 emit_report() {
   {
     echo 'report<<AUDIT_REPORT_EOF'
-    cat "$report"
+    if [[ -s "$report" ]]; then
+      cat "$report"
+    else
+      echo 'cargo audit produced no output, see the workflow logs.'
+    fi
     echo 'AUDIT_REPORT_EOF'
   } >>"$GITHUB_OUTPUT"
 }
 
-if cargo audit | tee "$report"; then
+if cargo audit 2>&1 | tee "$report"; then
   emit changed false
   emit unresolved false
   emit_report
@@ -33,7 +37,7 @@ if ! git diff --quiet -- Cargo.lock; then
 fi
 
 unresolved=true
-if cargo audit | tee "$report"; then
+if cargo audit 2>&1 | tee "$report"; then
   unresolved=false
 fi
 
