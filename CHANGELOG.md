@@ -5,6 +5,16 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.18](https://github.com/wielorzeczownik/ahe-ics/compare/v1.3.17...v1.3.18) - 2026-07-29
+
+### Bug Fixes
+
+- Repair the security advisory issue template ([9d2ae82](https://github.com/wielorzeczownik/ahe-ics/commit/9d2ae82628afd3baa5129a04f2b2078693737b3c))
+
+### CI/CD
+
+- Install actionlint from its own action ([8fc2fd8](https://github.com/wielorzeczownik/ahe-ics/commit/8fc2fd8767523cdefd71e12d3447fde103cf0942))
+
 ## [1.3.17](https://github.com/wielorzeczownik/ahe-ics/compare/v1.3.16...v1.3.17) - 2026-07-28
 
 ### Bug Fixes
