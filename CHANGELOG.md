@@ -5,6 +5,17 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.19](https://github.com/wielorzeczownik/ahe-ics/compare/v1.3.18...v1.3.19) - 2026-07-30
+
+### Bug Fixes
+
+- Disable cargo audit colour so the advisory report stays readable ([a8ae137](https://github.com/wielorzeczownik/ahe-ics/commit/a8ae13771d2ac8eb799a1a43365e7362d38722fa))
+
+### CI/CD
+
+- Update taiki-e/install-action action to v2.84.1 (#155) ([9275634](https://github.com/wielorzeczownik/ahe-ics/commit/927563442f8a77ab6a9692fcca8c690c2286553e))
+- Capture cargo audit stderr in the job summary ([f97e5fb](https://github.com/wielorzeczownik/ahe-ics/commit/f97e5fb6f46f35cb30862a823aa594d9dda652f6))
+
 ## [1.3.18](https://github.com/wielorzeczownik/ahe-ics/compare/v1.3.17...v1.3.18) - 2026-07-29
 
 ### Bug Fixes
