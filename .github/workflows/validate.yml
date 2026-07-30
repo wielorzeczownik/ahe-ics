@@ -53,6 +53,8 @@ jobs:
               - *rust
               - 'Dockerfile'
               - 'Dockerfile.shared'
+              - 'Dockerfile.alpine'
+              - 'Dockerfile.alpine.shared'
               - '.dockerignore'
             deps:
               - '.github/workflows/validate.yml'
@@ -198,6 +200,12 @@ jobs:
           - variant: shared
             dockerfile: Dockerfile.shared
             tag: ahe-ics:shared-test
+          - variant: alpine
+            dockerfile: Dockerfile.alpine
+            tag: ahe-ics:alpine-test
+          - variant: alpine-shared
+            dockerfile: Dockerfile.alpine.shared
+            tag: ahe-ics:alpine-shared-test
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
