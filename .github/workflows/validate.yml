@@ -13,7 +13,7 @@ concurrency:
 jobs:
   changes:
     name: Detect changes
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 5
     permissions:
       contents: read
@@ -69,7 +69,7 @@ jobs:
     name: Cargo test
     needs: changes
     if: ${{ needs.changes.outputs.rust == 'true' }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
       - name: Checkout
@@ -90,7 +90,7 @@ jobs:
     name: Lint (clippy + rustfmt)
     needs: changes
     if: ${{ needs.changes.outputs.rust == 'true' }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
       - name: Checkout
@@ -116,7 +116,7 @@ jobs:
     name: Cargo audit
     needs: changes
     if: ${{ needs.changes.outputs.deps == 'true' }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
       - name: Checkout
@@ -149,7 +149,7 @@ jobs:
     name: Smoke build (${{ matrix.variant }})
     needs: changes
     if: ${{ needs.changes.outputs.docker == 'true' }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     strategy:
       fail-fast: false
@@ -194,7 +194,7 @@ jobs:
     name: Shell (shfmt + shellcheck)
     needs: changes
     if: ${{ needs.changes.outputs.shell == 'true' }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
       - name: Checkout
@@ -217,7 +217,7 @@ jobs:
     name: Lint workflows (actionlint)
     needs: changes
     if: ${{ needs.changes.outputs.workflows == 'true' }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
       - name: Checkout
@@ -236,7 +236,7 @@ jobs:
     name: Formatting (Prettier)
     needs: changes
     if: ${{ needs.changes.outputs.format == 'true' }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
       - name: Checkout
@@ -251,7 +251,7 @@ jobs:
     name: Markdown lint
     needs: changes
     if: ${{ needs.changes.outputs.markdown == 'true' }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
       - name: Checkout
