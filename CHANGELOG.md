@@ -5,6 +5,16 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.20](https://github.com/wielorzeczownik/ahe-ics/compare/v1.3.19...v1.3.20) - 2026-07-30
+
+### CI/CD
+
+- Audit the published images on a schedule ([0c2371e](https://github.com/wielorzeczownik/ahe-ics/commit/0c2371e751a1f93a9b916eb7d27abb6693c5848a))
+- Smoke build the alpine image variants ([b168143](https://github.com/wielorzeczownik/ahe-ics/commit/b168143dc330a6284734562954fa0ff1a2346dcd))
+- Warn instead of failing on image vulnerabilities ([29713b4](https://github.com/wielorzeczownik/ahe-ics/commit/29713b4c575c0888960a7a56dc87de14e72467fe))
+- Lint every Dockerfile with hadolint ([cdbfafd](https://github.com/wielorzeczownik/ahe-ics/commit/cdbfafdb556d6cba7ce3afdbe8f229034d7cd1d4))
+- Pin runner images to ubuntu-24.04 ([aa9deca](https://github.com/wielorzeczownik/ahe-ics/commit/aa9deca678c6138ed9f01aca1ca667f698ddb3f6))
+
 ## [1.3.19](https://github.com/wielorzeczownik/ahe-ics/compare/v1.3.18...v1.3.19) - 2026-07-30
 
 ### Bug Fixes
