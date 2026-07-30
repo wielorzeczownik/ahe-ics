@@ -21,6 +21,7 @@ jobs:
     outputs:
       rust: ${{ steps.filter.outputs.rust }}
       docker: ${{ steps.filter.outputs.docker }}
+      dockerfiles: ${{ steps.filter.outputs.dockerfiles }}
       deps: ${{ steps.filter.outputs.deps }}
       shell: ${{ steps.filter.outputs.shell }}
       markdown: ${{ steps.filter.outputs.markdown }}
@@ -39,6 +40,15 @@ jobs:
               - 'Cargo.lock'
               - 'rustfmt.toml'
               - '.clippy.toml'
+            dockerfiles:
+              - '.github/workflows/validate.yml'
+              - '.hadolint.yaml'
+              - 'Dockerfile'
+              - 'Dockerfile.shared'
+              - 'Dockerfile.alpine'
+              - 'Dockerfile.alpine.shared'
+              - 'Dockerfile.release'
+              - 'Dockerfile.alpine.release'
             docker:
               - *rust
               - 'Dockerfile'
@@ -144,6 +154,33 @@ jobs:
             cat audit.log
             echo '```'
           } >>"$GITHUB_STEP_SUMMARY"
+
+  hadolint:
+    name: Dockerfile lint (hadolint)
+    needs: changes
+    if: ${{ needs.changes.outputs.dockerfiles == 'true' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        dockerfile:
+          - Dockerfile
+          - Dockerfile.shared
+          - Dockerfile.alpine
+          - Dockerfile.alpine.shared
+          - Dockerfile.release
+          - Dockerfile.alpine.release
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Lint Dockerfile
+        uses: hadolint/hadolint-action@2332a7b74a6de0dda2e2221d575162eba76ba5e5 # v3.3.0
+        with:
+          dockerfile: ${{ matrix.dockerfile }}
 
   smoke-build:
     name: Smoke build (${{ matrix.variant }})
