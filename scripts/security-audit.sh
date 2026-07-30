@@ -21,7 +21,7 @@ emit_report() {
   } >>"$GITHUB_OUTPUT"
 }
 
-if cargo audit 2>&1 | tee "$report"; then
+if cargo audit --color never 2>&1 | tee "$report"; then
   emit changed false
   emit unresolved false
   emit_report
@@ -37,7 +37,7 @@ if ! git diff --quiet -- Cargo.lock; then
 fi
 
 unresolved=true
-if cargo audit 2>&1 | tee "$report"; then
+if cargo audit --color never 2>&1 | tee "$report"; then
   unresolved=false
 fi
 
