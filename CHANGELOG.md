@@ -5,6 +5,19 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.21](https://github.com/wielorzeczownik/ahe-ics/compare/v1.3.20...v1.3.21) - 2026-08-01
+
+### CI/CD
+
+- Update docker/login-action action to v4.5.1 (#158) ([777652c](https://github.com/wielorzeczownik/ahe-ics/commit/777652ceebb9cc9bf0397825bb59b0c6ab5f676a))
+- Sign bot commits via GitHub API (qoomon create-commit/create-tag) ([95ad2c9](https://github.com/wielorzeczownik/ahe-ics/commit/95ad2c95a39414ec44dc2bb09078a3e7d452b52b))
+- Update docker/login-action action to v4.5.0 ([e7de9cc](https://github.com/wielorzeczownik/ahe-ics/commit/e7de9cc48a996b3288e2c0553ecf52f1c2ae9f4a))
+- Update taiki-e/install-action action to v2.85.0 ([e063ba9](https://github.com/wielorzeczownik/ahe-ics/commit/e063ba90b9c6bdac825b997a04fd5bf474bf1219))
+
+### Dependencies
+
+- Update rust crate icalendar to v0.17.13 (#159) ([bab9d45](https://github.com/wielorzeczownik/ahe-ics/commit/bab9d452f048de8bde097776b2de6e3534bb871e))
+
 ## [1.3.20](https://github.com/wielorzeczownik/ahe-ics/compare/v1.3.19...v1.3.20) - 2026-07-30
 
 ### CI/CD
