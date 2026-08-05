@@ -51,7 +51,7 @@ jobs:
         id: cliff_bumped
         uses: orhun/git-cliff-action@f50e11560dce63f7c33227798f90b924471a88b5 # v4.8.0
         with:
-          config: cliff.toml
+          config: cliff-release.toml
           args: --bumped-version
         env:
           OUTPUT: bumped-version.txt
@@ -73,6 +73,7 @@ jobs:
         env:
           OUTPUT: release-notes.md
           GITHUB_REPO: ${{ github.repository }}
+          GITHUB_TOKEN: ${{ github.token }}
 
       - name: Generate CHANGELOG.md (git-cliff)
         if: ${{ steps.bump.outputs.released == 'true' }}
