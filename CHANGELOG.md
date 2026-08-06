@@ -5,6 +5,48 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.22](https://github.com/wielorzeczownik/ahe-ics/compare/v1.3.21...v1.3.22) - 2026-08-06
+
+### Bug Fixes
+
+- Restore plain @mentions for human authors so avatars render ([4b91b1b](https://github.com/wielorzeczownik/ahe-ics/commit/4b91b1bee5da42ac0f2c0963caa688ae4b0d3d42))
+- Link bot authors and pull requests in the release notes ([190d271](https://github.com/wielorzeczownik/ahe-ics/commit/190d2719d840184227afab2184d52b09f701f77c))
+- Cover every dependency manifest in the label rules ([03180eb](https://github.com/wielorzeczownik/ahe-ics/commit/03180eb2d88fef558ee27c737947df5b726073c5))
+
+### Refactoring
+
+- Collapse the two assign steps into one ([f83a5cc](https://github.com/wielorzeczownik/ahe-ics/commit/f83a5cc5c1c6a59501d961f7a546e5acedde5a1e))
+
+### Documentation
+
+- Drop the redundant comment above commit_preprocessors ([8795d1a](https://github.com/wielorzeczownik/ahe-ics/commit/8795d1a1f6bdeae217096cd7a0eb7f3a1d57a923))
+
+### Styling
+
+- Drop the no-op whitespace trim inside the profile url ([a21344b](https://github.com/wielorzeczownik/ahe-ics/commit/a21344bdcea3108209a91f890cb1e4deef4814d5))
+
+### Build System
+
+- Update rust:1.97-trixie docker digest to f1400ab (#167) ([9abe034](https://github.com/wielorzeczownik/ahe-ics/commit/9abe0344de50df47250c44f6e84a2f31deeb6876))
+
+### CI/CD
+
+- Update taiki-e/install-action action to v2.85.4 (#166) ([dcdff42](https://github.com/wielorzeczownik/ahe-ics/commit/dcdff429e372634c766e7ccf399e4cfa936ebf79))
+- Update docker/login-action action to v4.6.0 (#165) ([e93ff9e](https://github.com/wielorzeczownik/ahe-ics/commit/e93ff9ea698fc2ebb83eb1857be1182cc52c6c02))
+- Publish through a deployment environment ([d1de371](https://github.com/wielorzeczownik/ahe-ics/commit/d1de3710880d831f14ef04a66411f0e5e9dcbd72))
+- Update taiki-e/install-action action to v2.85.3 (#163) ([90db556](https://github.com/wielorzeczownik/ahe-ics/commit/90db556adf924057395b0c33d1a6ef128e9d8185))
+- Update docker/login-action action to v4.5.2 (#162) ([dd9b634](https://github.com/wielorzeczownik/ahe-ics/commit/dd9b6344ff88b7f0aafd63b540899604b6184992))
+- Update taiki-e/install-action action to v2.85.2 (#161) ([33692ba](https://github.com/wielorzeczownik/ahe-ics/commit/33692ba442919b609c61b558afa0f04d8c9a68d2))
+- Update taiki-e/install-action action to v2.85.1 (#160) ([11cadda](https://github.com/wielorzeczownik/ahe-ics/commit/11cadda869a7ebf2d64d8e87dd1a99636839f9d5))
+
+### Dependencies
+
+- Update debian:trixie-slim docker digest to 3a39a05 (#168) ([3b27f54](https://github.com/wielorzeczownik/ahe-ics/commit/3b27f546edef690f8d17c1b72589d165d21c849a))
+
+### Other
+
+- Ci/release notes and bump (#164) ([57d7008](https://github.com/wielorzeczownik/ahe-ics/commit/57d7008fc90cde4e91bf4e65041dd858ed4954a7))
+
 ## [1.3.21](https://github.com/wielorzeczownik/ahe-ics/compare/v1.3.20...v1.3.21) - 2026-08-01
 
 ### CI/CD
