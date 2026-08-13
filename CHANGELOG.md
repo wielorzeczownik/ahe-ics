@@ -5,6 +5,18 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.23](https://github.com/wielorzeczownik/ahe-ics/compare/v1.3.22...v1.3.23) - 2026-08-13
+
+### CI/CD
+
+- Update swatinem/rust-cache action to v2.9.2 (#173) ([6a0f773](https://github.com/wielorzeczownik/ahe-ics/commit/6a0f773c58bc5b6c199820e866a1dea502b2b199))
+- Attest the container images and serialize the docker matrix (#172) ([198f883](https://github.com/wielorzeczownik/ahe-ics/commit/198f883affb164a4af471c7a348eb3bdf4f9538a))
+- Update github actions (#169) ([5edb039](https://github.com/wielorzeczownik/ahe-ics/commit/5edb03977d3cad42d9e4b8fbddb80b420f32f5f4))
+
+### Dependencies
+
+- Update rust crate moka to v0.12.16 (#171) ([54afbb2](https://github.com/wielorzeczownik/ahe-ics/commit/54afbb207857ec9bfcaf4334e57dbc514a460e61))
+
 ## [1.3.22](https://github.com/wielorzeczownik/ahe-ics/compare/v1.3.21...v1.3.22) - 2026-08-06
 
 ### Bug Fixes
