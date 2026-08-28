@@ -5,6 +5,35 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.24](https://github.com/wielorzeczownik/ahe-ics/compare/v1.3.23...v1.3.24) - 2026-08-28
+
+### Bug Fixes
+
+- Resolve audit advisories ([e159e15](https://github.com/wielorzeczownik/ahe-ics/commit/e159e153c2dbd3f3a0a7ac553130c75e252e4a66))
+
+### Build System
+
+- Update rust docker tag to v1.98 (#186) ([4924f6e](https://github.com/wielorzeczownik/ahe-ics/commit/4924f6efbd19c884eb3fcbc4b0b72b32853b1da2))
+- Update rust docker tag to v1.98 (#182) ([9846ebc](https://github.com/wielorzeczownik/ahe-ics/commit/9846ebc810abfbbba97bee450bf95370bd96fe23))
+- Update rust:1.97-trixie docker digest to b1b3c9c (#170) ([f6ac927](https://github.com/wielorzeczownik/ahe-ics/commit/f6ac9279dfb3b6935a80bafa5a598f58c9b30cdc))
+
+### CI/CD
+
+- Update github actions (#188) ([f2f23ee](https://github.com/wielorzeczownik/ahe-ics/commit/f2f23eeafe9660d799f63e375ae1fc0e8e6cef10))
+- Update taiki-e/install-action action to v2.86.4 (#184) ([9ec4999](https://github.com/wielorzeczownik/ahe-ics/commit/9ec49992a7c6afd28e4254ba89951005d860ccdc))
+- Update taiki-e/install-action action to v2.86.3 (#181) ([315d356](https://github.com/wielorzeczownik/ahe-ics/commit/315d356c0d4396af58bd9fc76f007ab63969b073))
+- Update docker/setup-buildx-action action to v4.3.0 (#183) ([c4c4f81](https://github.com/wielorzeczownik/ahe-ics/commit/c4c4f81ca396f02a033922612375734aa088df92))
+- Update taiki-e/install-action action to v2.85.13 (#180) ([ab821ab](https://github.com/wielorzeczownik/ahe-ics/commit/ab821abc681b026304a68942c2a544221a739f25))
+- Update taiki-e/install-action action to v2.85.12 (#179) ([b9fb4fa](https://github.com/wielorzeczownik/ahe-ics/commit/b9fb4fa500aa7272acc1faa7ea88aa610654d649))
+- Update taiki-e/install-action action to v2.85.11 (#177) ([a0b7e24](https://github.com/wielorzeczownik/ahe-ics/commit/a0b7e245c233be4dd216769db4becc5849fb9253))
+- Update taiki-e/install-action action to v2.85.10 (#176) ([7b06dfd](https://github.com/wielorzeczownik/ahe-ics/commit/7b06dfdb58b4499e3ffc7bd95c60fd4a77b39e64))
+- Update actions/attest-build-provenance action to v4.2.2 (#175) ([079dfd4](https://github.com/wielorzeczownik/ahe-ics/commit/079dfd470e123e7d6ab677717d34f36106565125))
+- Update taiki-e/install-action action to v2.85.9 (#174) ([2b64e17](https://github.com/wielorzeczownik/ahe-ics/commit/2b64e17b07d55b1e2244104cfa40822d868e6a2b))
+
+### Dependencies
+
+- Update rust crate argon2 to 0.6.0 (#187) ([35196a0](https://github.com/wielorzeczownik/ahe-ics/commit/35196a0b21dd6737dd653b7d47b1a97bf7af79e9))
+
 ## [1.3.23](https://github.com/wielorzeczownik/ahe-ics/compare/v1.3.22...v1.3.23) - 2026-08-13
 
 ### CI/CD
