@@ -57,7 +57,7 @@ moka = { version = "0.12.13", features = ["future"] }
 dotenvy = "0.15.7"
 
 # Calendar token verification and credential-derived cache keys
-argon2 = "0.5.3"
+argon2 = "0.6.0"
 sha2 = "0.11.0"
 subtle = "2.6.1"
 

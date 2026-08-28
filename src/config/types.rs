@@ -1,7 +1,7 @@
 use std::fmt;
 
 use anyhow::{Result, anyhow, bail};
-use argon2::password_hash::PasswordHash;
+use argon2::password_hash::phc::PasswordHash;
 use argon2::{Argon2, PasswordVerifier};
 use sha2::{Digest, Sha256};
 use subtle::ConstantTimeEq;
@@ -109,18 +109,14 @@ impl CalendarToken {
 
 #[cfg(test)]
 mod tests {
-  use argon2::password_hash::{PasswordHasher, SaltString};
+  use argon2::PasswordHasher;
   use argon2::{Algorithm, Params, Version};
 
   use super::*;
 
-  /// Deterministic salt keeps the generated PHC strings stable across runs
-  const TEST_SALT: &str = "dGVzdHNhbHR0ZXN0c2FsdA";
-
   fn hash_with(algorithm: Algorithm, password: &str) -> String {
-    let salt = SaltString::from_b64(TEST_SALT).expect("valid salt");
     Argon2::new(algorithm, Version::V0x13, Params::default())
-      .hash_password(password.as_bytes(), &salt)
+      .hash_password(password.as_bytes())
       .expect("hashing succeeds")
       .to_string()
   }
@@ -245,7 +241,8 @@ mod tests {
   #[test]
   fn token_accepts_digest_of_unexpected_length() {
     let hash = hash_with(Algorithm::Argon2id, "s3cret");
-    let truncated = &hash[..hash.len() - 8];
+    let digest = hash.rsplit('$').next().expect("digest");
+    let truncated = &hash[..hash.len() - digest.len() % 4 - 4];
 
     let token = CalendarToken::from_env_value(truncated).expect("parses");
     assert!(!token.verify("s3cret"));
