@@ -5,6 +5,12 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.25](https://github.com/wielorzeczownik/ahe-ics/compare/v1.3.24...v1.3.25) - 2026-09-01
+
+### Dependencies
+
+- Update debian:trixie-slim docker digest to d7e1218 (#185) ([d1df608](https://github.com/wielorzeczownik/ahe-ics/commit/d1df60861e0e1c848fbad561df8b059998a22edb))
+
 ## [1.3.24](https://github.com/wielorzeczownik/ahe-ics/compare/v1.3.23...v1.3.24) - 2026-08-28
 
 ### Bug Fixes
