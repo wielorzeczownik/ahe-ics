@@ -5,6 +5,21 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.26](https://github.com/wielorzeczownik/ahe-ics/compare/v1.3.25...v1.3.26) - 2026-09-12
+
+### CI/CD
+
+- Update taiki-e/install-action action to v2.87.4 (#195) ([89a3955](https://github.com/wielorzeczownik/ahe-ics/commit/89a39552986a86707f778ce7707a9be6a70ac196))
+- Update github actions (#194) ([d353c30](https://github.com/wielorzeczownik/ahe-ics/commit/d353c30701f82b3acdcf5167e7b7be5937f9045b))
+- Update docker/setup-qemu-action action to v4.3.0 (#193) ([6f2f5c6](https://github.com/wielorzeczownik/ahe-ics/commit/6f2f5c68a8c09f0e06b4fb1aa38e5e3e7bc270ec))
+- Update taiki-e/install-action action to v2.87.2 (#192) ([c186da2](https://github.com/wielorzeczownik/ahe-ics/commit/c186da296c3aabd1ce3fc5c6a91b6bdd88ae13f1))
+- Update softprops/action-gh-release action to v3.0.3 (#191) ([9431746](https://github.com/wielorzeczownik/ahe-ics/commit/9431746a58b3a11d91d79cb30e99a6801f539174))
+- Update taiki-e/install-action action to v2.87.1 (#190) ([fd15e4c](https://github.com/wielorzeczownik/ahe-ics/commit/fd15e4cea3ad37bace2ddf7ffaf459bfa888fab9))
+
+### Dependencies
+
+- Update rust crate reqwest to v0.13.5 (#197) ([877f9c3](https://github.com/wielorzeczownik/ahe-ics/commit/877f9c3f1b450e74375c5c0ef9c3fc66341e1f83))
+
 ## [1.3.25](https://github.com/wielorzeczownik/ahe-ics/compare/v1.3.24...v1.3.25) - 2026-09-01
 
 ### Dependencies
@@ -733,6 +748,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.5.12](https://github.com/wielorzeczownik/ahe-ics/compare/v0.5.11...v0.5.12) - 2026-04-04
 
+### Documentation
+
+- Document new build targets and update Apple Silicon to M4 ([ab60c6f](https://github.com/wielorzeczownik/ahe-ics/commit/ab60c6f5319aebcd5a33f09f9beffbfe2130afdf))
+
+### CI/CD
+
+- Add musl, Windows ARM64, and i686 targets ([a8a3242](https://github.com/wielorzeczownik/ahe-ics/commit/a8a324222489addc8f8982cfb63ac33f099a2d44))
+
 ### Dependencies
 
 - Add package metadata to Cargo.toml ([b6795bc](https://github.com/wielorzeczownik/ahe-ics/commit/b6795bc23845769bff567de1bf8a96f04bc8a782))
@@ -745,7 +768,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Documentation
 
-- Document new build targets and update Apple Silicon to M4 ([ab60c6f](https://github.com/wielorzeczownik/ahe-ics/commit/ab60c6f5319aebcd5a33f09f9beffbfe2130afdf))
 - Replace hyphens ([adf0a39](https://github.com/wielorzeczownik/ahe-ics/commit/adf0a39cc898e89c52bc4e255a7be3c77699bdba))
 - Update python docker tag to v3.14 ([e244876](https://github.com/wielorzeczownik/ahe-ics/commit/e2448769a4ff69a59b5bc6fdc5b433644a060d45))
 - SEO improvements ([b910943](https://github.com/wielorzeczownik/ahe-ics/commit/b9109431bf84dcb2260197b3c5e7c65321c488c5))
@@ -753,7 +775,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### CI/CD
 
-- Add musl, Windows ARM64, and i686 targets ([a8a3242](https://github.com/wielorzeczownik/ahe-ics/commit/a8a324222489addc8f8982cfb63ac33f099a2d44))
 - Remove [skip ci] ([f8d3a06](https://github.com/wielorzeczownik/ahe-ics/commit/f8d3a065fe2f7681bdaf84f2afc251d4df286ef0))
 - Track python image version in README ([0dc4107](https://github.com/wielorzeczownik/ahe-ics/commit/0dc41075426aa2b85165d2ab8db3e2364b27ad35))
 - Add security audit workflow with targeted fix and skip-ci guard ([2498987](https://github.com/wielorzeczownik/ahe-ics/commit/249898779357ab1ebb5ff1fc0e97df2107ffdd3a))
@@ -816,6 +837,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add GitHub issue templates, PR template and CODEOWNERS ([5d26576](https://github.com/wielorzeczownik/ahe-ics/commit/5d265761257ae7bd6cc239de358b03697b27d28e))
 - Set MSRV to 1.88 in Cargo.toml ([8401ebd](https://github.com/wielorzeczownik/ahe-ics/commit/8401ebd06f6a68117bfced750f23593bebe7e1bf))
 - Add PR cargo check workflow ([4906370](https://github.com/wielorzeczownik/ahe-ics/commit/490637017f2bef00e546ec02769faacf7259b334))
+- Improve changelog template and commit filtering ([ef6f53a](https://github.com/wielorzeczownik/ahe-ics/commit/ef6f53a63ce959c7bd89afa6b8b08a416da455c1))
 
 ## [0.5.6](https://github.com/wielorzeczownik/ahe-ics/compare/v0.5.5...v0.5.6) - 2026-03-03
 
@@ -832,10 +854,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### CI/CD
 
 - Remove fallback patch bump, rely solely on git-cliff ([b97847d](https://github.com/wielorzeczownik/ahe-ics/commit/b97847da5f7dad9d8f92059aafd26f8267174b4d))
-
-### Miscellaneous
-
-- Improve changelog template and commit filtering ([ef6f53a](https://github.com/wielorzeczownik/ahe-ics/commit/ef6f53a63ce959c7bd89afa6b8b08a416da455c1))
 
 ## [0.5.5](https://github.com/wielorzeczownik/ahe-ics/compare/v0.5.4...v0.5.5) - 2026-03-03
 
@@ -876,6 +894,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Bug Fixes
 
 - Use CMD for healthcheck ([9b96246](https://github.com/wielorzeczownik/ahe-ics/commit/9b96246d3a819231434348db75c7665efb3ebca7))
+- Use CMD for healthcheck ([15cddcc](https://github.com/wielorzeczownik/ahe-ics/commit/15cddccbf66909208c3f0d0a1311670bc0f0d15c))
 
 ## [0.5.0](https://github.com/wielorzeczownik/ahe-ics/compare/v0.4.1...v0.5.0) - 2026-02-08
 
@@ -883,10 +902,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add upstream health check ([1db5879](https://github.com/wielorzeczownik/ahe-ics/commit/1db5879b61ac0b998ab654060e74f342641b930b))
 - Add real ip header support ([10719c5](https://github.com/wielorzeczownik/ahe-ics/commit/10719c574347cd2b488bf4da18179feebabb46b4))
-
-### Bug Fixes
-
-- Use CMD for healthcheck ([15cddcc](https://github.com/wielorzeczownik/ahe-ics/commit/15cddccbf66909208c3f0d0a1311670bc0f0d15c))
 
 ### Refactoring
 
@@ -930,6 +945,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Document JSON and OpenAPI env toggles ([145596d](https://github.com/wielorzeczownik/ahe-ics/commit/145596d5aae4a20e9866bcbb25d4696102e0fd59))
 - Document JSON calendar endpoints ([d3c60c7](https://github.com/wielorzeczownik/ahe-ics/commit/d3c60c770958d51db665e47af31cc11831fe40fa))
 
+## [0.2.1](https://github.com/wielorzeczownik/ahe-ics/compare/v0.2.0...v0.2.1) - 2026-02-02
+
+### Build System
+
+- Pin rust builder image to bookworm ([61f55fc](https://github.com/wielorzeczownik/ahe-ics/commit/61f55fc237309549dd6d33f45845c005af627c28))
+
+### CI/CD
+
+- Trigger on Dockerfile changes and pin linux builds to ubuntu-22.04 ([1c5ea5b](https://github.com/wielorzeczownik/ahe-ics/commit/1c5ea5b47325c729e87a40a7cb1e3aa302961220))
+
 ## [0.2.0](https://github.com/wielorzeczownik/ahe-ics/compare/v0.1.2...v0.2.0) - 2026-02-02
 
 ### Features
@@ -953,13 +978,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Set 2-space indentation and reformat ([6c7dfe7](https://github.com/wielorzeczownik/ahe-ics/commit/6c7dfe7c1fdc4da03f3359eb0914c224ae359752))
 
-### Build System
-
-- Pin rust builder image to bookworm ([61f55fc](https://github.com/wielorzeczownik/ahe-ics/commit/61f55fc237309549dd6d33f45845c005af627c28))
-
 ### CI/CD
 
-- Trigger on Dockerfile changes and pin linux builds to ubuntu-22.04 ([1c5ea5b](https://github.com/wielorzeczownik/ahe-ics/commit/1c5ea5b47325c729e87a40a7cb1e3aa302961220))
 - Refine git-cliff release notes format ([0e0bc77](https://github.com/wielorzeczownik/ahe-ics/commit/0e0bc7755250efb5a3e765f3e4b6729e1a30d231))
 - Scope triggers and cancel in-progress runs ([d89297a](https://github.com/wielorzeczownik/ahe-ics/commit/d89297ab6d719e5802a0211ae4932d32fc73524f))
 
