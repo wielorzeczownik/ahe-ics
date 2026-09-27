@@ -3,11 +3,11 @@ language: en-US
 reviews:
   profile: chill
   path_filters:
-    - "!CHANGELOG.md"
-    - "!dist/**"
+    - '!CHANGELOG.md'
+    - '!dist/**'
   auto_review:
     ignore_title_keywords:
-      - "chore(release)"
+      - 'chore(release)'
   tools:
     clippy:
       enabled: true
