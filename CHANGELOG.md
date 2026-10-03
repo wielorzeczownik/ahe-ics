@@ -5,6 +5,33 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.27](https://github.com/wielorzeczownik/ahe-ics/compare/v1.3.26...v1.3.27) - 2026-10-03
+
+### Bug Fixes
+
+- Resolve audit advisories ([2b164ee](https://github.com/wielorzeczownik/ahe-ics/commit/2b164ee698c9b24ca5b5d79eb27a460023066d64))
+
+### Build System
+
+- Update rust base image (#189) ([f0fbe9a](https://github.com/wielorzeczownik/ahe-ics/commit/f0fbe9adae1a2784a57fc904605d2f74b31cbbc1))
+
+### CI/CD
+
+- Cache Docker layers for release image builds (#205) ([0112799](https://github.com/wielorzeczownik/ahe-ics/commit/0112799e236fa086e0e3959116b53a8805156350))
+- Update docker/setup-buildx-action action to v4.4.1 (#203) ([d41a0fa](https://github.com/wielorzeczownik/ahe-ics/commit/d41a0fa3d05f0819ffc695fa82cef5547ea6ba8b))
+- Update docker actions (#202) ([8bdb86b](https://github.com/wielorzeczownik/ahe-ics/commit/8bdb86b06980405cf146e21e800b5eb88a123686))
+
+### Dependencies
+
+- Update rust crate icalendar to v0.17.14 (#209) ([4db810a](https://github.com/wielorzeczownik/ahe-ics/commit/4db810afd71f32b6dcdcb5db28885ca4903156bc))
+- Update dependency prettier to v3.9.9 (#204) ([9267225](https://github.com/wielorzeczownik/ahe-ics/commit/926722535c6a49adde284d8a1bcf3cc73909bbe9))
+- Update dependency prettier to v3.9.8 (#200) ([3260f73](https://github.com/wielorzeczownik/ahe-ics/commit/3260f737d4b9da9bd311acb4fe2cf351b4f8aa29))
+- Update dependency prettier to v3.9.7 (#199) ([0ac3467](https://github.com/wielorzeczownik/ahe-ics/commit/0ac34674385546d44e0dddf4b92f9f6477b97b1d))
+
+### Miscellaneous
+
+- Enable vulnerabilityAlerts (#208) ([49c2607](https://github.com/wielorzeczownik/ahe-ics/commit/49c26072530421a7f7312627f47c277fd2750ea8))
+
 ## [1.3.26](https://github.com/wielorzeczownik/ahe-ics/compare/v1.3.25...v1.3.26) - 2026-09-12
 
 ### CI/CD
