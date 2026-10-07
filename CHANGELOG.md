@@ -5,6 +5,17 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.28](https://github.com/wielorzeczownik/ahe-ics/compare/v1.3.27...v1.3.28) - 2026-10-07
+
+### CI/CD
+
+- Update taiki-e/install-action action to v2.87.21 (#210) ([2c0f783](https://github.com/wielorzeczownik/ahe-ics/commit/2c0f783bfcf4093f4f4738c2e071afe21ff1f0e3))
+- Update github actions (#196) ([4c38b35](https://github.com/wielorzeczownik/ahe-ics/commit/4c38b354ea66cc2f02fa18dc28b7d5b490c9235d))
+
+### Dependencies
+
+- Update rust crate tokio to v1.53.2 (#212) ([219c40b](https://github.com/wielorzeczownik/ahe-ics/commit/219c40b00fe43bd35882fef6e763aba1e8279edb))
+
 ## [1.3.27](https://github.com/wielorzeczownik/ahe-ics/compare/v1.3.26...v1.3.27) - 2026-10-03
 
 ### Bug Fixes
