@@ -1,4 +1,4 @@
-FROM rust:1.98-trixie@sha256:bf5a9aa29062a6cb03c49bd59a46eb55e3cc770caf598a221a7866e500be3082 AS builder
+FROM rust:1.99-trixie@sha256:6ff07edce8775d0f64be7aba9197229407301bddf2054d62c27b541a6238a181 AS builder
 WORKDIR /app
 
 COPY Cargo.toml Cargo.lock build.rs ./
