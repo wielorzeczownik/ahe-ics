@@ -5,6 +5,21 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.30](https://github.com/wielorzeczownik/ahe-ics/compare/v1.3.29...v1.3.30) - 2026-10-14
+
+### Build System
+
+- Update rust docker tag to v1.99 (#201) ([8564fb9](https://github.com/wielorzeczownik/ahe-ics/commit/8564fb9f4a76d02fbe1bf14d8e8d32476b0aa633))
+
+### CI/CD
+
+- Update artifact actions (#216) ([88b2169](https://github.com/wielorzeczownik/ahe-ics/commit/88b2169168fc019f133d8d59638603d6e81f2665))
+- Update github actions (#213) ([766b181](https://github.com/wielorzeczownik/ahe-ics/commit/766b1813d3389cb75b1f55b63358cdc4a1eda3da))
+
+### Dependencies
+
+- Update rust crate serde_json to v1.0.154 (#217) ([aeec7f0](https://github.com/wielorzeczownik/ahe-ics/commit/aeec7f036776ce63c7c8df4a96025ba50624c710))
+
 ## [1.3.29](https://github.com/wielorzeczownik/ahe-ics/compare/v1.3.28...v1.3.29) - 2026-10-13
 
 ### Bug Fixes
