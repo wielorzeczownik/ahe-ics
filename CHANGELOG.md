@@ -5,6 +5,12 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.32](https://github.com/wielorzeczownik/ahe-ics/compare/v1.3.31...v1.3.32) - 2026-10-15
+
+### Dependencies
+
+- Update rust crate sha2 to v0.11.1 (#219) ([5d2fe7c](https://github.com/wielorzeczownik/ahe-ics/commit/5d2fe7cb98b4f3fe5b703806c79ca29df1b16e97))
+
 ## [1.3.31](https://github.com/wielorzeczownik/ahe-ics/compare/v1.3.30...v1.3.31) - 2026-10-15
 
 ### Dependencies
