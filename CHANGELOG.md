@@ -5,6 +5,12 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.31](https://github.com/wielorzeczownik/ahe-ics/compare/v1.3.30...v1.3.31) - 2026-10-15
+
+### Dependencies
+
+- Update rust crate winresource to v0.1.34 (#218) ([1f3cbfe](https://github.com/wielorzeczownik/ahe-ics/commit/1f3cbfe944de0bafd3fce1f5c932b3555b0f36f0))
+
 ## [1.3.30](https://github.com/wielorzeczownik/ahe-ics/compare/v1.3.29...v1.3.30) - 2026-10-14
 
 ### Build System
