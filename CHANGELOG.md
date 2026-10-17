@@ -5,6 +5,16 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.34](https://github.com/wielorzeczownik/ahe-ics/compare/v1.3.33...v1.3.34) - 2026-10-17
+
+### Bug Fixes
+
+- Resolve audit advisories ([7e3433e](https://github.com/wielorzeczownik/ahe-ics/commit/7e3433e30ee5bcec25b3daf51e7c80f7b6f8a4dd))
+
+### Dependencies
+
+- Update rust crate icalendar to v0.17.15 (#222) ([8e7b2a9](https://github.com/wielorzeczownik/ahe-ics/commit/8e7b2a95160bca690ed58df75223eae5c2d8ca10))
+
 ## [1.3.33](https://github.com/wielorzeczownik/ahe-ics/compare/v1.3.32...v1.3.33) - 2026-10-17
 
 ### Dependencies
