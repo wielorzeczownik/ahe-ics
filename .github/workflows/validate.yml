@@ -11,23 +11,22 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  changes:
-    name: Detect changes
+  checks:
+    name: Checks
     runs-on: ubuntu-24.04
-    timeout-minutes: 5
+    timeout-minutes: 15
     permissions:
       contents: read
       pull-requests: read
     outputs:
       rust: ${{ steps.filter.outputs.rust }}
       docker: ${{ steps.filter.outputs.docker }}
-      dockerfiles: ${{ steps.filter.outputs.dockerfiles }}
-      deps: ${{ steps.filter.outputs.deps }}
-      shell: ${{ steps.filter.outputs.shell }}
-      markdown: ${{ steps.filter.outputs.markdown }}
-      format: ${{ steps.filter.outputs.format }}
-      workflows: ${{ steps.filter.outputs.workflows }}
     steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
       - name: Filter changed paths
         id: filter
         uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d # v4.0.3
@@ -60,6 +59,7 @@ jobs:
               - '.github/workflows/validate.yml'
               - 'Cargo.toml'
               - 'Cargo.lock'
+              - 'scripts/cargo-audit-report.sh'
             shell:
               - '.github/workflows/validate.yml'
               - 'scripts/**'
@@ -77,10 +77,92 @@ jobs:
               - '**/*.yml'
               - '**/*.yaml'
 
-  cargo-test:
-    name: Cargo test
-    needs: changes
-    if: ${{ needs.changes.outputs.rust == 'true' }}
+      - name: Install cargo-audit
+        id: install
+        if: ${{ steps.filter.outputs.deps == 'true' }}
+        uses: taiki-e/install-action@ab6895351a88b908e96a4697860d4ffea5e57dbe # v2.87.27
+        with:
+          tool: cargo-audit
+
+      - name: Cargo audit
+        if: ${{ !cancelled() && steps.install.outcome == 'success' && steps.filter.outputs.deps == 'true' }}
+        shell: bash
+        run: bash scripts/cargo-audit-report.sh >>"$GITHUB_STEP_SUMMARY" || echo "::warning title=cargo audit::Advisories found or audit failed, see the job summary. Not blocking this pull request."
+
+      - name: Lint Dockerfile
+        if: ${{ !cancelled() && steps.filter.outputs.dockerfiles == 'true' }}
+        uses: hadolint/hadolint-action@06be81baf89a55ffd0e24b8f04a4185738dd3387 # v3.5.0
+        with:
+          dockerfile: Dockerfile
+
+      - name: Lint Dockerfile.shared
+        if: ${{ !cancelled() && steps.filter.outputs.dockerfiles == 'true' }}
+        uses: hadolint/hadolint-action@06be81baf89a55ffd0e24b8f04a4185738dd3387 # v3.5.0
+        with:
+          dockerfile: Dockerfile.shared
+
+      - name: Lint Dockerfile.alpine
+        if: ${{ !cancelled() && steps.filter.outputs.dockerfiles == 'true' }}
+        uses: hadolint/hadolint-action@06be81baf89a55ffd0e24b8f04a4185738dd3387 # v3.5.0
+        with:
+          dockerfile: Dockerfile.alpine
+
+      - name: Lint Dockerfile.alpine.shared
+        if: ${{ !cancelled() && steps.filter.outputs.dockerfiles == 'true' }}
+        uses: hadolint/hadolint-action@06be81baf89a55ffd0e24b8f04a4185738dd3387 # v3.5.0
+        with:
+          dockerfile: Dockerfile.alpine.shared
+
+      - name: Lint Dockerfile.release
+        if: ${{ !cancelled() && steps.filter.outputs.dockerfiles == 'true' }}
+        uses: hadolint/hadolint-action@06be81baf89a55ffd0e24b8f04a4185738dd3387 # v3.5.0
+        with:
+          dockerfile: Dockerfile.release
+
+      - name: Lint Dockerfile.alpine.release
+        if: ${{ !cancelled() && steps.filter.outputs.dockerfiles == 'true' }}
+        uses: hadolint/hadolint-action@06be81baf89a55ffd0e24b8f04a4185738dd3387 # v3.5.0
+        with:
+          dockerfile: Dockerfile.alpine.release
+
+      - name: Install shfmt and shellcheck
+        if: ${{ !cancelled() && steps.filter.outputs.shell == 'true' }}
+        uses: taiki-e/install-action@ab6895351a88b908e96a4697860d4ffea5e57dbe # v2.87.27
+        with:
+          tool: shfmt,shellcheck
+
+      - name: Format check shell scripts
+        if: ${{ !cancelled() && steps.filter.outputs.shell == 'true' }}
+        run: shfmt --diff scripts/
+
+      - name: Lint shell scripts
+        if: ${{ !cancelled() && steps.filter.outputs.shell == 'true' }}
+        run: shellcheck scripts/*.sh
+
+      - name: Lint workflows
+        if: ${{ !cancelled() && steps.filter.outputs.workflows == 'true' }}
+        uses: raven-actions/actionlint@3d39aea434753780c3b3d4a1a31c854b4dbf49d7 # v2.2.0
+        with:
+          # renovate: datasource=github-releases depName=rhysd/actionlint
+          version: 1.7.12
+          shellcheck: true
+
+      - name: Format check
+        if: ${{ !cancelled() && steps.filter.outputs.format == 'true' }}
+        run: npx --yes prettier@3.9.10 --check .
+
+      - name: Lint Markdown
+        if: ${{ !cancelled() && steps.filter.outputs.markdown == 'true' }}
+        uses: DavidAnson/markdownlint-cli2-action@21c1be1b93ad9ed58fa840aacc3f279cde2a72ff # v24.2.0
+        with:
+          globs: |
+            **/*.md
+            !CHANGELOG.md
+
+  tests:
+    name: Tests
+    needs: checks
+    if: ${{ !cancelled() && needs.checks.outputs.rust == 'true' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
@@ -98,10 +180,10 @@ jobs:
       - name: Cargo test
         run: cargo test --locked
 
-  lint:
-    name: Lint (clippy + rustfmt)
-    needs: changes
-    if: ${{ needs.changes.outputs.rust == 'true' }}
+  clippy:
+    name: Clippy
+    needs: checks
+    if: ${{ !cancelled() && needs.checks.outputs.rust == 'true' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
@@ -124,70 +206,10 @@ jobs:
       - name: Clippy
         run: cargo clippy --all-targets --locked -- -D warnings
 
-  cargo-audit:
-    name: Cargo audit
-    needs: changes
-    if: ${{ needs.changes.outputs.deps == 'true' }}
-    runs-on: ubuntu-24.04
-    timeout-minutes: 10
-    steps:
-      - name: Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-
-      - name: Install cargo-audit
-        uses: taiki-e/install-action@ab6895351a88b908e96a4697860d4ffea5e57dbe # v2.87.27
-        with:
-          tool: cargo-audit
-
-      - name: Cargo audit
-        shell: bash
-        run: |
-          set -uo pipefail
-          if cargo audit --color never 2>&1 | tee audit.log; then
-            exit 0
-          fi
-          echo "::warning title=cargo audit::Advisories found – see the job summary. Not blocking this pull request."
-          {
-            echo "### cargo audit findings"
-            echo
-            echo '```text'
-            cat audit.log
-            echo '```'
-          } >>"$GITHUB_STEP_SUMMARY"
-
-  hadolint:
-    name: Dockerfile lint (hadolint)
-    needs: changes
-    if: ${{ needs.changes.outputs.dockerfiles == 'true' }}
-    runs-on: ubuntu-24.04
-    timeout-minutes: 10
-    strategy:
-      fail-fast: false
-      matrix:
-        dockerfile:
-          - Dockerfile
-          - Dockerfile.shared
-          - Dockerfile.alpine
-          - Dockerfile.alpine.shared
-          - Dockerfile.release
-          - Dockerfile.alpine.release
-    steps:
-      - name: Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-
-      - name: Lint Dockerfile
-        uses: hadolint/hadolint-action@06be81baf89a55ffd0e24b8f04a4185738dd3387 # v3.5.0
-        with:
-          dockerfile: ${{ matrix.dockerfile }}
-
-  smoke-build:
-    name: Smoke build (${{ matrix.variant }})
-    needs: changes
-    if: ${{ needs.changes.outputs.docker == 'true' }}
+  image:
+    name: Image ${{ matrix.variant }}
+    needs: checks
+    if: ${{ !cancelled() && needs.checks.outputs.docker == 'true' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     strategy:
@@ -248,7 +270,7 @@ jobs:
             echo "No fixable CRITICAL or HIGH vulnerabilities in $VARIANT."
             exit 0
           fi
-          echo "::warning title=trivy::$count fixable CRITICAL/HIGH vulnerabilities in $VARIANT - see the job summary. Not blocking this pull request."
+          echo "::warning title=trivy::$count fixable CRITICAL/HIGH vulnerabilities in $VARIANT, see the job summary. Not blocking this pull request."
           {
             echo "### Trivy findings for $VARIANT"
             echo
@@ -261,79 +283,3 @@ jobs:
             ' "$REPORT" | sort -u
             echo '```'
           } >>"$GITHUB_STEP_SUMMARY"
-
-  shell-lint:
-    name: Shell (shfmt + shellcheck)
-    needs: changes
-    if: ${{ needs.changes.outputs.shell == 'true' }}
-    runs-on: ubuntu-24.04
-    timeout-minutes: 10
-    steps:
-      - name: Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-
-      - name: Install shfmt and shellcheck
-        uses: taiki-e/install-action@ab6895351a88b908e96a4697860d4ffea5e57dbe # v2.87.27
-        with:
-          tool: shfmt,shellcheck
-
-      - name: Format check shell scripts
-        run: shfmt --diff scripts/
-
-      - name: Lint shell scripts
-        run: shellcheck scripts/*.sh
-
-  actionlint:
-    name: Lint workflows (actionlint)
-    needs: changes
-    if: ${{ needs.changes.outputs.workflows == 'true' }}
-    runs-on: ubuntu-24.04
-    timeout-minutes: 10
-    steps:
-      - name: Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-
-      - name: Lint workflows
-        uses: raven-actions/actionlint@3d39aea434753780c3b3d4a1a31c854b4dbf49d7 # v2.2.0
-        with:
-          # renovate: datasource=github-releases depName=rhysd/actionlint
-          version: 1.7.12
-          shellcheck: true
-
-  prettier:
-    name: Formatting (Prettier)
-    needs: changes
-    if: ${{ needs.changes.outputs.format == 'true' }}
-    runs-on: ubuntu-24.04
-    timeout-minutes: 10
-    steps:
-      - name: Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-
-      - name: Format check
-        run: npx --yes prettier@3.9.10 --check .
-
-  markdownlint:
-    name: Markdown lint
-    needs: changes
-    if: ${{ needs.changes.outputs.markdown == 'true' }}
-    runs-on: ubuntu-24.04
-    timeout-minutes: 10
-    steps:
-      - name: Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-
-      - name: Lint Markdown
-        uses: DavidAnson/markdownlint-cli2-action@21c1be1b93ad9ed58fa840aacc3f279cde2a72ff # v24.2.0
-        with:
-          globs: |
-            **/*.md
-            !CHANGELOG.md
