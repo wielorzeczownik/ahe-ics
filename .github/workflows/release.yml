@@ -14,9 +14,6 @@ on:
 
 concurrency:
   group: release-main
-  # Never cancel a release in flight: prepare-release pushes the tag before the
-  # artifacts exist, so a cancelled run would strand that tag with no GitHub
-  # release and no images, and no later run would rebuild it.
   cancel-in-progress: false
 
 permissions: {}
@@ -364,7 +361,7 @@ jobs:
             latest_tag: shared
             platforms: linux/amd64,linux/arm64,linux/arm/v7,linux/386
             title: 'ahe-ics-shared'
-            description: 'AHE Łódź class schedule exporter — stateless SaaS variant (credentials per request)'
+            description: 'AHE Łódź class schedule exporter, stateless SaaS variant (credentials per request)'
           - variant: shared-alpine
             dockerfile: Dockerfile.alpine.release
             bin_name: ahe-ics-shared
@@ -374,7 +371,7 @@ jobs:
             latest_tag: shared-alpine
             platforms: linux/amd64,linux/arm64
             title: 'ahe-ics-shared'
-            description: 'AHE Łódź class schedule exporter — stateless SaaS variant (credentials per request)'
+            description: 'AHE Łódź class schedule exporter, stateless SaaS variant (credentials per request)'
     steps:
       - name: Checkout tag
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1

@@ -7,7 +7,6 @@ on:
 
 concurrency:
   group: security-audit
-  # Two overlapping runs would both push a fixed Cargo.lock and race each other.
   cancel-in-progress: false
 
 permissions: {}
