@@ -4,6 +4,10 @@
     "enabled": true
   },
   "osvVulnerabilityAlerts": true,
+  "lockFileMaintenance": {
+    "enabled": true,
+    "automerge": true
+  },
   "extends": ["group:monorepos", "group:recommended"],
   "platformAutomerge": true,
   "automergeType": "pr",

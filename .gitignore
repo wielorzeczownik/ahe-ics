@@ -13,9 +13,6 @@
 *.pid
 *.seed
 
-# Security audit report
-/audit-report.txt
-
 # Coverage / profiling
 coverage/
 *.profraw
