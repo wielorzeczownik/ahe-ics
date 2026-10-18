@@ -87,8 +87,7 @@ Download the latest release asset for your platform:
 
 **macOS:**
 
-- [ahe-ics-x86_64-apple-darwin.tar.gz](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-x86_64-apple-darwin.tar.gz) – macOS on Intel Macs
-- [ahe-ics-aarch64-apple-darwin.tar.gz](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-aarch64-apple-darwin.tar.gz) – macOS on Apple Silicon (M1/M2/M3/M4)
+- [ahe-ics-universal-apple-darwin.tar.gz](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-universal-apple-darwin.tar.gz) – macOS (Intel and Apple Silicon)
 
 **Windows:**
 
@@ -177,8 +176,7 @@ Download the `ahe-ics-shared-*` asset for your platform from the [latest release
 
 **macOS:**
 
-- [ahe-ics-shared-x86_64-apple-darwin.tar.gz](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-shared-x86_64-apple-darwin.tar.gz) – macOS on Intel Macs
-- [ahe-ics-shared-aarch64-apple-darwin.tar.gz](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-shared-aarch64-apple-darwin.tar.gz) – macOS on Apple Silicon (M1/M2/M3/M4)
+- [ahe-ics-shared-universal-apple-darwin.tar.gz](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-shared-universal-apple-darwin.tar.gz) – macOS (Intel and Apple Silicon)
 
 **Windows:**
 
