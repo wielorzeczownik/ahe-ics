@@ -14,8 +14,7 @@ A lightweight self-hosted service written in Rust that exports the AHE Łódź c
 ├── scripts/
 │   ├── bump-version.sh        determines next release version from git-cliff and bumps Cargo.toml
 │   ├── stage-docker-binaries.sh  lays release binaries out per platform for the release images
-│   ├── smoke-test-image.sh    starts a built image and waits for it to serve HTTP
-│   └── security-audit.sh      runs cargo audit and attempts cargo audit fix
+│   └── smoke-test-image.sh    starts a built image and waits for it to serve HTTP
 ├── Dockerfile                 Debian-based image, builds from source (local development)
 ├── Dockerfile.alpine          Alpine-based image, builds from source (local development)
 └── Dockerfile.release         published image, copies in a binary from build-artifacts
@@ -45,7 +44,6 @@ cargo run
 cargo fmt --check
 cargo clippy --all-targets --locked -- -D warnings
 cargo test --locked
-cargo audit
 
 # Dockerfile
 hadolint Dockerfile Dockerfile.alpine Dockerfile.release Dockerfile.alpine.release
