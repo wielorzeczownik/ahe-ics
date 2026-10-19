@@ -10,6 +10,12 @@ concurrency:
   group: validate-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  # renovate: datasource=github-releases depName=rhysd/actionlint extractVersion=^v(?<version>.+)$
+  ACTIONLINT_VERSION: 1.7.12
+  # renovate: datasource=npm depName=prettier
+  PRETTIER_VERSION: 3.9.10
+
 jobs:
   checks:
     name: Checks
@@ -126,13 +132,12 @@ jobs:
         if: ${{ !cancelled() && steps.filter.outputs.workflows == 'true' }}
         uses: raven-actions/actionlint@3d39aea434753780c3b3d4a1a31c854b4dbf49d7 # v2.2.0
         with:
-          # renovate: datasource=github-releases depName=rhysd/actionlint
-          version: 1.7.12
+          version: ${{ env.ACTIONLINT_VERSION }}
           shellcheck: true
 
       - name: Format check
         if: ${{ !cancelled() && steps.filter.outputs.format == 'true' }}
-        run: npx --yes prettier@3.9.10 --check .
+        run: npx --yes "prettier@${PRETTIER_VERSION}" --check .
 
       - name: Lint Markdown
         if: ${{ !cancelled() && steps.filter.outputs.markdown == 'true' }}
