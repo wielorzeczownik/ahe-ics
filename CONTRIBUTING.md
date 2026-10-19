@@ -23,7 +23,8 @@ A lightweight self-hosted service written in Rust that exports the AHE Łódź c
 Published images are assembled from the binaries that the release workflow already
 cross-compiles natively, so they never compile anything under QEMU emulation. The
 `Dockerfile` / `Dockerfile.alpine` variants stay around as the from-source build path
-for local development and are what pull requests smoke-build.
+for local development and are what pull requests smoke-build. They build the dedicated
+binary by default; pass `--build-arg BIN=ahe-ics-shared` for the shared variant.
 
 ## Development setup
 
