@@ -32,17 +32,6 @@
       "semanticCommitType": "docs"
     },
     {
-      "matchManagers": ["github-actions"],
-      "matchPackageNames": [
-        "docker/build-push-action",
-        "docker/login-action",
-        "docker/metadata-action",
-        "docker/setup-buildx-action",
-        "docker/setup-qemu-action"
-      ],
-      "groupName": "docker actions"
-    },
-    {
       "matchManagers": ["cargo"],
       "matchPackageNames": ["serde", "serde_json"],
       "groupName": "serde"
