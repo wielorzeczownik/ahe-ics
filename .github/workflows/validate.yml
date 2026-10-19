@@ -49,17 +49,13 @@ jobs:
               - '.github/workflows/validate.yml'
               - '.hadolint.yaml'
               - 'Dockerfile'
-              - 'Dockerfile.shared'
               - 'Dockerfile.alpine'
-              - 'Dockerfile.alpine.shared'
               - 'Dockerfile.release'
               - 'Dockerfile.alpine.release'
             docker:
               - *rust
               - 'Dockerfile'
-              - 'Dockerfile.shared'
               - 'Dockerfile.alpine'
-              - 'Dockerfile.alpine.shared'
               - '.dockerignore'
             shell:
               - '.github/workflows/validate.yml'
@@ -84,23 +80,11 @@ jobs:
         with:
           dockerfile: Dockerfile
 
-      - name: Lint Dockerfile.shared
-        if: ${{ !cancelled() && steps.filter.outputs.dockerfiles == 'true' }}
-        uses: hadolint/hadolint-action@06be81baf89a55ffd0e24b8f04a4185738dd3387 # v3.5.0
-        with:
-          dockerfile: Dockerfile.shared
-
       - name: Lint Dockerfile.alpine
         if: ${{ !cancelled() && steps.filter.outputs.dockerfiles == 'true' }}
         uses: hadolint/hadolint-action@06be81baf89a55ffd0e24b8f04a4185738dd3387 # v3.5.0
         with:
           dockerfile: Dockerfile.alpine
-
-      - name: Lint Dockerfile.alpine.shared
-        if: ${{ !cancelled() && steps.filter.outputs.dockerfiles == 'true' }}
-        uses: hadolint/hadolint-action@06be81baf89a55ffd0e24b8f04a4185738dd3387 # v3.5.0
-        with:
-          dockerfile: Dockerfile.alpine.shared
 
       - name: Lint Dockerfile.release
         if: ${{ !cancelled() && steps.filter.outputs.dockerfiles == 'true' }}
@@ -208,13 +192,15 @@ jobs:
             dockerfile: Dockerfile
             tag: ahe-ics:test
           - variant: shared
-            dockerfile: Dockerfile.shared
+            dockerfile: Dockerfile
+            build_args: BIN=ahe-ics-shared
             tag: ahe-ics:shared-test
           - variant: alpine
             dockerfile: Dockerfile.alpine
             tag: ahe-ics:alpine-test
           - variant: alpine-shared
-            dockerfile: Dockerfile.alpine.shared
+            dockerfile: Dockerfile.alpine
+            build_args: BIN=ahe-ics-shared
             tag: ahe-ics:alpine-shared-test
     steps:
       - name: Checkout
@@ -230,6 +216,7 @@ jobs:
         with:
           context: .
           file: ${{ matrix.dockerfile }}
+          build-args: ${{ matrix.build_args }}
           push: false
           load: true
           tags: ${{ matrix.tag }}

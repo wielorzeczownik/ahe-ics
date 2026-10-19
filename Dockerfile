@@ -1,17 +1,22 @@
 FROM rust:1.98-trixie@sha256:bf5a9aa29062a6cb03c49bd59a46eb55e3cc770caf598a221a7866e500be3082 AS builder
+ARG BIN=ahe-ics
 WORKDIR /app
 
 COPY Cargo.toml Cargo.lock build.rs ./
 COPY src ./src
-RUN cargo build --release --locked --bin ahe-ics
+RUN cargo build --release --locked --bin "${BIN}"
 
 FROM debian:trixie-slim@sha256:d7e12182ce18b85b93007c1dedf31f2d29e01ccf3182cc4017c709b6259bc132
+
+ARG BIN=ahe-ics
+ARG IMAGE_TITLE="ahe-ics"
+ARG IMAGE_DESCRIPTION="Self-hosted AHE Łódź class schedule exporter to iCalendar (ICS)"
 
 LABEL org.opencontainers.image.source="https://github.com/wielorzeczownik/ahe-ics" \
   org.opencontainers.image.url="https://github.com/wielorzeczownik/ahe-ics" \
   org.opencontainers.image.documentation="https://github.com/wielorzeczownik/ahe-ics#readme" \
-  org.opencontainers.image.title="ahe-ics" \
-  org.opencontainers.image.description="Self-hosted AHE Łódź class schedule exporter to iCalendar (ICS)" \
+  org.opencontainers.image.title="${IMAGE_TITLE}" \
+  org.opencontainers.image.description="${IMAGE_DESCRIPTION}" \
   org.opencontainers.image.authors="wielorzeczownik" \
   org.opencontainers.image.vendor="wielorzeczownik"
 
@@ -23,7 +28,8 @@ RUN apt-get update \
   && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
-COPY --from=builder /app/target/release/ahe-ics /usr/local/bin/ahe-ics
+COPY --from=builder /app/target/release/${BIN} /usr/local/bin/${BIN}
+RUN ln -s "/usr/local/bin/${BIN}" /usr/local/bin/app
 
 # The service only needs to bind 8080 and read its own binary.
 RUN useradd --system --uid 10001 --no-create-home --shell /usr/sbin/nologin app
@@ -33,4 +39,4 @@ ENV BIND_ADDR=0.0.0.0:8080
 EXPOSE 8080
 HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
   CMD ["/bin/sh", "-c", "curl -fsS \"http://127.0.0.1:${BIND_ADDR##*:}/healthz\""]
-CMD ["ahe-ics"]
+CMD ["app"]
