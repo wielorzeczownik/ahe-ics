@@ -13,17 +13,8 @@
   "packageRules": [
     {
       "matchManagers": ["dockerfile"],
-      "semanticCommitType": "build"
-    },
-    {
-      "matchManagers": ["dockerfile"],
       "matchPackageNames": ["rust"],
       "groupName": "rust base image"
-    },
-    {
-      "matchManagers": ["dockerfile"],
-      "matchPackageNames": ["debian"],
-      "semanticCommitType": "chore"
     },
     {
       "matchManagers": ["custom.regex"],
