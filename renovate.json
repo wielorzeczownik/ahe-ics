@@ -13,7 +13,6 @@
   "packageRules": [
     {
       "matchManagers": ["dockerfile"],
-      "pinDigests": true,
       "semanticCommitType": "build"
     },
     {
