@@ -5,15 +5,46 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.3.34](https://github.com/wielorzeczownik/ahe-ics/compare/v1.3.33...v1.3.34) - 2026-10-17
+## [1.3.35](https://github.com/wielorzeczownik/ahe-ics/compare/v1.3.34...v1.3.35) - 2026-10-19
 
 ### Bug Fixes
 
-- Resolve audit advisories ([7e3433e](https://github.com/wielorzeczownik/ahe-ics/commit/7e3433e30ee5bcec25b3daf51e7c80f7b6f8a4dd))
+- Match breaking changes by field so they get their own section ([370fe1a](https://github.com/wielorzeczownik/ahe-ics/commit/370fe1adc1bc162af23340583045e98a886a5b9f))
+- Group fix(deps) updates under dependencies ([ee229f0](https://github.com/wielorzeczownik/ahe-ics/commit/ee229f04b9210462e2455be607b0c08e5638ff14))
+
+### Documentation
+
+- Explain how to verify attestations in release notes ([8976f7e](https://github.com/wielorzeczownik/ahe-ics/commit/8976f7e91d0f0635eba7b42a8d7afec33f3fd401))
+- Use shared pull request template from .github ([c0b7cb7](https://github.com/wielorzeczownik/ahe-ics/commit/c0b7cb74899aaa179853af1dc4f03117910195c5))
+- Use shared code of conduct from .github ([a9d2b56](https://github.com/wielorzeczownik/ahe-ics/commit/a9d2b56d126dba078064a0d15dc280ed6115e54f))
+
+### Build System
+
+- One dockerfile per base image and a versioned alpine tag (#229) ([31f195f](https://github.com/wielorzeczownik/ahe-ics/commit/31f195f9e03ecc6e2a1b111d0b032b8b5d897490))
+- Drop rules covered by shared preset ([d12fcca](https://github.com/wielorzeczownik/ahe-ics/commit/d12fccaad9fa8962cc12c690cd2abca0acaa799b))
+- Drop rules covered by shared preset ([cdbfe36](https://github.com/wielorzeczownik/ahe-ics/commit/cdbfe365c6164e153e2ec3ff3619f888dcf1267c))
+- Migrate fileMatch to managerFilePatterns ([ee6736a](https://github.com/wielorzeczownik/ahe-ics/commit/ee6736a781a27db504e6f153d7abe73689a6d090))
+- Drop rules covered by shared preset ([2d42f07](https://github.com/wielorzeczownik/ahe-ics/commit/2d42f070e2f67cda30d9263ec7201b9930642cae))
+- Drop rules that match nothing ([ada60ac](https://github.com/wielorzeczownik/ahe-ics/commit/ada60ac0941c89c8898aa8070c22a0e16db8d9c5))
+- Extend shared preset from .github ([5561670](https://github.com/wielorzeczownik/ahe-ics/commit/556167075ed6fef47fbe3a318eee515e13d66c62))
+- Open one pull request per dependency (#227) ([89ffa57](https://github.com/wielorzeczownik/ahe-ics/commit/89ffa5775ade1147cdf7f096e1a33d05dff38be2))
+
+### CI/CD
+
+- Attach an spdx sbom to releases ([a1e94eb](https://github.com/wielorzeczownik/ahe-ics/commit/a1e94eb58fd1cf5160aebe6cc046bcbf31554b05))
+- Move pinned tool versions to workflow env ([8d69c23](https://github.com/wielorzeczownik/ahe-ics/commit/8d69c236465715f3ddd2f581ba1ecdabc0464bb8))
+- Hand dependency fixes to renovate (#225) ([2bba6fd](https://github.com/wielorzeczownik/ahe-ics/commit/2bba6fd1de61032336f3869b2d331e77cf47c1e2))
+- Ship a universal macOS binary and build images in parallel (#224) ([5c7fd04](https://github.com/wielorzeczownik/ahe-ics/commit/5c7fd04e168f9654a6d15b5c9413f916e60954c0))
+- Merge light checks into one job and render audit reports ([da87698](https://github.com/wielorzeczownik/ahe-ics/commit/da876981a5ebb9797b7aec0673a44f8052b61998))
+- Update taiki-e/install-action action to v2.87.27 (#221) ([5b9210e](https://github.com/wielorzeczownik/ahe-ics/commit/5b9210ec304f2b767ba28e40eb3bc24609fccf99))
+- Batch updates weekly and skip bot PRs in label/assign ([78db365](https://github.com/wielorzeczownik/ahe-ics/commit/78db36559f9a024cb58ae37166a4cfa5a9c71158))
+
+## [1.3.34](https://github.com/wielorzeczownik/ahe-ics/compare/v1.3.33...v1.3.34) - 2026-10-17
 
 ### Dependencies
 
 - Update rust crate icalendar to v0.17.15 (#222) ([8e7b2a9](https://github.com/wielorzeczownik/ahe-ics/commit/8e7b2a95160bca690ed58df75223eae5c2d8ca10))
+- Resolve audit advisories ([7e3433e](https://github.com/wielorzeczownik/ahe-ics/commit/7e3433e30ee5bcec25b3daf51e7c80f7b6f8a4dd))
 
 ## [1.3.33](https://github.com/wielorzeczownik/ahe-ics/compare/v1.3.32...v1.3.33) - 2026-10-17
 
@@ -50,11 +81,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.3.29](https://github.com/wielorzeczownik/ahe-ics/compare/v1.3.28...v1.3.29) - 2026-10-13
 
-### Bug Fixes
-
-- Resolve audit advisories ([46a174e](https://github.com/wielorzeczownik/ahe-ics/commit/46a174ead1f28e94fc293a870b40f5c1bd745bde))
-- Resolve audit advisories ([76fc7af](https://github.com/wielorzeczownik/ahe-ics/commit/76fc7af072cce59a7eb93d14cad9957e8c1c0e95))
-
 ### CI/CD
 
 - Update github actions (#211) ([0613ea0](https://github.com/wielorzeczownik/ahe-ics/commit/0613ea02ef016d79cdeb145821eb015f6951f6a4))
@@ -63,6 +89,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Update rust crate serde_json to v1.0.152 (#215) ([8d4e3bf](https://github.com/wielorzeczownik/ahe-ics/commit/8d4e3bf14b4625a14c543cab364ba40beacb5a86))
 - Update dependency prettier to v3.9.10 (#214) ([62cc4ee](https://github.com/wielorzeczownik/ahe-ics/commit/62cc4eec3babe53f692c7ff7e153924880732fb2))
+- Resolve audit advisories ([46a174e](https://github.com/wielorzeczownik/ahe-ics/commit/46a174ead1f28e94fc293a870b40f5c1bd745bde))
+- Resolve audit advisories ([76fc7af](https://github.com/wielorzeczownik/ahe-ics/commit/76fc7af072cce59a7eb93d14cad9957e8c1c0e95))
 
 ## [1.3.28](https://github.com/wielorzeczownik/ahe-ics/compare/v1.3.27...v1.3.28) - 2026-10-07
 
@@ -76,10 +104,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update rust crate tokio to v1.53.2 (#212) ([219c40b](https://github.com/wielorzeczownik/ahe-ics/commit/219c40b00fe43bd35882fef6e763aba1e8279edb))
 
 ## [1.3.27](https://github.com/wielorzeczownik/ahe-ics/compare/v1.3.26...v1.3.27) - 2026-10-03
-
-### Bug Fixes
-
-- Resolve audit advisories ([2b164ee](https://github.com/wielorzeczownik/ahe-ics/commit/2b164ee698c9b24ca5b5d79eb27a460023066d64))
 
 ### Build System
 
@@ -97,6 +121,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update dependency prettier to v3.9.9 (#204) ([9267225](https://github.com/wielorzeczownik/ahe-ics/commit/926722535c6a49adde284d8a1bcf3cc73909bbe9))
 - Update dependency prettier to v3.9.8 (#200) ([3260f73](https://github.com/wielorzeczownik/ahe-ics/commit/3260f737d4b9da9bd311acb4fe2cf351b4f8aa29))
 - Update dependency prettier to v3.9.7 (#199) ([0ac3467](https://github.com/wielorzeczownik/ahe-ics/commit/0ac34674385546d44e0dddf4b92f9f6477b97b1d))
+- Resolve audit advisories ([2b164ee](https://github.com/wielorzeczownik/ahe-ics/commit/2b164ee698c9b24ca5b5d79eb27a460023066d64))
 
 ### Miscellaneous
 
@@ -125,10 +150,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.3.24](https://github.com/wielorzeczownik/ahe-ics/compare/v1.3.23...v1.3.24) - 2026-08-28
 
-### Bug Fixes
-
-- Resolve audit advisories ([e159e15](https://github.com/wielorzeczownik/ahe-ics/commit/e159e153c2dbd3f3a0a7ac553130c75e252e4a66))
-
 ### Build System
 
 - Update rust docker tag to v1.98 (#186) ([4924f6e](https://github.com/wielorzeczownik/ahe-ics/commit/4924f6efbd19c884eb3fcbc4b0b72b32853b1da2))
@@ -151,6 +172,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Dependencies
 
 - Update rust crate argon2 to 0.6.0 (#187) ([35196a0](https://github.com/wielorzeczownik/ahe-ics/commit/35196a0b21dd6737dd653b7d47b1a97bf7af79e9))
+- Resolve audit advisories ([e159e15](https://github.com/wielorzeczownik/ahe-ics/commit/e159e153c2dbd3f3a0a7ac553130c75e252e4a66))
 
 ## [1.3.23](https://github.com/wielorzeczownik/ahe-ics/compare/v1.3.22...v1.3.23) - 2026-08-13
 
@@ -449,10 +471,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add event colours, reminders, status and categories ([88786f1](https://github.com/wielorzeczownik/ahe-ics/commit/88786f1153f2f459b8609f4720817e5b3982a707))
 - Label resits and filter exams by student section ([ca22bcc](https://github.com/wielorzeczownik/ahe-ics/commit/ca22bcc0ff215f4b6acc655a6968514109ad7f5e))
 
-### Bug Fixes
-
-- Resolve audit advisories ([5eda8f4](https://github.com/wielorzeczownik/ahe-ics/commit/5eda8f4ac2ed5f1db2c3c5772243582038c82894))
-
 ### Refactoring
 
 - Inline single-use constants and drop constants.rs ([1ec6879](https://github.com/wielorzeczownik/ahe-ics/commit/1ec6879f33be444a3e2d3497d4cf8ff4574ce4ff))
@@ -461,6 +479,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Update docker actions (#124) ([50ec83f](https://github.com/wielorzeczownik/ahe-ics/commit/50ec83f83db357c67dae30398ad6ec291c481a6f))
 - Update taiki-e/install-action action to v2.82.7 (#123) ([74e7829](https://github.com/wielorzeczownik/ahe-ics/commit/74e782937c7bf534cca9e7e9e180190894e9d2d0))
+
+### Dependencies
+
+- Resolve audit advisories ([5eda8f4](https://github.com/wielorzeczownik/ahe-ics/commit/5eda8f4ac2ed5f1db2c3c5772243582038c82894))
 
 ## [1.2.7](https://github.com/wielorzeczownik/ahe-ics/compare/v1.2.6...v1.2.7) - 2026-07-06
 
@@ -504,10 +526,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.2.3](https://github.com/wielorzeczownik/ahe-ics/compare/v1.2.2...v1.2.3) - 2026-06-27
 
-### Bug Fixes
-
-- Resolve audit advisories ([1e92bab](https://github.com/wielorzeczownik/ahe-ics/commit/1e92babcded8ff2340f0f42dc68b77ded1f5a2ac))
-
 ### Build System
 
 - Update alpine:latest docker digest to 28bd5fe ([54af439](https://github.com/wielorzeczownik/ahe-ics/commit/54af43932adb8bbf0ffec9b947990a0c3c8409ab))
@@ -533,6 +551,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update actions/checkout action to v6.0.3 (#94) ([2a44598](https://github.com/wielorzeczownik/ahe-ics/commit/2a44598e5df0982fb443c17e08b11fe792beb5f7))
 - Update taiki-e/install-action action to v2.81.2 (#93) ([a2519a6](https://github.com/wielorzeczownik/ahe-ics/commit/a2519a68396e098d4c896b135967ac7adb682378))
 - Update taiki-e/install-action action to v2.81.1 (#92) ([0182351](https://github.com/wielorzeczownik/ahe-ics/commit/0182351b543a8637a683be2914fe5c0069c5746f))
+
+### Dependencies
+
+- Resolve audit advisories ([1e92bab](https://github.com/wielorzeczownik/ahe-ics/commit/1e92babcded8ff2340f0f42dc68b77ded1f5a2ac))
 
 ## [1.2.2](https://github.com/wielorzeczownik/ahe-ics/compare/v1.2.1...v1.2.2) - 2026-06-07
 
@@ -723,14 +745,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.1.4](https://github.com/wielorzeczownik/ahe-ics/compare/v1.1.3...v1.1.4) - 2026-04-22
 
-### Bug Fixes
-
-- Resolve audit advisories ([83a8a87](https://github.com/wielorzeczownik/ahe-ics/commit/83a8a87326b1541774d595b24d5ad4949dcc0e07))
-
 ### Build System
 
 - Update rust:1.95-bookworm docker digest to 6bb82db ([d2eaefe](https://github.com/wielorzeczownik/ahe-ics/commit/d2eaefec5345582e994301bc749a5d8001b37772))
 - Update rust:1.95-bookworm docker digest to f245d2f ([a986914](https://github.com/wielorzeczownik/ahe-ics/commit/a9869141792af1824863d501cf53e7b258568371))
+
+### Dependencies
+
+- Resolve audit advisories ([83a8a87](https://github.com/wielorzeczownik/ahe-ics/commit/83a8a87326b1541774d595b24d5ad4949dcc0e07))
 
 ## [1.1.3](https://github.com/wielorzeczownik/ahe-ics/compare/v1.1.2...v1.1.3) - 2026-04-22
 
@@ -775,13 +797,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add Alpine variant and expand platform support ([5f43a76](https://github.com/wielorzeczownik/ahe-ics/commit/5f43a7690e72ec9c09df9d8301b4db52a3e6dfd8))
 - Add Alpine variant ([b1edde6](https://github.com/wielorzeczownik/ahe-ics/commit/b1edde6e8cc72eb1ad29e5b5df51b52f49d2066a))
 
-### Bug Fixes
-
-- Resolve audit advisories ([e8512e9](https://github.com/wielorzeczownik/ahe-ics/commit/e8512e9bca426d97a1d60c470849cad130fd4a67))
-
 ### Documentation
 
 - Logo change ([87bbfbc](https://github.com/wielorzeczownik/ahe-ics/commit/87bbfbc03d8de4fe5b5c41781004285038c08a2e))
+
+### Dependencies
+
+- Resolve audit advisories ([e8512e9](https://github.com/wielorzeczownik/ahe-ics/commit/e8512e9bca426d97a1d60c470849cad130fd4a67))
 
 ## [1.0.4](https://github.com/wielorzeczownik/ahe-ics/compare/v1.0.3...v1.0.4) - 2026-04-15
 
@@ -827,7 +849,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.0.0](https://github.com/wielorzeczownik/ahe-ics/compare/v0.5.12...v1.0.0) - 2026-04-05
 
-### Features
+### Breaking Changes
 
 - Remove /openapi.json endpoint and AHE_OPENAPI_ENABLED config ([ad9e72f](https://github.com/wielorzeczownik/ahe-ics/commit/ad9e72fd7414b24ca804e228d75cd4f6ae0d453a))
 
@@ -859,10 +881,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.5.11](https://github.com/wielorzeczownik/ahe-ics/compare/v0.5.10...v0.5.11) - 2026-04-04
 
-### Bug Fixes
-
-- Update Cargo.lock to resolve audit advisories ([cd89aa7](https://github.com/wielorzeczownik/ahe-ics/commit/cd89aa70107261253d10b7690a6e410e3acd4933))
-
 ### Documentation
 
 - Replace hyphens ([adf0a39](https://github.com/wielorzeczownik/ahe-ics/commit/adf0a39cc898e89c52bc4e255a7be3c77699bdba))
@@ -883,6 +901,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Dependencies
 
 - Update rust crate icalendar to v0.17.10 ([f8e9de7](https://github.com/wielorzeczownik/ahe-ics/commit/f8e9de7732715e6c58736cc64f442d15a9d37f5f))
+- Update Cargo.lock to resolve audit advisories ([cd89aa7](https://github.com/wielorzeczownik/ahe-ics/commit/cd89aa70107261253d10b7690a6e410e3acd4933))
 
 ## [0.5.10](https://github.com/wielorzeczownik/ahe-ics/compare/v0.5.9...v0.5.10) - 2026-03-31
 
