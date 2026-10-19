@@ -12,10 +12,6 @@
   ],
   "packageRules": [
     {
-      "matchDepTypes": ["buildDependencies"],
-      "semanticCommitType": "build"
-    },
-    {
       "matchManagers": ["dockerfile"],
       "pinDigests": true,
       "semanticCommitType": "build"
@@ -27,7 +23,6 @@
     },
     {
       "matchManagers": ["dockerfile"],
-      "pinDigests": true,
       "matchPackageNames": ["debian"],
       "semanticCommitType": "chore"
     },
@@ -35,18 +30,6 @@
       "matchManagers": ["regex"],
       "matchFileNames": ["README.md", "README.pl.md"],
       "semanticCommitType": "docs"
-    },
-    {
-      "matchManagers": ["regex"],
-      "matchFileNames": ["Dockerfile"],
-      "semanticCommitType": "build",
-      "groupName": "debian packages"
-    },
-    {
-      "matchManagers": ["regex"],
-      "matchFileNames": ["Dockerfile.alpine"],
-      "semanticCommitType": "build",
-      "groupName": "alpine packages"
     },
     {
       "matchManagers": ["github-actions"],
