@@ -4,7 +4,7 @@
   "customManagers": [
     {
       "customType": "regex",
-      "fileMatch": ["^README(\\.pl)?\\.md$"],
+      "managerFilePatterns": ["/^README(\\.pl)?\\.md$/"],
       "matchStrings": ["python:(?<currentValue>[^\\s\"']+)"],
       "depNameTemplate": "python",
       "datasourceTemplate": "docker"
@@ -27,7 +27,7 @@
       "semanticCommitType": "chore"
     },
     {
-      "matchManagers": ["regex"],
+      "matchManagers": ["custom.regex"],
       "matchFileNames": ["README.md", "README.pl.md"],
       "semanticCommitType": "docs"
     },
