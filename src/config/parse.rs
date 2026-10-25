@@ -1,6 +1,6 @@
 use anyhow::{Context, Result, bail};
 
-use super::types::{CalendarLanguage, CalendarToken};
+use super::types::{CalendarLanguage, CalendarToken, LinkKey};
 
 const DEFAULT_BIND_ADDR: &str = "0.0.0.0:8080";
 const DEFAULT_CAL_PAST_DAYS: i64 = 60;
@@ -30,6 +30,13 @@ pub(super) fn calendar_token() -> Result<Option<CalendarToken>> {
     .context("AHE_CAL_TOKEN is invalid; provide plain token or Argon2id hash")?;
 
   Ok(Some(token))
+}
+
+pub(super) fn link_key() -> Result<Option<LinkKey>> {
+  std::env::var("AHE_LINK_KEY")
+    .ok()
+    .map(|raw| LinkKey::from_env_value(&raw))
+    .transpose()
 }
 
 pub(super) fn calendar_lang() -> Result<CalendarLanguage> {

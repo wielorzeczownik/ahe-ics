@@ -2,7 +2,7 @@ use anyhow::Result;
 
 use super::ServerSettings;
 use super::parse;
-use super::types::{CalendarLanguage, CalendarToken};
+use super::types::{CalendarLanguage, CalendarToken, LinkKey};
 
 /// Shared configuration
 #[derive(Clone, Debug)]
@@ -15,6 +15,7 @@ pub struct SharedConfig {
   pub exams_enabled: bool,
   pub json_enabled: bool,
   pub real_ip_header: Option<String>,
+  pub link_key: Option<LinkKey>,
 }
 
 impl SharedConfig {
@@ -33,6 +34,7 @@ impl SharedConfig {
       exams_enabled: parse::exams_enabled()?,
       json_enabled: parse::json_enabled()?,
       real_ip_header: parse::real_ip_header()?,
+      link_key: parse::link_key()?,
     })
   }
 }

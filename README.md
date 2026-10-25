@@ -134,7 +134,7 @@ http://localhost:8080/calendar.ics?from=2026-01-01&to=2026-03-01
 
 ## Shared variant (`ahe-ics-shared`)
 
-The shared variant is fully stateless – no credentials are stored or logged server-side. Each request carries its own WPS username and password in the URL query string. The server holds only in-memory caches (WPS access tokens and student metadata, keyed by username) that are lost on restart.
+The shared variant is fully stateless – no credentials are stored or logged server-side. Each request carries its own WPS credentials, encrypted into a single `c` link parameter (see [Privacy](#privacy)). The server holds only in-memory caches (WPS access tokens and student metadata, keyed by username) that are lost on restart.
 
 ### Self-host with Docker
 
@@ -197,27 +197,36 @@ Same as the dedicated variant **except** `AHE_USERNAME` and `AHE_PASSWORD` – t
 | `AHE_CAL_EXAMS_ENABLED` | no       | `true`         | Enable or disable exam fetching (`true`/`false`); useful when exam entries are noisy |
 | `AHE_CAL_JSON_ENABLED`  | no       | `true`         | Enable or disable JSON calendar endpoints (`/calendar.json`, `/calendar/me.json`)    |
 | `AHE_CAL_TOKEN`         | no       | -              | Optional access token to restrict who can use the endpoint                           |
+| `AHE_LINK_KEY`          | no       | -              | Base64 32-byte key for encrypted links (`openssl rand -base64 32`)                   |
 | `REAL_IP_HEADER`        | no       | -              | Header name with client IP (e.g. `CF-Connecting-IP`, `X-Forwarded-For`, `Forwarded`) |
 | `RUST_LOG`              | no       | `info`         | Log level (`debug`, `info`, etc.)                                                    |
 
 ### Endpoints
 
-Same as the dedicated variant, with two additional **required** query parameters on all calendar endpoints:
+Same as the dedicated variant, plus:
 
-- `username=...` – WPS username.
-- `password=...` – WPS password.
+- `POST /link` – turns a WPS login into an encrypted subscription link (when `AHE_LINK_KEY` is set). Takes `username`, `password` and, if `AHE_CAL_TOKEN` is set, `token` as a form body, checks them against WPS and returns the calendar path. Limited to 10 requests per minute across all clients (`429` above that), so the server cannot be used to guess WPS passwords.
 
-Example:
-
-```text
-https://your-domain.example/calendar.ics?username=jan.kowalski&password=haslo
-https://your-domain.example/calendar.ics?username=jan.kowalski&password=haslo&from=2026-01-01&to=2026-03-01
+```bash
+curl https://your-domain.example/link -d username=jan.kowalski --data-urlencode password='haslo'
+# /calendar.ics?c=AXk3...
 ```
 
-- `GET /healthz` – always returns `204 No Content` (no upstream check; no fixed credentials to test with).
+Prepend your domain and subscribe to `https://your-domain.example/calendar.ics?c=...`. All calendar endpoints accept `c`, combined with `from`, `to` and `token` as usual.
+
+Rotating `AHE_LINK_KEY` invalidates every link issued so far. A link also stops working when the WPS password changes, so generate a new one after changing it.
+
+- `GET /healthz` – always returns `204 No Content` (no upstream check; there are no fixed credentials to test with).
 
 > [!WARNING]
-> Credentials appear in the URL query string, which means they may be recorded in server access logs, browser history, and proxy logs. Use HTTPS to prevent them from being visible in transit. If your reverse proxy logs full URLs, consider disabling access logging or masking the `password` parameter.
+> **Deprecated:** the plain `username=...&password=...` query params still work but will be removed. They put the whole university account in the URL. Switch to a `c` link.
+
+### Privacy
+
+- **Kept by the server:** only in-memory caches (WPS access tokens, student metadata, rendered calendars), lost on restart. No database, no files.
+- **Never logged:** passwords, usernames, query strings and the `c` value. Logs carry the client IP and, when WPS returns an error, its status and response body for debugging.
+- **Where the link can leak:** reverse proxy or Cloudflare logs, your calendar provider's servers (Google, Apple, Microsoft) and browser history. A leaked `c` link exposes your timetable through this server, not your password: it cannot be decrypted without `AHE_LINK_KEY`.
+- **What it does not protect against:** the server still decrypts your password and logs in to WPS on your behalf, so you have to trust whoever runs the instance. Anyone holding both `AHE_LINK_KEY` and a link can recover the password, so keep the key secret and rotate it if it leaks.
 
 ## Common configuration
 

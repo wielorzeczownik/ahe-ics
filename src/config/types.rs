@@ -3,6 +3,10 @@ use std::fmt;
 use anyhow::{Result, anyhow, bail};
 use argon2::password_hash::phc::PasswordHash;
 use argon2::{Argon2, PasswordVerifier};
+use base64::Engine;
+use base64::engine::general_purpose::{STANDARD, URL_SAFE_NO_PAD};
+use chacha20poly1305::aead::{Aead, Generate, Payload};
+use chacha20poly1305::{KeyInit, XChaCha20Poly1305, XNonce};
 use sha2::{Digest, Sha256};
 use subtle::ConstantTimeEq;
 
@@ -104,6 +108,90 @@ impl CalendarToken {
           .is_ok()
       }
     }
+  }
+}
+
+/// Format version of a sealed link, also bound in as associated data
+const LINK_VERSION: u8 = 1;
+const LINK_NONCE_LEN: usize = 24;
+
+/// Key that seals WPS credentials into an opaque `c` link parameter.
+#[derive(Clone)]
+pub struct LinkKey(XChaCha20Poly1305);
+
+impl fmt::Debug for LinkKey {
+  fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+    formatter.write_str("LinkKey(<redacted>)")
+  }
+}
+
+impl LinkKey {
+  pub(super) fn from_env_value(value: &str) -> Result<Self> {
+    let bytes = STANDARD
+      .decode(value.trim())
+      .map_err(|_| anyhow!("AHE_LINK_KEY must be base64 (openssl rand -base64 32)"))?;
+    let cipher = XChaCha20Poly1305::new_from_slice(&bytes)
+      .map_err(|_| anyhow!("AHE_LINK_KEY must decode to exactly 32 bytes"))?;
+
+    Ok(Self(cipher))
+  }
+
+  /// Encrypts the credentials into a URL-safe string.
+  ///
+  /// # Errors
+  ///
+  /// Returns an error if the username contains a NUL byte or encryption fails.
+  pub fn seal(&self, username: &str, password: &str) -> Result<String> {
+    if username.contains('\0') {
+      bail!("username cannot contain NUL");
+    }
+
+    let nonce = XNonce::try_generate().map_err(|_| anyhow!("failed to generate link nonce"))?;
+    let plaintext = format!("{username}\0{password}");
+    let ciphertext = self
+      .0
+      .encrypt(
+        &nonce,
+        Payload {
+          msg: plaintext.as_bytes(),
+          aad: &[LINK_VERSION],
+        },
+      )
+      .map_err(|_| anyhow!("failed to seal link"))?;
+
+    let mut blob = Vec::with_capacity(1 + LINK_NONCE_LEN + ciphertext.len());
+    blob.push(LINK_VERSION);
+    blob.extend_from_slice(&nonce);
+    blob.extend_from_slice(&ciphertext);
+
+    Ok(URL_SAFE_NO_PAD.encode(blob))
+  }
+
+  /// Decrypts a sealed link back into `(username, password)`, or `None` if it
+  /// is malformed, tampered with or sealed under another key.
+  #[must_use]
+  pub fn open(&self, link: &str) -> Option<(String, String)> {
+    let blob = URL_SAFE_NO_PAD.decode(link).ok()?;
+    let (&version, rest) = blob.split_first()?;
+    if version != LINK_VERSION || rest.len() < LINK_NONCE_LEN {
+      return None;
+    }
+
+    let (nonce, ciphertext) = rest.split_at(LINK_NONCE_LEN);
+    let plaintext = self
+      .0
+      .decrypt(
+        &XNonce::try_from(nonce).ok()?,
+        Payload {
+          msg: ciphertext,
+          aad: &[LINK_VERSION],
+        },
+      )
+      .ok()?;
+
+    let plaintext = String::from_utf8(plaintext).ok()?;
+    let (username, password) = plaintext.split_once('\0')?;
+    Some((username.to_string(), password.to_string()))
   }
 }
 
@@ -236,6 +324,48 @@ mod tests {
       rendered.contains("Argon2id"),
       "mode should stay visible: {rendered}"
     );
+  }
+
+  fn link_key(fill: u8) -> LinkKey {
+    LinkKey::from_env_value(&STANDARD.encode([fill; 32])).expect("valid key")
+  }
+
+  #[test]
+  fn link_round_trips_credentials() {
+    let key = link_key(7);
+    let link = key.seal("jan.kowalski", "pa\0ss&=?").expect("sealed");
+
+    assert!(!link.contains("jan"), "username visible: {link}");
+    assert_eq!(
+      key.open(&link),
+      Some(("jan.kowalski".to_string(), "pa\0ss&=?".to_string()))
+    );
+    // Fresh nonce every time
+    assert_ne!(link, key.seal("jan.kowalski", "pa\0ss&=?").expect("sealed"));
+  }
+
+  #[test]
+  fn link_rejects_tampering_other_keys_and_garbage() {
+    let key = link_key(7);
+    let link = key.seal("jan", "secret").expect("sealed");
+
+    let mut blob = URL_SAFE_NO_PAD.decode(&link).expect("base64");
+    let last = blob.len() - 1;
+    blob[last] ^= 1;
+    assert_eq!(key.open(&URL_SAFE_NO_PAD.encode(&blob)), None);
+
+    assert_eq!(link_key(8).open(&link), None);
+    assert_eq!(key.open(""), None);
+    assert_eq!(key.open("not base64!"), None);
+    assert_eq!(key.open(&link[..20]), None);
+  }
+
+  #[test]
+  fn link_key_requires_32_base64_bytes() {
+    assert!(LinkKey::from_env_value("not base64!").is_err());
+    assert!(LinkKey::from_env_value(&STANDARD.encode([1u8; 16])).is_err());
+    assert!(LinkKey::from_env_value(&format!(" {} ", STANDARD.encode([1u8; 32]))).is_ok());
+    assert_eq!(format!("{:?}", link_key(7)), "LinkKey(<redacted>)");
   }
 
   #[test]
