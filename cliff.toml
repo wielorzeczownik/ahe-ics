@@ -40,6 +40,7 @@ split_commits = false
 commit_parsers = [
   { message = "^chore\\(release\\)", skip = true },
   { message = "^Merge ", skip = true },
+  { message = "\\[security\\]", group = "<!-- 00 -->Security" },
   { field = "breaking", pattern = "true", group = "<!-- 01 -->Breaking Changes" },
   { message = "^feat", group = "<!-- 02 -->Features" },
   { message = "^fix\\(deps\\)", group = "<!-- 11 -->Dependencies" },
@@ -57,7 +58,7 @@ commit_parsers = [
 ]
 protect_breaking_commits = true
 filter_commits = false
-tag_pattern = "v[0-9]*"
+tag_pattern = "^v[0-9]+\\.[0-9]+\\.[0-9]+$"
 skip_tags = "v0.0.0"
 ignore_tags = ""
 topo_order = false
