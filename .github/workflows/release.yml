@@ -11,6 +11,9 @@ on:
       - 'Dockerfile.release'
       - 'Dockerfile.alpine.release'
       - 'scripts/**'
+  schedule:
+    - cron: '0 12 * * 1'
+  workflow_dispatch:
 
 concurrency:
   group: release-main
@@ -30,11 +33,25 @@ jobs:
       version: ${{ steps.bump.outputs.version }}
       tag: ${{ steps.bump.outputs.tag }}
       commit_changes: ${{ steps.bump.outputs.commit_changes }}
+      prerelease: ${{ steps.kind.outputs.kind == 'rc' }}
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
+
+      - name: Decide release kind
+        id: kind
+        shell: bash
+        env:
+          EVENT: ${{ github.event_name }}
+          MESSAGE: ${{ github.event.head_commit.message }}
+        run: |
+          if [[ "$EVENT" == push && "$MESSAGE" != *"[security]"* ]]; then
+            echo "kind=rc" >>"$GITHUB_OUTPUT"
+          else
+            echo "kind=stable" >>"$GITHUB_OUTPUT"
+          fi
 
       - name: Determine next version (git-cliff)
         id: cliff_bumped
@@ -51,7 +68,7 @@ jobs:
         uses: orhun/git-cliff-action@a9a95522b26fe6403f7bb24031f21fb573d0f5ff # v4.9.1
         with:
           config: cliff-release.toml
-          args: --unreleased --context
+          args: ${{ steps.kind.outputs.kind == 'rc' && format('{0}..{1}', github.event.before, github.sha) || '--unreleased' }} --context
         env:
           OUTPUT: user-facing.json
           GITHUB_REPO: ${{ github.repository }}
@@ -66,11 +83,11 @@ jobs:
           echo "count=$count" >>"$GITHUB_OUTPUT"
 
       - name: Install rust toolchain
-        if: ${{ steps.userfacing.outputs.count != '0' }}
+        if: ${{ steps.userfacing.outputs.count != '0' && steps.kind.outputs.kind == 'stable' }}
         uses: dtolnay/rust-toolchain@4360b52568e2003a75bf9bc1d59f33a8e3fc893c # stable
 
       - name: Install cargo-edit
-        if: ${{ steps.userfacing.outputs.count != '0' }}
+        if: ${{ steps.userfacing.outputs.count != '0' && steps.kind.outputs.kind == 'stable' }}
         uses: taiki-e/install-action@ab6895351a88b908e96a4697860d4ffea5e57dbe # v2.87.27
         with:
           tool: cargo-edit
@@ -80,6 +97,7 @@ jobs:
         if: ${{ steps.userfacing.outputs.count != '0' }}
         shell: bash
         env:
+          RELEASE_KIND: ${{ steps.kind.outputs.kind }}
           CLIFF_BUMPED_VERSION: ${{ steps.cliff_bumped.outputs.content }}
         run: bash scripts/bump-version.sh
 
@@ -95,7 +113,7 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
 
       - name: Generate CHANGELOG.md (git-cliff)
-        if: ${{ steps.bump.outputs.released == 'true' }}
+        if: ${{ steps.bump.outputs.released == 'true' && steps.kind.outputs.kind == 'stable' }}
         uses: orhun/git-cliff-action@a9a95522b26fe6403f7bb24031f21fb573d0f5ff # v4.9.1
         with:
           config: cliff.toml
@@ -109,18 +127,18 @@ jobs:
         run: git add Cargo.toml Cargo.lock CHANGELOG.md
 
       - name: Stage changelog
-        if: ${{ steps.bump.outputs.released == 'true' && steps.bump.outputs.commit_changes == 'false' }}
+        if: ${{ steps.bump.outputs.released == 'true' && steps.bump.outputs.commit_changes == 'false' && steps.kind.outputs.kind == 'stable' }}
         run: git add CHANGELOG.md
 
       - name: Commit release (verified)
-        if: ${{ steps.bump.outputs.released == 'true' }}
+        if: ${{ steps.bump.outputs.released == 'true' && steps.kind.outputs.kind == 'stable' }}
         uses: qoomon/actions--create-commit@7102b1a8b3cb8716dc70dbeb6d774c375d779d2f # v1.2.5
         with:
           message: 'chore(release): ${{ steps.bump.outputs.tag }} [skip ci]'
           skip-empty: true
 
       - name: Push commit
-        if: ${{ steps.bump.outputs.released == 'true' }}
+        if: ${{ steps.bump.outputs.released == 'true' && steps.kind.outputs.kind == 'stable' }}
         run: git push
 
       - name: Create tag
@@ -340,6 +358,8 @@ jobs:
           name: ${{ needs.prepare-release.outputs.tag }}
           body_path: release-notes.md
           files: dist/*
+          prerelease: ${{ needs.prepare-release.outputs.prerelease }}
+          make_latest: ${{ needs.prepare-release.outputs.prerelease != 'true' }}
 
   publish-docker:
     name: Image ${{ matrix.variant }}
@@ -475,7 +495,8 @@ jobs:
             docker.io/${{ secrets.DOCKERHUB_USERNAME || github.repository_owner }}/${{ matrix.image_name }}
           tags: |
             type=raw,value=${{ needs.prepare-release.outputs.version }}${{ matrix.tag_suffix }}
-            type=raw,value=${{ matrix.latest_tag }}
+            type=raw,value=${{ matrix.latest_tag }},enable=${{ needs.prepare-release.outputs.prerelease != 'true' }}
+            type=raw,value=next${{ matrix.tag_suffix }},enable=${{ needs.prepare-release.outputs.prerelease == 'true' }}
           labels: |
             org.opencontainers.image.description=${{ matrix.description }}
 
