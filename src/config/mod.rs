@@ -5,7 +5,7 @@ mod types;
 
 pub use dedicated::Config;
 pub use shared::SharedConfig;
-pub use types::{CalendarLanguage, CalendarToken};
+pub use types::{CalendarLanguage, CalendarToken, LinkKey};
 
 /// Shared server-level settings used by both dedicated and shared binaries.
 pub trait ServerSettings: Clone + Send + Sync + 'static {

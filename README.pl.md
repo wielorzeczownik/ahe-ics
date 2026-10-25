@@ -134,7 +134,7 @@ http://localhost:8080/calendar.ics?from=2026-01-01&to=2026-03-01
 
 ## Wariant współdzielony (`ahe-ics-shared`)
 
-Wariant współdzielony jest w pełni bezstanowy – żadne dane logowania nie są przechowywane ani logowane po stronie serwera. Każde żądanie przekazuje własną nazwę użytkownika i hasło WPS w parametrach URL. Serwer przechowuje jedynie pamięci podręczną (tokeny dostępu WPS i metadane studenta, kluczowane po nazwie użytkownika), które są kasowane przy restarcie.
+Wariant współdzielony jest w pełni bezstanowy – żadne dane logowania nie są przechowywane ani logowane po stronie serwera. Każde żądanie przekazuje własne dane WPS, zaszyfrowane w jednym parametrze linku `c` (zobacz [Prywatność](#prywatność)). Serwer przechowuje jedynie pamięci podręczną (tokeny dostępu WPS i metadane studenta, kluczowane po nazwie użytkownika), które są kasowane przy restarcie.
 
 ### Uruchomienie przez Docker
 
@@ -197,27 +197,36 @@ Takie same jak w wariancie dedykowanym **z wyjątkiem** `AHE_USERNAME` i `AHE_PA
 | `AHE_CAL_EXAMS_ENABLED` | nie      | `true`         | Włącz lub wyłącz pobieranie egzaminów (`true`/`false`); przydatne gdy wpisy egzaminów są mylące |
 | `AHE_CAL_JSON_ENABLED`  | nie      | `true`         | Włącz lub wyłącz endpointy JSON (`/calendar.json`, `/calendar/me.json`)                         |
 | `AHE_CAL_TOKEN`         | nie      | -              | Opcjonalny token ograniczający dostęp do endpointów                                             |
+| `AHE_LINK_KEY`          | nie      | -              | Klucz base64 (32 bajty) do szyfrowanych linków (`openssl rand -base64 32`)                      |
 | `REAL_IP_HEADER`        | nie      | -              | Nagłówek z adresem IP klienta (np. `CF-Connecting-IP`, `X-Forwarded-For`, `Forwarded`)          |
 | `RUST_LOG`              | nie      | `info`         | Poziom logowania (`debug`, `info` itp.)                                                         |
 
 ### Endpointy
 
-Takie same jak w wariancie dedykowanym, z dwoma **wymaganymi** dodatkowymi parametrami we wszystkich endpointach kalendarza:
+Takie same jak w wariancie dedykowanym, a dodatkowo:
 
-- `username=...` – nazwa użytkownika WPS.
-- `password=...` – hasło WPS.
+- `POST /link` – zamienia login WPS na zaszyfrowany link do subskrypcji (gdy ustawiono `AHE_LINK_KEY`). Przyjmuje w body formularza `username`, `password` oraz `token`, jeśli ustawiono `AHE_CAL_TOKEN`, sprawdza dane w WPS i zwraca ścieżkę kalendarza. Limit to 10 żądań na minutę łącznie dla wszystkich klientów (powyżej `429`), żeby serwera nie dało się użyć do zgadywania haseł WPS.
 
-Przykład:
-
-```text
-https://twoja-domena.example/calendar.ics?username=jan.kowalski&password=haslo
-https://twoja-domena.example/calendar.ics?username=jan.kowalski&password=haslo&from=2026-01-01&to=2026-03-01
+```bash
+curl https://twoja-domena.example/link -d username=jan.kowalski --data-urlencode password='haslo'
+# /calendar.ics?c=AXk3...
 ```
+
+Dopisz swoją domenę i subskrybuj `https://twoja-domena.example/calendar.ics?c=...`. Wszystkie endpointy kalendarza przyjmują `c` razem z `from`, `to` i `token` jak dotychczas.
+
+Zmiana `AHE_LINK_KEY` unieważnia wszystkie wydane dotąd linki. Link przestaje też działać po zmianie hasła w WPS, więc po zmianie trzeba wygenerować nowy.
 
 - `GET /healthz` – zawsze zwraca `204 No Content` (brak sprawdzenia upstream; nie ma stałych danych logowania do testowania).
 
 > [!WARNING]
-> Dane logowania pojawiają się w parametrach zapytania URL, co oznacza, że mogą być zapisywane w logach dostępu serwera, historii przeglądarki i logach proxy. Używaj HTTPS, aby zapobiec ich przechwyceniu podczas transmisji. Jeśli Twój reverse proxy loguje pełne adresy URL, rozważ wyłączenie logowania dostępu lub maskowanie parametru `password`.
+> **Przestarzałe:** jawne parametry `username=...&password=...` nadal działają, ale zostaną usunięte. Umieszczają w URL całe konto uczelniane. Przejdź na link z `c`.
+
+### Prywatność
+
+- **Co trzyma serwer:** wyłącznie pamięć podręczną w RAM (tokeny dostępu WPS, metadane studenta, wygenerowane kalendarze), kasowaną przy restarcie. Żadnej bazy ani plików.
+- **Czego nigdy nie loguje:** haseł, loginów, query stringów ani wartości `c`. W logach jest IP klienta oraz, gdy WPS zwróci błąd, jego status i treść odpowiedzi (do debugowania).
+- **Gdzie link może wyciec:** logi reverse proxy lub Cloudflare, serwery dostawcy kalendarza (Google, Apple, Microsoft) i historia przeglądarki. Wyciek linku z `c` ujawnia plan zajęć przez ten serwer, ale nie hasło: bez `AHE_LINK_KEY` nie da się go odszyfrować.
+- **Przed czym to nie chroni:** serwer nadal odszyfrowuje hasło i loguje się w Twoim imieniu do WPS, więc musisz ufać osobie, która prowadzi instancję. Kto ma jednocześnie `AHE_LINK_KEY` i link, odzyska hasło, dlatego trzymaj klucz w tajemnicy i zmień go, jeśli wycieknie.
 
 ## Wspólna konfiguracja
 
