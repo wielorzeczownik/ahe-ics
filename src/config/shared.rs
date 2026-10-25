@@ -15,7 +15,7 @@ pub struct SharedConfig {
   pub exams_enabled: bool,
   pub json_enabled: bool,
   pub real_ip_header: Option<String>,
-  pub link_key: Option<LinkKey>,
+  pub link_key: LinkKey,
 }
 
 impl SharedConfig {

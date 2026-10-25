@@ -143,7 +143,7 @@ Run with Docker:
 
 ```bash
 curl -fsSL -o .env https://raw.githubusercontent.com/wielorzeczownik/ahe-ics/main/.env.shared.example
-# edit .env and set AHE_CAL_TOKEN
+# edit .env and set AHE_LINK_KEY and AHE_CAL_TOKEN
 docker run --rm -p 8080:8080 --env-file .env wielorzeczownik/ahe-ics:shared
 ```
 
@@ -152,7 +152,7 @@ Run with Docker Compose:
 ```bash
 curl -fsSL -o .env https://raw.githubusercontent.com/wielorzeczownik/ahe-ics/main/.env.shared.example
 curl -fsSL -o docker-compose.yml https://raw.githubusercontent.com/wielorzeczownik/ahe-ics/main/docker-compose.shared.example.yml
-# edit .env and set AHE_CAL_TOKEN
+# edit .env and set AHE_LINK_KEY and AHE_CAL_TOKEN
 docker compose pull
 docker compose up -d
 ```
@@ -198,7 +198,7 @@ Same as the dedicated variant **except** `AHE_USERNAME` and `AHE_PASSWORD` – t
 | `AHE_CAL_EXAMS_ENABLED` | no       | `true`         | Enable or disable exam fetching (`true`/`false`); useful when exam entries are noisy |
 | `AHE_CAL_JSON_ENABLED`  | no       | `true`         | Enable or disable JSON calendar endpoints (`/calendar.json`, `/calendar/me.json`)    |
 | `AHE_CAL_TOKEN`         | no       | -              | Optional access token to restrict who can use the endpoint                           |
-| `AHE_LINK_KEY`          | no       | -              | Base64 32-byte key for encrypted links (`openssl rand -base64 32`)                   |
+| `AHE_LINK_KEY`          | yes      | -              | Base64 32-byte key for encrypted links (`openssl rand -base64 32`)                   |
 | `REAL_IP_HEADER`        | no       | -              | Header name with client IP (e.g. `CF-Connecting-IP`, `X-Forwarded-For`, `Forwarded`) |
 | `HTTPS_PROXY`           | no       | -              | Proxy for WPS requests, `http://` or `socks5h://` (Tor: `socks5h://127.0.0.1:9050`)  |
 | `RUST_LOG`              | no       | `info`         | Log level (`debug`, `info`, etc.)                                                    |
@@ -207,7 +207,7 @@ Same as the dedicated variant **except** `AHE_USERNAME` and `AHE_PASSWORD` – t
 
 Same as the dedicated variant, plus:
 
-- `POST /link` – turns a WPS login into an encrypted subscription link (when `AHE_LINK_KEY` is set). Takes `username`, `password` and, if `AHE_CAL_TOKEN` is set, `token` as a form body, checks them against WPS and returns the calendar path. Limited to 10 requests per minute across all clients (`429` above that), so the server cannot be used to guess WPS passwords.
+- `POST /link` – turns a WPS login into an encrypted subscription link. Takes `username`, `password` and, if `AHE_CAL_TOKEN` is set, `token` as a form body, checks them against WPS and returns the calendar path. Limited to 10 requests per minute across all clients (`429` above that), so the server cannot be used to guess WPS passwords.
 
 ```bash
 curl https://your-domain.example/link -d username=jan.kowalski --data-urlencode password='haslo'
@@ -220,8 +220,8 @@ Rotating `AHE_LINK_KEY` invalidates every link issued so far. A link also stops 
 
 - `GET /healthz` – always returns `204 No Content` (no upstream check; there are no fixed credentials to test with).
 
-> [!WARNING]
-> **Deprecated:** the plain `username=...&password=...` query params still work but will be removed. They put the whole university account in the URL. Switch to a `c` link.
+> [!NOTE]
+> **Migrating from `username`/`password` links:** the plain `username=...&password=...` query params have been removed, because they put the whole university account in the URL. Set `AHE_LINK_KEY`, generate a `c` link with `POST /link` and replace the old subscription in your calendar app.
 
 ### Privacy
 

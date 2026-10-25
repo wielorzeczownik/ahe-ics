@@ -7,6 +7,6 @@ services:
     environment:
       AHE_CAL_TOKEN: 'supersecret-token'
       # openssl rand -base64 32
-      # AHE_LINK_KEY: 'paste-generated-key'
+      AHE_LINK_KEY: '${AHE_LINK_KEY:?set it in .env}'
       AHE_CAL_EXAMS_ENABLED: 'true'
     restart: unless-stopped
