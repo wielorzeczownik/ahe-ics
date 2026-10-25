@@ -40,6 +40,7 @@ reqwest = { version = "0.13.1", features = [
   "gzip",
   "brotli",
   "deflate",
+  "socks",
 ] }
 
 # Serialization + date/time

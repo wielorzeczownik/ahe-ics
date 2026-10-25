@@ -109,6 +109,7 @@ Pobierz najnowsze archiwum dla swojej platformy:
 | `AHE_CAL_JSON_ENABLED`  | nie      | `true`         | Włącz lub wyłącz endpointy JSON (`/calendar.json`, `/calendar/me.json`)                         |
 | `AHE_CAL_TOKEN`         | nie      | -              | Opcjonalny token dostępu do endpointów kalendarza (zwykły ciąg lub hash Argon2id)               |
 | `REAL_IP_HEADER`        | nie      | -              | Nagłówek z adresem IP klienta (np. `CF-Connecting-IP`, `X-Forwarded-For`, `Forwarded`)          |
+| `HTTPS_PROXY`           | nie      | -              | Proxy dla zapytań do WPS, `http://` lub `socks5h://` (Tor: `socks5h://127.0.0.1:9050`)          |
 | `RUST_LOG`              | nie      | `info`         | Poziom logowania (`debug`, `info` itp.)                                                         |
 
 ### Endpointy
@@ -199,6 +200,7 @@ Takie same jak w wariancie dedykowanym **z wyjątkiem** `AHE_USERNAME` i `AHE_PA
 | `AHE_CAL_TOKEN`         | nie      | -              | Opcjonalny token ograniczający dostęp do endpointów                                             |
 | `AHE_LINK_KEY`          | nie      | -              | Klucz base64 (32 bajty) do szyfrowanych linków (`openssl rand -base64 32`)                      |
 | `REAL_IP_HEADER`        | nie      | -              | Nagłówek z adresem IP klienta (np. `CF-Connecting-IP`, `X-Forwarded-For`, `Forwarded`)          |
+| `HTTPS_PROXY`           | nie      | -              | Proxy dla zapytań do WPS, `http://` lub `socks5h://` (Tor: `socks5h://127.0.0.1:9050`)          |
 | `RUST_LOG`              | nie      | `info`         | Poziom logowania (`debug`, `info` itp.)                                                         |
 
 ### Endpointy
