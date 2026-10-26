@@ -5,6 +5,31 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.0](https://github.com/wielorzeczownik/ahe-ics/compare/v1.3.35...v1.4.0) - 2026-10-26
+
+### Security
+
+- Update rust crate tokio to v1.54.1 [security] (#231) ([a810312](https://github.com/wielorzeczownik/ahe-ics/commit/a8103125ef491aceec02bc289944c93e28bfcd56))
+
+### Features
+
+- Socks5 proxy support for wps requests (#237) ([359a11f](https://github.com/wielorzeczownik/ahe-ics/commit/359a11f9c9fb20b6fd07c10cc78020c2addfa5bd))
+- Encrypted subscription links via POST /link (#234) ([e14b476](https://github.com/wielorzeczownik/ahe-ics/commit/e14b476d9418bbb6596b148506648ab2b7091d21))
+
+### Bug Fixes
+
+- Draft releases before uploading assets (#236) ([474db9d](https://github.com/wielorzeczownik/ahe-ics/commit/474db9d05dcdbac64485b3357a19712302de91cd))
+
+### CI/CD
+
+- Update dtolnay/rust-toolchain digest to b725eda (#240) ([84fa0fd](https://github.com/wielorzeczownik/ahe-ics/commit/84fa0fd8d9275e8174845d70775a50e0c7fb6993))
+- Cut release candidates on push and stable releases weekly (#232) ([689eb6a](https://github.com/wielorzeczownik/ahe-ics/commit/689eb6ae21faf1685cc8415e63e1b8fe4a60d6eb))
+
+### Dependencies
+
+- Update rust base image (#239) ([c4a308f](https://github.com/wielorzeczownik/ahe-ics/commit/c4a308f1f0502992b6b3d511895986a8ebd0a948))
+- Lock file maintenance (#226) ([e8bf0a5](https://github.com/wielorzeczownik/ahe-ics/commit/e8bf0a5b8048698a03548281d38a8d8719b3d1a8))
+
 ## [1.3.35](https://github.com/wielorzeczownik/ahe-ics/compare/v1.3.34...v1.3.35) - 2026-10-19
 
 ### Bug Fixes
