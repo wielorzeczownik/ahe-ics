@@ -143,7 +143,7 @@ Uruchomienie przez Docker:
 
 ```bash
 curl -fsSL -o .env https://raw.githubusercontent.com/wielorzeczownik/ahe-ics/main/.env.shared.example
-# edytuj .env i ustaw AHE_CAL_TOKEN
+# edytuj .env i ustaw AHE_LINK_KEY oraz AHE_CAL_TOKEN
 docker run --rm -p 8080:8080 --env-file .env wielorzeczownik/ahe-ics:shared
 ```
 
@@ -152,7 +152,7 @@ Uruchomienie przez Docker Compose:
 ```bash
 curl -fsSL -o .env https://raw.githubusercontent.com/wielorzeczownik/ahe-ics/main/.env.shared.example
 curl -fsSL -o docker-compose.yml https://raw.githubusercontent.com/wielorzeczownik/ahe-ics/main/docker-compose.shared.example.yml
-# edytuj .env i ustaw AHE_CAL_TOKEN
+# edytuj .env i ustaw AHE_LINK_KEY oraz AHE_CAL_TOKEN
 docker compose pull
 docker compose up -d
 ```
@@ -198,7 +198,7 @@ Takie same jak w wariancie dedykowanym **z wyjątkiem** `AHE_USERNAME` i `AHE_PA
 | `AHE_CAL_EXAMS_ENABLED` | nie      | `true`         | Włącz lub wyłącz pobieranie egzaminów (`true`/`false`); przydatne gdy wpisy egzaminów są mylące |
 | `AHE_CAL_JSON_ENABLED`  | nie      | `true`         | Włącz lub wyłącz endpointy JSON (`/calendar.json`, `/calendar/me.json`)                         |
 | `AHE_CAL_TOKEN`         | nie      | -              | Opcjonalny token ograniczający dostęp do endpointów                                             |
-| `AHE_LINK_KEY`          | nie      | -              | Klucz base64 (32 bajty) do szyfrowanych linków (`openssl rand -base64 32`)                      |
+| `AHE_LINK_KEY`          | tak      | -              | Klucz base64 (32 bajty) do szyfrowanych linków (`openssl rand -base64 32`)                      |
 | `REAL_IP_HEADER`        | nie      | -              | Nagłówek z adresem IP klienta (np. `CF-Connecting-IP`, `X-Forwarded-For`, `Forwarded`)          |
 | `HTTPS_PROXY`           | nie      | -              | Proxy dla zapytań do WPS, `http://` lub `socks5h://` (Tor: `socks5h://127.0.0.1:9050`)          |
 | `RUST_LOG`              | nie      | `info`         | Poziom logowania (`debug`, `info` itp.)                                                         |
@@ -207,7 +207,7 @@ Takie same jak w wariancie dedykowanym **z wyjątkiem** `AHE_USERNAME` i `AHE_PA
 
 Takie same jak w wariancie dedykowanym, a dodatkowo:
 
-- `POST /link` – zamienia login WPS na zaszyfrowany link do subskrypcji (gdy ustawiono `AHE_LINK_KEY`). Przyjmuje w body formularza `username`, `password` oraz `token`, jeśli ustawiono `AHE_CAL_TOKEN`, sprawdza dane w WPS i zwraca ścieżkę kalendarza. Limit to 10 żądań na minutę łącznie dla wszystkich klientów (powyżej `429`), żeby serwera nie dało się użyć do zgadywania haseł WPS.
+- `POST /link` – zamienia login WPS na zaszyfrowany link do subskrypcji. Przyjmuje w body formularza `username`, `password` oraz `token`, jeśli ustawiono `AHE_CAL_TOKEN`, sprawdza dane w WPS i zwraca ścieżkę kalendarza. Limit to 10 żądań na minutę łącznie dla wszystkich klientów (powyżej `429`), żeby serwera nie dało się użyć do zgadywania haseł WPS.
 
 ```bash
 curl https://twoja-domena.example/link -d username=jan.kowalski --data-urlencode password='haslo'
@@ -220,8 +220,8 @@ Zmiana `AHE_LINK_KEY` unieważnia wszystkie wydane dotąd linki. Link przestaje 
 
 - `GET /healthz` – zawsze zwraca `204 No Content` (brak sprawdzenia upstream; nie ma stałych danych logowania do testowania).
 
-> [!WARNING]
-> **Przestarzałe:** jawne parametry `username=...&password=...` nadal działają, ale zostaną usunięte. Umieszczają w URL całe konto uczelniane. Przejdź na link z `c`.
+> [!NOTE]
+> **Migracja z linków `username`/`password`:** jawne parametry `username=...&password=...` zostały usunięte, bo umieszczały w URL całe konto uczelniane. Ustaw `AHE_LINK_KEY`, wygeneruj link z `c` przez `POST /link` i podmień starą subskrypcję w aplikacji kalendarza.
 
 ### Prywatność
 

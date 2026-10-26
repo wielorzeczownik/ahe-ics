@@ -32,11 +32,13 @@ pub(super) fn calendar_token() -> Result<Option<CalendarToken>> {
   Ok(Some(token))
 }
 
-pub(super) fn link_key() -> Result<Option<LinkKey>> {
-  std::env::var("AHE_LINK_KEY")
+pub(super) fn link_key() -> Result<LinkKey> {
+  let raw = std::env::var("AHE_LINK_KEY")
     .ok()
-    .map(|raw| LinkKey::from_env_value(&raw))
-    .transpose()
+    .filter(|raw| !raw.trim().is_empty())
+    .context("AHE_LINK_KEY is required; generate one with: openssl rand -base64 32")?;
+
+  LinkKey::from_env_value(&raw)
 }
 
 pub(super) fn calendar_lang() -> Result<CalendarLanguage> {

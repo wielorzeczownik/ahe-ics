@@ -24,11 +24,7 @@ use crate::web::dto::CalendarJsonResponse;
 struct CalendarQuery {
   /// Encrypted credentials minted by `POST /link`
   #[serde(rename = "c")]
-  link: Option<String>,
-  /// Deprecated in favour of `c`
-  username: Option<String>,
-  /// Deprecated in favour of `c`
-  password: Option<String>,
+  link: String,
   from: Option<NaiveDate>,
   to: Option<NaiveDate>,
   token: Option<String>,
@@ -60,19 +56,14 @@ const LINK_LOGINS_PER_MINUTE: NonZeroU32 = NonZeroU32::new(10).expect("non-zero"
 static LINK_BRAKE: LazyLock<DefaultDirectRateLimiter> =
   LazyLock::new(|| RateLimiter::direct(Quota::per_minute(LINK_LOGINS_PER_MINUTE)));
 
-const LINKS_DISABLED: &str = "encrypted links are not enabled (AHE_LINK_KEY)";
-
 /// Builds the HTTP router for the shared binary
 pub fn shared_router(state: AppState<SharedConfig>) -> Router {
   let mut router = Router::new()
     .route("/calendar.ics", get(calendar_ics))
     .route("/calendar/me.ics", get(calendar_ics))
+    .route("/link", post(create_link))
     .route("/healthz", get(healthz))
     .fallback(not_found);
-
-  if state.config.link_key.is_some() {
-    router = router.route("/link", post(create_link));
-  }
 
   if state.config.json_enabled {
     router = router
@@ -117,29 +108,15 @@ async fn calendar_json(
   Ok(([(CONTENT_TYPE, "application/json; charset=utf-8")], body))
 }
 
-/// Credentials from the encrypted `c` param, falling back to the legacy
-/// plain `username`/`password` params
+/// Credentials sealed into the `c` param by `POST /link`
 fn resolve_credentials(
   config: &SharedConfig,
   query: &CalendarQuery,
 ) -> Result<(String, String), AppError> {
-  if let Some(link) = &query.link {
-    let key = config
-      .link_key
-      .as_ref()
-      .ok_or_else(|| AppError::bad_request(LINKS_DISABLED))?;
-    return key
-      .open(link)
-      .ok_or_else(|| AppError::unauthorized("invalid or expired link"));
-  }
-
-  let (Some(username), Some(password)) = (&query.username, &query.password) else {
-    return Err(AppError::bad_request(
-      "missing c (or username and password)",
-    ));
-  };
-  warn!("plain username/password in the URL is deprecated, generate an encrypted link instead");
-  Ok((username.clone(), password.clone()))
+  config
+    .link_key
+    .open(&query.link)
+    .ok_or_else(|| AppError::unauthorized("invalid or expired link"))
 }
 
 /// Checks the credentials against WPS and returns a calendar path with them
@@ -148,12 +125,6 @@ async fn create_link(
   State(state): State<AppState<SharedConfig>>,
   Form(form): Form<LinkForm>,
 ) -> Result<String, AppError> {
-  let key = state
-    .config
-    .link_key
-    .as_ref()
-    .ok_or_else(|| AppError::bad_request(LINKS_DISABLED))?;
-
   let token = form.token.filter(|token| !token.is_empty());
   if let Some(expected) = &state.config.calendar_token
     && !token.as_deref().is_some_and(|token| expected.verify(token))
@@ -188,7 +159,7 @@ async fn create_link(
     ));
   }
 
-  let sealed = key.seal(&form.username, &form.password)?;
+  let sealed = state.config.link_key.seal(&form.username, &form.password)?;
   let mut params = vec![("c", sealed.as_str())];
   if state.config.calendar_token.is_some()
     && let Some(token) = &token
