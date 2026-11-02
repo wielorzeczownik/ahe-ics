@@ -5,6 +5,30 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0](https://github.com/wielorzeczownik/ahe-ics/compare/v1.4.0...v2.0.0) - 2026-11-02
+
+### Breaking Changes
+
+- Drop plain username/password params and require AHE_LINK_KEY (#238) ([25f041c](https://github.com/wielorzeczownik/ahe-ics/commit/25f041c072de3ee8e35c011a638213187b1b9b3e))
+
+### Documentation
+
+- Update python docker tag to v3.15 (#243) ([85d5b0a](https://github.com/wielorzeczownik/ahe-ics/commit/85d5b0a54efb28de5a035ab751dadd377dafccbb))
+
+### CI/CD
+
+- Update taiki-e/install-action action to v2.87.31 (#249) ([634dcdb](https://github.com/wielorzeczownik/ahe-ics/commit/634dcdbd9ce0b4f780442c496f56ee73ae4f138b))
+- Update docker/login-action action to v4.7.0 (#250) ([20b62a7](https://github.com/wielorzeczownik/ahe-ics/commit/20b62a7365353e25ad5ada0a57bb610eaf552439))
+- Update pozil/auto-assign-issue action to v4.1.0 (#251) ([6936a6c](https://github.com/wielorzeczownik/ahe-ics/commit/6936a6c29b4c52cdd80fdbcace05af6372daa3d1))
+- Update davidanson/markdownlint-cli2-action action to v25 (#252) ([5061b47](https://github.com/wielorzeczownik/ahe-ics/commit/5061b47c1ac9af47387ae63f5b9f6068faa586e5))
+- Update swatinem/rust-cache action to v2.9.3 (#248) ([ff99872](https://github.com/wielorzeczownik/ahe-ics/commit/ff9987269cc83f9fa525d13f9db884f87ece2b11))
+- Update taiki-e/install-action action to v2.87.29 (#242) ([488fdfc](https://github.com/wielorzeczownik/ahe-ics/commit/488fdfcb8fbbe438ebde436b57f359bf24fa6d61))
+
+### Dependencies
+
+- Lock file maintenance (#245) ([7964818](https://github.com/wielorzeczownik/ahe-ics/commit/7964818577c273e4434dd2f7a2586f27c82810d3))
+- Update rust crate icalendar to v0.17.17 (#247) ([6a0a396](https://github.com/wielorzeczownik/ahe-ics/commit/6a0a39622346388a0b94d0a4aa82b29621045cfa))
+
 ## [1.4.0](https://github.com/wielorzeczownik/ahe-ics/compare/v1.3.35...v1.4.0) - 2026-10-26
 
 ### Security
