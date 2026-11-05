@@ -19,7 +19,7 @@ env:
 jobs:
   checks:
     name: Checks
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     timeout-minutes: 15
     permissions:
       contents: read
@@ -135,7 +135,7 @@ jobs:
     name: Tests
     needs: checks
     if: ${{ !cancelled() && needs.checks.outputs.rust == 'true' }}
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     timeout-minutes: 20
     steps:
       - name: Checkout
@@ -156,7 +156,7 @@ jobs:
     name: Clippy
     needs: checks
     if: ${{ !cancelled() && needs.checks.outputs.rust == 'true' }}
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     timeout-minutes: 20
     steps:
       - name: Checkout
@@ -182,7 +182,7 @@ jobs:
     name: Image ${{ matrix.variant }}
     needs: checks
     if: ${{ !cancelled() && needs.checks.outputs.docker == 'true' }}
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     timeout-minutes: 30
     strategy:
       fail-fast: false
