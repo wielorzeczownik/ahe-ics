@@ -5,6 +5,22 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.1](https://github.com/wielorzeczownik/ahe-ics/compare/v2.0.0...v2.0.1) - 2026-11-09
+
+### CI/CD
+
+- Update taiki-e/install-action action to v2.89.0 (#256) ([c0075d1](https://github.com/wielorzeczownik/ahe-ics/commit/c0075d10163aaeaecc12b36756042a929ec844c2))
+- Create lightweight tags ([ff7dade](https://github.com/wielorzeczownik/ahe-ics/commit/ff7dade6cb1029a3503e9d5288361dc368a4cc9b))
+
+### Dependencies
+
+- Update debian:trixie-slim docker digest to a72b443 (#255) ([dd478fc](https://github.com/wielorzeczownik/ahe-ics/commit/dd478fcadd59a0a86a6e81d3a7938aa44fc5181c))
+- Lock file maintenance (#257) ([072404f](https://github.com/wielorzeczownik/ahe-ics/commit/072404fc334f7abc0f0577e0904230adf398a0ce))
+- Update alpine:3.24 docker digest to f59abe6 (#254) ([c50db7f](https://github.com/wielorzeczownik/ahe-ics/commit/c50db7fea1a1ed13dd48179144d073ba7fc3adc3))
+- Update rust base image (#253) ([de379f0](https://github.com/wielorzeczownik/ahe-ics/commit/de379f0596ba6a3eabcea6a9793d49943e542bee))
+- Update rust base image (#246) ([3e35b7e](https://github.com/wielorzeczownik/ahe-ics/commit/3e35b7e354d3184cb19ceb7276a877dfece754d4))
+- Update alpine:3.24 docker digest to be26560 (#241) ([7f32acb](https://github.com/wielorzeczownik/ahe-ics/commit/7f32acb8d5bc7464665efa0f46980eada44c816e))
+
 ## [2.0.0](https://github.com/wielorzeczownik/ahe-ics/compare/v1.4.0...v2.0.0) - 2026-11-02
 
 ### Breaking Changes
