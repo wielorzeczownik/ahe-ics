@@ -7,244 +7,75 @@
 </p>
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/wielorzeczownik/ahe-ics/main/assets/logo.png" alt="AHE-ICS logo" width="300" />
+  <img src="https://raw.githubusercontent.com/wielorzeczownik/ahe-ics/main/assets/logo.svg" alt="AHE-ICS logo" width="300" />
 </p>
 
 <p align="center">🇬🇧 <a href="README.md">English</a> | 🇵🇱 Polski</p>
 
-Lekki serwis, który eksportuje plan zajęć [Akademii Humanistyczno-Ekonomicznej (AHE) w Łodzi](https://www.ahe.lodz.pl) z systemu [Wirtualny Pokój Studenta (WPS)](https://wps.ahe.lodz.pl) jako subskrybowalny kanał ICS – kompatybilny z Google Calendar, Apple Calendar i Outlookiem.
+Twój plan zajęć z [WPS](https://wps.ahe.lodz.pl) [AHE Łódź](https://www.ahe.lodz.pl) w Kalendarzu Google, Kalendarzu Apple albo Outlooku. Dodajesz kalendarz z adresu URL, a zajęcia i egzaminy aktualizują się same.
 
-Wystarczy dodać jeden adres URL, a plan zajęć AHE będzie automatycznie aktualizowany w dowolnej aplikacji kalendarza.
+Są dwa warianty:
 
-Dostępne są dwa warianty:
+| Wariant           | Binarka          | Obraz Docker                     | Dane logowania                                       |
+| ----------------- | ---------------- | -------------------------------- | ---------------------------------------------------- |
+| **Dedykowany**    | `ahe-ics`        | `wielorzeczownik/ahe-ics`        | w zmiennych środowiskowych, jedno konto na instancję |
+| **Współdzielony** | `ahe-ics-shared` | `wielorzeczownik/ahe-ics:shared` | zaszyfrowane w linku każdego użytkownika             |
 
-| Wariant           | Binarka          | Obraz Docker                     | Dane logowania                                                       |
-| ----------------- | ---------------- | -------------------------------- | -------------------------------------------------------------------- |
-| **Dedykowany**    | `ahe-ics`        | `wielorzeczownik/ahe-ics`        | Ustawiane raz w zmiennych środowiskowych – jedno konto na instancję  |
-| **Współdzielony** | `ahe-ics-shared` | `wielorzeczownik/ahe-ics:shared` | Przekazywane w każdym żądaniu w URL – bezstanowy, bez przechowywania |
+Dedykowany uruchom dla siebie. Współdzielony, jeśli z twojej instancji mają korzystać inni.
 
-## Wariant dedykowany (`ahe-ics`)
+## Uruchomienie
 
-### Uruchomienie przez Docker (zalecane)
-
-Uruchomienie przez Docker:
+### Docker
 
 ```bash
 curl -fsSL -o .env https://raw.githubusercontent.com/wielorzeczownik/ahe-ics/main/.env.example
-# edytuj .env i ustaw AHE_USERNAME / AHE_PASSWORD
+# ustaw AHE_USERNAME i AHE_PASSWORD w .env
 docker run --rm -p 8080:8080 --env-file .env wielorzeczownik/ahe-ics:latest
 ```
 
-Uruchomienie przez Docker Compose:
+Dla Docker Compose pobierz też [docker-compose.example.yml](docker-compose.example.yml) i uruchom `docker compose up -d`.
 
-```bash
-curl -fsSL -o .env https://raw.githubusercontent.com/wielorzeczownik/ahe-ics/main/.env.example
-curl -fsSL -o docker-compose.yml https://raw.githubusercontent.com/wielorzeczownik/ahe-ics/main/docker-compose.example.yml
-# edytuj .env i ustaw AHE_USERNAME / AHE_PASSWORD
-docker compose pull
-docker compose up -d
-```
+Dla wariantu współdzielonego użyj [.env.shared.example](.env.shared.example) (ustaw tam `AHE_LINK_KEY` i `AHE_CAL_TOKEN`), obrazu `:shared` i [docker-compose.shared.example.yml](docker-compose.shared.example.yml).
 
-### Uruchomienie z gotowych plików binarnych
+### Binarki
 
-Każde wydanie zawiera gotowe archiwa dla systemu Linux, macOS i Windows.
-Najnowsze wydanie: [GitHub Releases](https://github.com/wielorzeczownik/ahe-ics/releases/latest)
+Pobierz archiwum dla swojego systemu z [Releases](https://github.com/wielorzeczownik/ahe-ics/releases/latest), rozpakuj, połóż `.env` obok binarki i ją uruchom.
 
-1. Pobierz archiwum `ahe-ics-*` dla swojej platformy ze strony wydania.
-2. Rozpakuj je.
-3. Utwórz plik `.env` na podstawie `.env.example` i ustaw `AHE_USERNAME` / `AHE_PASSWORD`.
-4. Uruchom program.
+| System                        | `ahe-ics`                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | `ahe-ics-shared`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Linux (glibc 2.35+)           | [x64](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-x86_64-unknown-linux-gnu.tar.gz), [ARM64](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-aarch64-unknown-linux-gnu.tar.gz), [ARMv7](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-armv7-unknown-linux-gnueabihf.tar.gz), [x86](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-i686-unknown-linux-gnu.tar.gz) | [x64](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-shared-x86_64-unknown-linux-gnu.tar.gz), [ARM64](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-shared-aarch64-unknown-linux-gnu.tar.gz), [ARMv7](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-shared-armv7-unknown-linux-gnueabihf.tar.gz), [x86](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-shared-i686-unknown-linux-gnu.tar.gz) |
+| Linux (musl, statycznie)      | [x64](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-x86_64-unknown-linux-musl.tar.gz), [ARM64](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-aarch64-unknown-linux-musl.tar.gz)                                                                                                                                                                                                                                            | [x64](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-shared-x86_64-unknown-linux-musl.tar.gz), [ARM64](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-shared-aarch64-unknown-linux-musl.tar.gz)                                                                                                                                                                                                                                                          |
+| macOS (Intel i Apple Silicon) | [universal](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-universal-apple-darwin.tar.gz)                                                                                                                                                                                                                                                                                                                                                                 | [universal](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-shared-universal-apple-darwin.tar.gz)                                                                                                                                                                                                                                                                                                                                                                                      |
+| Windows                       | [x64](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-x86_64-pc-windows-msvc.zip), [ARM64](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-aarch64-pc-windows-msvc.zip), [x86](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-i686-pc-windows-msvc.zip)                                                                                                                                           | [x64](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-shared-x86_64-pc-windows-msvc.zip), [ARM64](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-shared-aarch64-pc-windows-msvc.zip), [x86](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-shared-i686-pc-windows-msvc.zip)                                                                                                                                                  |
 
-Przykład (Linux/macOS):
+## Konfiguracja
 
-```bash
-curl -fsSL -o .env https://raw.githubusercontent.com/wielorzeczownik/ahe-ics/main/.env.example
-# edytuj .env
-./ahe-ics
-```
+Ustawienia są czytane ze zmiennych środowiskowych albo z pliku `.env`.
 
-Przykład (Windows PowerShell):
+| Zmienna                 | Wymagana                | Domyślnie      | Znaczenie                                                                               |
+| ----------------------- | ----------------------- | -------------- | --------------------------------------------------------------------------------------- |
+| `AHE_USERNAME`          | tylko w dedykowanym     | -              | login do WPS                                                                            |
+| `AHE_PASSWORD`          | tylko w dedykowanym     | -              | hasło do WPS                                                                            |
+| `AHE_LINK_KEY`          | tylko we współdzielonym | -              | 32-bajtowy klucz base64, którym szyfrowane są linki (`openssl rand -base64 32`)         |
+| `AHE_CAL_TOKEN`         | nie                     | -              | token wymagany do odczytu kalendarza, zobacz [niżej](#token-dostępu)                    |
+| `AHE_CAL_PAST_DAYS`     | nie                     | `60`           | ile dni wstecz pobierać, gdy nie podano `from`                                          |
+| `AHE_CAL_FUTURE_DAYS`   | nie                     | `60`           | ile dni do przodu pobierać, gdy nie podano `to`                                         |
+| `AHE_CAL_LANG`          | nie                     | `pl`           | język generowanych etykiet, `pl` albo `en`                                              |
+| `AHE_CAL_EXAMS_ENABLED` | nie                     | `true`         | `false` pomija egzaminy, zobacz [Egzaminy](#egzaminy)                                   |
+| `AHE_CAL_JSON_ENABLED`  | nie                     | `true`         | `false` wyłącza endpointy `.json`                                                       |
+| `BIND_ADDR`             | nie                     | `0.0.0.0:8080` | adres, na którym nasłuchuje serwer                                                      |
+| `REAL_IP_HEADER`        | nie                     | -              | nagłówek z IP klienta za proxy, np. `CF-Connecting-IP`                                  |
+| `HTTPS_PROXY`           | nie                     | -              | proxy dla zapytań do WPS, `http://` albo `socks5h://` (Tor: `socks5h://127.0.0.1:9050`) |
+| `RUST_LOG`              | nie                     | `info`         | poziom logów                                                                            |
 
-```powershell
-Invoke-WebRequest -Uri "https://raw.githubusercontent.com/wielorzeczownik/ahe-ics/main/.env.example" -OutFile ".env"
-# edytuj .env
-.\ahe-ics.exe
-```
+### Token dostępu
 
-Pobierz najnowsze archiwum dla swojej platformy:
+Bez `AHE_CAL_TOKEN` każdy, kto zna adres, może odczytać twój plan. Ustaw go zawsze, gdy instancja jest dostępna z internetu.
 
-**Linux (glibc – wymaga glibc 2.35+):**
+Wartość może być zwykłym tekstem albo hashem Argon2id (`$argon2id$...`, opcjonalnie z przedrostkiem `argon2:`). Klient zawsze wysyła token jawnie: jako `?token=...`, w nagłówku `X-Calendar-Token` albo jako `Authorization: Bearer ...`.
 
-- [ahe-ics-x86_64-unknown-linux-gnu.tar.gz](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-x86_64-unknown-linux-gnu.tar.gz) – Linux (Intel/AMD 64-bit)
-- [ahe-ics-aarch64-unknown-linux-gnu.tar.gz](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-aarch64-unknown-linux-gnu.tar.gz) – Linux (ARM64, np. Raspberry Pi 64-bit)
-- [ahe-ics-armv7-unknown-linux-gnueabihf.tar.gz](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-armv7-unknown-linux-gnueabihf.tar.gz) – Linux (ARM 32-bit, np. Raspberry Pi 32-bit)
-- [ahe-ics-i686-unknown-linux-gnu.tar.gz](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-i686-unknown-linux-gnu.tar.gz) – Linux (Intel/AMD 32-bit)
-
-**Linux (musl – w pełni statyczne, bez zależności od glibc):**
-
-- [ahe-ics-x86_64-unknown-linux-musl.tar.gz](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-x86_64-unknown-linux-musl.tar.gz) – Linux (Intel/AMD 64-bit)
-- [ahe-ics-aarch64-unknown-linux-musl.tar.gz](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-aarch64-unknown-linux-musl.tar.gz) – Linux (ARM64)
-
-**macOS:**
-
-- [ahe-ics-universal-apple-darwin.tar.gz](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-universal-apple-darwin.tar.gz) – macOS (Intel i Apple Silicon)
-
-**Windows:**
-
-- [ahe-ics-x86_64-pc-windows-msvc.zip](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-x86_64-pc-windows-msvc.zip) – Windows 64-bit (x86_64)
-- [ahe-ics-aarch64-pc-windows-msvc.zip](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-aarch64-pc-windows-msvc.zip) – Windows ARM64
-- [ahe-ics-i686-pc-windows-msvc.zip](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-i686-pc-windows-msvc.zip) – Windows 32-bit (x86)
-
-### Zmienne środowiskowe
-
-| Zmienna                 | Wymagana | Domyślna       | Opis                                                                                            |
-| ----------------------- | -------- | -------------- | ----------------------------------------------------------------------------------------------- |
-| `AHE_USERNAME`          | tak      | -              | Nazwa użytkownika [WPS](https://wps.ahe.lodz.pl/)                                               |
-| `AHE_PASSWORD`          | tak      | -              | Hasło [WPS](https://wps.ahe.lodz.pl/)                                                           |
-| `BIND_ADDR`             | nie      | `0.0.0.0:8080` | Adres i port serwera HTTP                                                                       |
-| `AHE_CAL_PAST_DAYS`     | nie      | `60`           | Domyślny zakres: liczba dni wstecz, gdy `from` nie jest podane                                  |
-| `AHE_CAL_FUTURE_DAYS`   | nie      | `60`           | Domyślny zakres: liczba dni wprzód, gdy `to` nie jest podane                                    |
-| `AHE_CAL_LANG`          | nie      | `pl`           | Język etykiet w kalendarzu (`pl` lub `en`)                                                      |
-| `AHE_CAL_EXAMS_ENABLED` | nie      | `true`         | Włącz lub wyłącz pobieranie egzaminów (`true`/`false`); przydatne gdy wpisy egzaminów są mylące |
-| `AHE_CAL_JSON_ENABLED`  | nie      | `true`         | Włącz lub wyłącz endpointy JSON (`/calendar.json`, `/calendar/me.json`)                         |
-| `AHE_CAL_TOKEN`         | nie      | -              | Opcjonalny token dostępu do endpointów kalendarza (zwykły ciąg lub hash Argon2id)               |
-| `REAL_IP_HEADER`        | nie      | -              | Nagłówek z adresem IP klienta (np. `CF-Connecting-IP`, `X-Forwarded-For`, `Forwarded`)          |
-| `HTTPS_PROXY`           | nie      | -              | Proxy dla zapytań do WPS, `http://` lub `socks5h://` (Tor: `socks5h://127.0.0.1:9050`)          |
-| `RUST_LOG`              | nie      | `info`         | Poziom logowania (`debug`, `info` itp.)                                                         |
-
-### Endpointy
-
-- `GET /calendar.ics` – główny endpoint kanału ICS (`text/calendar`).
-- `GET /calendar/me.ics` – alias `/calendar.ics` (identyczny wynik).
-- `GET /calendar.json` – JSON z danymi źródłowymi kalendarza (gdy `AHE_CAL_JSON_ENABLED=true`).
-- `GET /calendar/me.json` – alias `/calendar.json` (gdy `AHE_CAL_JSON_ENABLED=true`).
-- `GET /healthz` – sonda liveness; zawsze zwraca `204 No Content`, bez odpytywania API AHE.
-- `GET /readyz` – sonda readiness weryfikująca, czy skonfigurowane dane logowania nadal działają wobec API AHE (zwraca `204 No Content`, w przeciwnym razie `503`).
-
-Parametry zapytania (`/calendar.ics`, `/calendar/me.ics` i endpointy JSON):
-
-- `from=RRRR-MM-DD` – data początkowa; gdy pominięta, serwis używa `AHE_CAL_PAST_DAYS`.
-- `to=RRRR-MM-DD` – data końcowa; gdy pominięta, serwis używa `AHE_CAL_FUTURE_DAYS`.
-- `token=...` – opcjonalny token dostępu, jeśli skonfigurowano `AHE_CAL_TOKEN`.
-
-Przykład:
-
-```text
-http://localhost:8080/calendar.ics?from=2026-01-01&to=2026-03-01
-```
-
-## Wariant współdzielony (`ahe-ics-shared`)
-
-Wariant współdzielony jest w pełni bezstanowy – żadne dane logowania nie są przechowywane ani logowane po stronie serwera. Każde żądanie przekazuje własne dane WPS, zaszyfrowane w jednym parametrze linku `c` (zobacz [Prywatność](#prywatność)). Serwer przechowuje jedynie pamięci podręczną (tokeny dostępu WPS i metadane studenta, kluczowane po nazwie użytkownika), które są kasowane przy restarcie.
-
-### Uruchomienie przez Docker
-
-Uruchomienie przez Docker:
-
-```bash
-curl -fsSL -o .env https://raw.githubusercontent.com/wielorzeczownik/ahe-ics/main/.env.shared.example
-# edytuj .env i ustaw AHE_LINK_KEY oraz AHE_CAL_TOKEN
-docker run --rm -p 8080:8080 --env-file .env wielorzeczownik/ahe-ics:shared
-```
-
-Uruchomienie przez Docker Compose:
-
-```bash
-curl -fsSL -o .env https://raw.githubusercontent.com/wielorzeczownik/ahe-ics/main/.env.shared.example
-curl -fsSL -o docker-compose.yml https://raw.githubusercontent.com/wielorzeczownik/ahe-ics/main/docker-compose.shared.example.yml
-# edytuj .env i ustaw AHE_LINK_KEY oraz AHE_CAL_TOKEN
-docker compose pull
-docker compose up -d
-```
-
-Zmienne `AHE_USERNAME` ani `AHE_PASSWORD` nie są potrzebne.
-
-### Uruchomienie z gotowych plików binarnych
-
-Pobierz archiwum `ahe-ics-shared-*` dla swojej platformy z [najnowszego wydania](https://github.com/wielorzeczownik/ahe-ics/releases/latest).
-
-**Linux (glibc – wymaga glibc 2.35+):**
-
-- [ahe-ics-shared-x86_64-unknown-linux-gnu.tar.gz](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-shared-x86_64-unknown-linux-gnu.tar.gz) – Linux (Intel/AMD 64-bit)
-- [ahe-ics-shared-aarch64-unknown-linux-gnu.tar.gz](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-shared-aarch64-unknown-linux-gnu.tar.gz) – Linux (ARM64)
-- [ahe-ics-shared-armv7-unknown-linux-gnueabihf.tar.gz](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-shared-armv7-unknown-linux-gnueabihf.tar.gz) – Linux (ARM 32-bit)
-- [ahe-ics-shared-i686-unknown-linux-gnu.tar.gz](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-shared-i686-unknown-linux-gnu.tar.gz) – Linux (Intel/AMD 32-bit)
-
-**Linux (musl – w pełni statyczne, bez zależności od glibc):**
-
-- [ahe-ics-shared-x86_64-unknown-linux-musl.tar.gz](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-shared-x86_64-unknown-linux-musl.tar.gz) – Linux (Intel/AMD 64-bit)
-- [ahe-ics-shared-aarch64-unknown-linux-musl.tar.gz](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-shared-aarch64-unknown-linux-musl.tar.gz) – Linux (ARM64)
-
-**macOS:**
-
-- [ahe-ics-shared-universal-apple-darwin.tar.gz](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-shared-universal-apple-darwin.tar.gz) – macOS (Intel i Apple Silicon)
-
-**Windows:**
-
-- [ahe-ics-shared-x86_64-pc-windows-msvc.zip](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-shared-x86_64-pc-windows-msvc.zip) – Windows 64-bit
-- [ahe-ics-shared-aarch64-pc-windows-msvc.zip](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-shared-aarch64-pc-windows-msvc.zip) – Windows ARM64
-- [ahe-ics-shared-i686-pc-windows-msvc.zip](https://github.com/wielorzeczownik/ahe-ics/releases/latest/download/ahe-ics-shared-i686-pc-windows-msvc.zip) – Windows 32-bit
-
-### Zmienne środowiskowe
-
-Takie same jak w wariancie dedykowanym **z wyjątkiem** `AHE_USERNAME` i `AHE_PASSWORD` – nie są używane i nie powinny być ustawiane.
-
-| Zmienna                 | Wymagana | Domyślna       | Opis                                                                                            |
-| ----------------------- | -------- | -------------- | ----------------------------------------------------------------------------------------------- |
-| `BIND_ADDR`             | nie      | `0.0.0.0:8080` | Adres i port serwera HTTP                                                                       |
-| `AHE_CAL_PAST_DAYS`     | nie      | `60`           | Domyślny zakres: liczba dni wstecz, gdy `from` nie jest podane                                  |
-| `AHE_CAL_FUTURE_DAYS`   | nie      | `60`           | Domyślny zakres: liczba dni wprzód, gdy `to` nie jest podane                                    |
-| `AHE_CAL_LANG`          | nie      | `pl`           | Język etykiet w kalendarzu (`pl` lub `en`)                                                      |
-| `AHE_CAL_EXAMS_ENABLED` | nie      | `true`         | Włącz lub wyłącz pobieranie egzaminów (`true`/`false`); przydatne gdy wpisy egzaminów są mylące |
-| `AHE_CAL_JSON_ENABLED`  | nie      | `true`         | Włącz lub wyłącz endpointy JSON (`/calendar.json`, `/calendar/me.json`)                         |
-| `AHE_CAL_TOKEN`         | nie      | -              | Opcjonalny token ograniczający dostęp do endpointów                                             |
-| `AHE_LINK_KEY`          | tak      | -              | Klucz base64 (32 bajty) do szyfrowanych linków (`openssl rand -base64 32`)                      |
-| `REAL_IP_HEADER`        | nie      | -              | Nagłówek z adresem IP klienta (np. `CF-Connecting-IP`, `X-Forwarded-For`, `Forwarded`)          |
-| `HTTPS_PROXY`           | nie      | -              | Proxy dla zapytań do WPS, `http://` lub `socks5h://` (Tor: `socks5h://127.0.0.1:9050`)          |
-| `RUST_LOG`              | nie      | `info`         | Poziom logowania (`debug`, `info` itp.)                                                         |
-
-### Endpointy
-
-Takie same jak w wariancie dedykowanym, a dodatkowo:
-
-- `POST /link` – zamienia login WPS na zaszyfrowany link do subskrypcji. Przyjmuje w body formularza `username`, `password` oraz `token`, jeśli ustawiono `AHE_CAL_TOKEN`, sprawdza dane w WPS i zwraca ścieżkę kalendarza. Limit to 10 żądań na minutę łącznie dla wszystkich klientów (powyżej `429`), żeby serwera nie dało się użyć do zgadywania haseł WPS.
-
-```bash
-curl https://twoja-domena.example/link -d username=jan.kowalski --data-urlencode password='haslo'
-# /calendar.ics?c=AXk3...
-```
-
-Dopisz swoją domenę i subskrybuj `https://twoja-domena.example/calendar.ics?c=...`. Wszystkie endpointy kalendarza przyjmują `c` razem z `from`, `to` i `token` jak dotychczas.
-
-Zmiana `AHE_LINK_KEY` unieważnia wszystkie wydane dotąd linki. Link przestaje też działać po zmianie hasła w WPS, więc po zmianie trzeba wygenerować nowy.
-
-- `GET /healthz` – zawsze zwraca `204 No Content` (brak sprawdzenia upstream; nie ma stałych danych logowania do testowania).
-
-> [!NOTE]
-> **Migracja z linków `username`/`password`:** jawne parametry `username=...&password=...` zostały usunięte, bo umieszczały w URL całe konto uczelniane. Ustaw `AHE_LINK_KEY`, wygeneruj link z `c` przez `POST /link` i podmień starą subskrypcję w aplikacji kalendarza.
-
-### Prywatność
-
-- **Co trzyma serwer:** wyłącznie pamięć podręczną w RAM (tokeny dostępu WPS, metadane studenta, wygenerowane kalendarze), kasowaną przy restarcie. Żadnej bazy ani plików.
-- **Czego nigdy nie loguje:** haseł, loginów, query stringów ani wartości `c`. W logach jest IP klienta oraz, gdy WPS zwróci błąd, jego status i treść odpowiedzi (do debugowania).
-- **Gdzie link może wyciec:** logi reverse proxy lub Cloudflare, serwery dostawcy kalendarza (Google, Apple, Microsoft) i historia przeglądarki. Wyciek linku z `c` ujawnia plan zajęć przez ten serwer, ale nie hasło: bez `AHE_LINK_KEY` nie da się go odszyfrować.
-- **Przed czym to nie chroni:** serwer nadal odszyfrowuje hasło i loguje się w Twoim imieniu do WPS, więc musisz ufać osobie, która prowadzi instancję. Kto ma jednocześnie `AHE_LINK_KEY` i link, odzyska hasło, dlatego trzymaj klucz w tajemnicy i zmień go, jeśli wycieknie.
-
-## Wspólna konfiguracja
-
-### `AHE_CAL_TOKEN`
-
-`AHE_CAL_TOKEN` ogranicza dostęp do endpointów kalendarza. Oba warianty go obsługują.
-
-Obsługiwane formaty:
-
-- zwykły token (np. `AHE_CAL_TOKEN=moj-sekret`),
-- hash Argon2id (`$argon2id$...`),
-- tryb jawny Argon2id (`AHE_CAL_TOKEN=argon2:$argon2id$...`).
-
-W trybie hasha klient wysyła token jako zwykły tekst (`token=...`), a serwer weryfikuje go względem hasha.
-
-Przykład generowania hasha Argon2id przez Docker:
+<details>
+<summary>Generowanie hasha Argon2id</summary>
 
 ```bash
 docker run --rm -e TOKEN='twoj-token' python:3.15-alpine sh -lc "pip install --quiet argon2-cffi && python - <<'PY'
@@ -255,33 +86,54 @@ print(PasswordHasher(time_cost=3, memory_cost=65536, parallelism=1).hash(os.envi
 PY"
 ```
 
-### Subskrypcja w Google Calendar / Apple Calendar / Outlook
+</details>
 
-Dodaj adres URL kanału ICS w swojej aplikacji kalendarza – plan zajęć będzie synchronizowany automatycznie:
+## Endpointy
 
-- **Google Calendar** → Inne kalendarze → Dodaj przez URL
-- **Apple Calendar** → Plik → Nowa subskrypcja kalendarza
-- **Outlook** → Dodaj kalendarz → Subskrybuj z sieci Web
+| Endpoint                                  | Opis                                                                                                    |
+| ----------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| `GET /calendar.ics`, `/calendar/me.ics`   | kanał ICS                                                                                               |
+| `GET /calendar.json`, `/calendar/me.json` | dane, z których budowany jest kanał                                                                     |
+| `GET /healthz`                            | zawsze `204`, nie odpytuje WPS                                                                          |
+| `GET /readyz`                             | `204`, jeśli logowanie do WPS działa, `503`, jeśli nie (tylko w dedykowanym)                            |
+| `POST /link`                              | tworzy link do subskrypcji (tylko we współdzielonym, zobacz [niżej](#linki-w-wariancie-współdzielonym)) |
 
-Przy subskrypcji z zewnętrznych klientów użyj publicznego adresu URL. `localhost` działa tylko lokalnie.
+Endpointy kalendarza przyjmują `from=YYYY-MM-DD`, `to=YYYY-MM-DD` i `token`, np. `/calendar.ics?from=2026-10-01&to=2027-02-28`.
 
-> [!CAUTION]
-> Jeśli udostępniasz wariant dedykowanym na domenie lub publicznym IP, ustaw `AHE_CAL_TOKEN`, aby zabezpieczyć swój kanał. Następnie dołącz go do adresu URL subskrypcji, np.: `https://twoja-domena.example/calendar.ics?token=twoj-token`
+## Subskrypcja
 
-### Ograniczenia danych egzaminacyjnych
+Dodaj adres kanału do kalendarza:
 
-Dane egzaminacyjne pochodzą z endpointów [WPS](https://wps.ahe.lodz.pl/), które mogą zwracać wpisy wyglądające na poprawne, ale niebędące egzaminami, których szukasz (fałszywe trafienia). Nie istnieje w pełni niezawodny sygnał API, który pozwoliłby odfiltrować wszystkie takie przypadki.
+- **Kalendarz Google**: Inne kalendarze → Z adresu URL
+- **Kalendarz Apple**: Plik → Nowa subskrypcja kalendarza
+- **Outlook**: Dodaj kalendarz → Subskrybuj z sieci Web
 
-Jeśli problem dotyczy Twojego konta, wyłącz egzaminy całkowicie:
+Aplikacja kalendarza pobiera kanał ze swoich serwerów, więc adres musi być publiczny. `localhost` nie zadziała.
 
-- `AHE_CAL_EXAMS_ENABLED=false`
+## Linki w wariancie współdzielonym
 
-## Obsługiwane platformy
+W wariancie współdzielonym login do WPS każdego użytkownika trafia do linku, zaszyfrowany kluczem `AHE_LINK_KEY`. `POST /link` sprawdza login w WPS i zwraca ścieżkę:
 
-- Linux: testowany, traktowany jako główne środowisko uruchomieniowe.
-- Windows: gotowe pliki binarne są publikowane i powinny działać, jednak środowisko Windows nie jest regularnie weryfikowane.
-- macOS: powinno działać przy uruchomieniu ze źródeł (ten sam stack co Linux).
+```bash
+curl https://twoja-domena.example/link -d username=jan.kowalski --data-urlencode password='haslo'
+# /calendar.ics?c=AXk3...
+```
+
+Jeśli ustawiony jest `AHE_CAL_TOKEN`, dodaj też `-d token=...`. Dopisz swoją domenę z przodu i zasubskrybuj `https://twoja-domena.example/calendar.ics?c=...`. `/link` przyjmuje łącznie 10 zapytań na minutę, więc nie da się nim zgadywać haseł do WPS.
+
+Link przestaje działać po zmianie hasła do WPS albo `AHE_LINK_KEY`. Wtedy wygeneruj nowy.
+
+### Prywatność
+
+- Serwer trzyma tylko cache w pamięci (tokeny WPS, dane studenta, wygenerowane kalendarze). Po restarcie znika. Żadnej bazy, żadnych plików.
+- Hasła, loginy, query stringi i wartości `c` nigdy nie trafiają do logów. W logach jest IP klienta, a gdy WPS zwróci błąd, jego status i treść odpowiedzi.
+- Link może trafić do logów reverse proxy albo Cloudflare, do dostawcy kalendarza i do historii przeglądarki. Kto go zdobędzie, zobaczy twój plan, ale nie hasło, bo bez `AHE_LINK_KEY` nie da się go odszyfrować.
+- Serwer odszyfrowuje hasło i loguje się do WPS w twoim imieniu, więc musisz ufać temu, kto go prowadzi. Kto ma i klucz, i link, odzyska hasło.
+
+## Egzaminy
+
+WPS czasem zwraca wpisy, które wyglądają jak egzaminy, ale nie są tymi, które chcesz mieć w kalendarzu, i nie ma pola, po którym dałoby się je pewnie odfiltrować. Jeśli tak jest u ciebie, ustaw `AHE_CAL_EXAMS_ENABLED=false`.
 
 ## Zastrzeżenie
 
-Projekt jest tworzony przez społeczność, jest nieoficjalny i może przestać działać w przypadku zmiany backendowego API.
+Projekt nieoficjalny i niezwiązany z AHE. Jeśli WPS zmieni API, przestanie działać, dopóki się go tu nie poprawi.
