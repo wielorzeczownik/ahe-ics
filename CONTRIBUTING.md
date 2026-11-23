@@ -1,116 +1,54 @@
-# Contributing to AHE-ICS
+# Contributing
 
-Thank you for considering a contribution. This document covers everything you need to get started.
+Every contribution helps, including a typo fix, a bug report, or a question about how something works. You don't need to be an AHE student to help. For anything bigger than a small fix, opening an issue first is a good idea, so we can agree on the approach before you spend time on it.
 
-## Overview
-
-A lightweight self-hosted service written in Rust that exports the AHE Łódź class schedule as a subscribable ICS feed, compatible with Google Calendar, Apple Calendar, and Outlook.
-
-## Project structure
-
-```text
-.
-├── src/                       Rust source code
-├── scripts/
-│   ├── bump-version.sh        determines next release version from git-cliff and bumps Cargo.toml
-│   ├── stage-docker-binaries.sh  lays release binaries out per platform for the release images
-│   └── smoke-test-image.sh    starts a built image and waits for it to serve HTTP
-├── Dockerfile                 Debian-based image, builds from source (local development)
-├── Dockerfile.alpine          Alpine-based image, builds from source (local development)
-└── Dockerfile.release         published image, copies in a binary from build-artifacts
-```
-
-Published images are assembled from the binaries that the release workflow already
-cross-compiles natively, so they never compile anything under QEMU emulation. The
-`Dockerfile` / `Dockerfile.alpine` variants stay around as the from-source build path
-for local development and are what pull requests smoke-build. They build the dedicated
-binary by default; pass `--build-arg BIN=ahe-ics-shared` for the shared variant.
-
-## Development setup
+## Setup
 
 ```bash
 git clone https://github.com/wielorzeczownik/ahe-ics.git
 cd ahe-ics
-cp .env.example .env
-# Edit .env and set AHE_USERNAME / AHE_PASSWORD
-cargo run
+cp .env.example .env          # set AHE_USERNAME and AHE_PASSWORD
+cargo run --bin ahe-ics
 ```
 
-## Running checks locally
+For the shared variant, copy `.env.shared.example` instead and run `cargo run --bin ahe-ics-shared`.
 
-### With tools installed locally
+`Dockerfile` and `Dockerfile.alpine` build from source and are what pull requests build in CI. They build `ahe-ics` by default, pass `--build-arg BIN=ahe-ics-shared` for the other one. The `*.release` Dockerfiles only package binaries that the release workflow has already built.
+
+## Checks
+
+CI runs these on every pull request. You don't have to run them all locally, since CI will point out anything that's off:
 
 ```bash
-# Rust
 cargo fmt --check
 cargo clippy --all-targets --locked -- -D warnings
 cargo test --locked
 
-# Dockerfile
 hadolint Dockerfile Dockerfile.alpine Dockerfile.release Dockerfile.alpine.release
-
-# Shell
 shfmt --diff scripts/
 shellcheck scripts/*.sh
-
-# GitHub Actions workflows
 actionlint
-
-# Markdown
 markdownlint-cli2 "**/*.md"
-
-# YAML, JSON and Markdown formatting
 npx prettier --check .
 ```
 
-### With Docker (no local installs required)
+Without the tools installed, run them in Docker, e.g.:
 
 ```bash
-docker run --rm -v "$(pwd):/src" -w /src hadolint/hadolint hadolint Dockerfile Dockerfile.alpine Dockerfile.release Dockerfile.alpine.release
-
-docker run --rm -v "$(pwd):/src" -w /src mvdan/shfmt --diff scripts/
-
+docker run --rm -v "$(pwd):/src" -w /src hadolint/hadolint hadolint Dockerfile
 docker run --rm -v "$(pwd):/workdir" davidanson/markdownlint-cli2 "**/*.md"
 ```
 
-## Commit style
+## Tests
 
-This project uses [Conventional Commits](https://www.conventionalcommits.org/). Commit messages drive automatic changelog generation and version bumping.
+Tests sit next to the code they cover, in a `#[cfg(test)] mod tests` in the same file.
 
-Common prefixes:
+## Commits and pull requests
 
-| Prefix      | When to use                         |
-| ----------- | ----------------------------------- |
-| `feat:`     | New feature or endpoint             |
-| `fix:`      | Bug fix                             |
-| `test:`     | Adding or updating tests            |
-| `chore:`    | Maintenance, dependency updates     |
-| `refactor:` | Code change without behavior change |
-| `docs:`     | Documentation only                  |
-| `style:`    | Formatting, no logic change         |
-| `ci:`       | CI/CD changes                       |
+Commits follow [Conventional Commits](https://www.conventionalcommits.org/) (`feat: ...`, `fix: ...`), because the changelog and version bumps are generated from them. Don't worry if you get the prefix wrong, it can be fixed before merging.
 
-Breaking changes must include `BREAKING CHANGE:` in the commit footer.
+Smaller PRs that do one thing are easier to review. Tests for behavior changes are very welcome. If you're not sure how to test something, open the PR anyway and we'll work it out together.
 
-## Pull requests
+Bugs and ideas go to [issues](https://github.com/wielorzeczownik/ahe-ics/issues). Security problems go through [SECURITY.md](SECURITY.md).
 
-- Keep PRs focused on a single concern.
-- Reference any related issue in the PR description.
-- Cover behavior changes with tests; bug fixes should come with a test that fails without the fix.
-- All CI checks must pass: Rust linting, tests, shell linting, Markdown linting, smoke build, and vulnerability scan.
-
-## Reporting bugs
-
-Open an [issue](https://github.com/wielorzeczownik/ahe-ics/issues) and include:
-
-- What you did
-- What you expected
-- What actually happened
-- Relevant logs or error messages
-- Your platform and how you're running the service (Docker, binary, from source)
-
-> For security issues, please read [SECURITY.md](SECURITY.md) before opening a public issue.
-
-## License
-
-By contributing you agree that your changes will be licensed under the [MIT License](LICENSE).
+Contributions are licensed under the [MIT License](LICENSE).

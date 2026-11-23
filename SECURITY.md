@@ -1,36 +1,18 @@
-# Security Policy
+# Security
 
-## Supported versions
+Thanks for taking the time to look. Please report vulnerabilities privately through [GitHub Security Advisories](https://github.com/wielorzeczownik/ahe-ics/security/advisories/new) instead of a public issue, so there's a chance to fix them first. You'll be credited in the release notes unless you'd rather not be. Only the latest release gets fixes.
 
-Only the latest release receives security fixes.
+## In scope
 
-## Reporting a vulnerability
+- the HTTP endpoints
+- `AHE_CAL_TOKEN` checks
+- WPS credentials: env vars in the dedicated variant, encrypted links and `AHE_LINK_KEY` in the shared one
+- the `/link` rate limit
 
-**Do not open a public GitHub issue for security vulnerabilities.**
+Problems in WPS itself are out of scope.
 
-Report vulnerabilities privately via [GitHub Security Advisories](https://github.com/wielorzeczownik/ahe-ics/security/advisories/new).
+## Running it safely
 
-Include as much detail as possible:
-
-- Description of the vulnerability
-- Steps to reproduce
-- Potential impact
-- Suggested fix (if any)
-
-You will receive a response within **7 days**. If the issue is confirmed, a fix will be released as soon as possible and you will be credited in the release notes (unless you prefer to remain anonymous).
-
-## Scope
-
-This project is a self-hosted service. The attack surface includes:
-
-- HTTP endpoints exposed by the service
-- Handling of the `AHE_CAL_TOKEN` access token
-- Credential handling (`AHE_USERNAME` / `AHE_PASSWORD`)
-
-Issues related to the upstream AHE/WPS API are out of scope.
-
-## Security notes for operators
-
-- Always set `AHE_CAL_TOKEN` when exposing the service on a public network.
-- Prefer using an Argon2id hash over a plain token value see [README.md](README.md) for generation instructions.
-- Run behind a reverse proxy with TLS termination.
+- Set `AHE_CAL_TOKEN` if the instance is reachable from the internet, preferably as an Argon2id hash (see [README](README.md#access-token)).
+- Put it behind a reverse proxy with TLS.
+- In the shared variant, keep `AHE_LINK_KEY` secret. Together with any link it reveals that user's WPS password.
