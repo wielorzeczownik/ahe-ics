@@ -5,6 +5,32 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.2](https://github.com/wielorzeczownik/ahe-ics/compare/v2.0.1...v2.0.2) - 2026-11-23
+
+### Documentation
+
+- Make contributing, security and issue forms friendlier (#270) ([95c6f2a](https://github.com/wielorzeczownik/ahe-ics/commit/95c6f2a50761d7ab4f682bae2a92106491950cc5))
+- Rewrite readme and switch to an svg logo (#264) ([10f7790](https://github.com/wielorzeczownik/ahe-ics/commit/10f7790542efe3d4a8c397fb80e49a92659cb237))
+
+### CI/CD
+
+- Update taiki-e/install-action action to v2.90.5 (#268) ([ba0ae11](https://github.com/wielorzeczownik/ahe-ics/commit/ba0ae114d7c59655f324b3f9fc99ac9ba374db86))
+- Update taiki-e/install-action action to v2.90.3 (#262) ([8cc4b42](https://github.com/wielorzeczownik/ahe-ics/commit/8cc4b42e012e42ce58bcc5f408ceb056ff5b2d89))
+- Update docker/login-action action to v4.8.0 (#261) ([464c2a3](https://github.com/wielorzeczownik/ahe-ics/commit/464c2a329228225455d9a41ee4de1649a5eb6a7b))
+- Update dependency prettier to v3.10.1 (#260) ([3928035](https://github.com/wielorzeczownik/ahe-ics/commit/39280352d2257a47c57b09f4dc5e2dbfd29ef7a6))
+- Update softprops/action-gh-release action to v3.0.4 (#258) ([cb77dc3](https://github.com/wielorzeczownik/ahe-ics/commit/cb77dc3c49763faa55fa79925508966a24bebb03))
+
+### Dependencies
+
+- Lock file maintenance (#269) ([5b7c6fd](https://github.com/wielorzeczownik/ahe-ics/commit/5b7c6fd2bfe39b263b0f02c5a5d3f089561344a3))
+- Update rust base image (#266) ([793bab4](https://github.com/wielorzeczownik/ahe-ics/commit/793bab4c973edd5c5f641cf523a023992b597b7c))
+- Lock file maintenance (#263) ([b91377e](https://github.com/wielorzeczownik/ahe-ics/commit/b91377e1171b53f3addc7a498fc9a76b2b8d2f29))
+- Update rust docker tag to v1.100 (#259) ([48f9635](https://github.com/wielorzeczownik/ahe-ics/commit/48f963587bddaed5d2e149a4bcdabb4411ed45a1))
+
+### Miscellaneous
+
+- Optimize logo svg with svgo (#265) ([a6b85a2](https://github.com/wielorzeczownik/ahe-ics/commit/a6b85a2c6bbfabcb16a4ba5fd37db4c44907a603))
+
 ## [2.0.1](https://github.com/wielorzeczownik/ahe-ics/compare/v2.0.0...v2.0.1) - 2026-11-09
 
 ### CI/CD
